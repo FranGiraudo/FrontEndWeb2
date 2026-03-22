@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
         carContainer.innerHTML = "";
 
         if (list.length === 0) {
-            carContainer.innerHTML = `<p class="no-results">No se encontraron vehículos.</p>`;
+            carContainer.innerHTML = `<p class="no-results">No se encontraron vehículos que coincidan con los filtros.</p>`;
             return;
         }
         
@@ -96,32 +96,77 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // NUEVO: Función separada para obtener los datos de los inputs
+    function obtenerCriteriosFiltro() {
+        const pMin = parseFloat(document.getElementById('filter-price-min')?.value);
+        const pMax = parseFloat(document.getElementById('filter-price-max')?.value);
+        const kmMin = parseInt(document.getElementById('filter-km-min')?.value);
+        const kmMax = parseInt(document.getElementById('filter-km-max')?.value);
+        const yMin = parseInt(document.getElementById('filter-year-min')?.value);
+        const yMax = parseInt(document.getElementById('filter-year-max')?.value);
+
+        return {
+            search: normalizar(searchInput?.value || ""),
+            brand: normalizar(document.getElementById('filter-brand')?.value || ""),
+            model: normalizar(document.getElementById('filter-model')?.value || ""),
+            location: normalizar(document.getElementById('filter-location')?.value || ""),
+            
+            // Validamos con isNaN por si los campos numéricos están vacíos
+            yearMin: isNaN(yMin) ? 0 : yMin,
+            yearMax: isNaN(yMax) ? 9999 : yMax,
+            
+            priceMin: isNaN(pMin) ? 0 : pMin,
+            priceMax: isNaN(pMax) ? Infinity : pMax,
+
+            kmMin: isNaN(kmMin) ? 0 : kmMin,
+            kmMax: isNaN(kmMax) ? Infinity : kmMax,
+
+            body: document.getElementById('filter-body')?.value || "all",
+            fuel: document.getElementById('filter-fuel')?.value || "all",
+            transmission: document.getElementById('filter-trans')?.value || "all"
+        };
+    }
+
+    // NUEVO: Aplicar los filtros de forma estructurada
     function aplicarFiltros() {
-        const searchText = normalizar(searchInput?.value || "");
-        const fBrand = normalizar(document.getElementById('filter-brand')?.value || "");
-        const fModel = normalizar(document.getElementById('filter-model')?.value || "");
-        const fLocation = normalizar(document.getElementById('filter-location')?.value || "");
-        
-        const yMin = parseInt(document.getElementById('filter-year-min')?.value) || 0;
-        const yMax = parseInt(document.getElementById('filter-year-max')?.value) || 2027;
-        const pMax = parseFloat(document.getElementById('filter-price-max')?.value) || Infinity;
-        const body = document.getElementById('filter-body')?.value || "all";
+        const criterios = obtenerCriteriosFiltro();
 
         const filtered = allCars.filter(car => {
-            const matchesSearch = normalizar(car.brand).includes(searchText) || normalizar(car.model).includes(searchText);
-            const matchesFBrand = fBrand === "" || normalizar(car.brand).includes(fBrand);
-            const matchesFModel = fModel === "" || normalizar(car.model).includes(fModel);
-            const matchesLocation = fLocation === "" || normalizar(car.location).includes(fLocation);
-            
-            const matchesYear = car.year >= yMin && car.year <= yMax;
-            const matchesPrice = car.price <= pMax;
-            
-            const carBody = normalizar(car.bodyType);
-            const fBody = normalizar(body);
-            const matchesBody = (body === "all") || (carBody === fBody) || carBody.includes(fBody) || fBody.includes(carBody);
+            // Normalizamos los datos del vehículo actual
+            const cBrand = normalizar(car.brand);
+            const cModel = normalizar(car.model);
+            const cLocation = normalizar(car.location);
+            const cBody = normalizar(car.bodyType);
+            const cFuel = normalizar(car.fuel);
+            const cTrans = normalizar(car.transmission);
 
-            return matchesSearch && matchesFBrand && matchesFModel && matchesLocation && matchesYear && matchesPrice && matchesBody;
+            // Normalizamos los criterios de selección fijos
+            const fBody = normalizar(criterios.body);
+            const fFuel = normalizar(criterios.fuel);
+            const fTrans = normalizar(criterios.transmission);
+
+            // Validaciones de Texto
+            const matchesSearch = cBrand.includes(criterios.search) || cModel.includes(criterios.search);
+            const matchesBrand = criterios.brand === "" || cBrand.includes(criterios.brand);
+            const matchesModel = criterios.model === "" || cModel.includes(criterios.model);
+            const matchesLocation = criterios.location === "" || cLocation.includes(criterios.location);
+            
+            // Validaciones Numéricas (Ahora sí contempla Mínimos y Máximos)
+            const matchesYear = car.year >= criterios.yearMin && car.year <= criterios.yearMax;
+            const matchesPrice = car.price >= criterios.priceMin && car.price <= criterios.priceMax;
+            const matchesKm = car.km >= criterios.kmMin && car.km <= criterios.kmMax;
+
+            // Validaciones de Selectores (Combustible, Transmisión y Carrocería)
+            const matchesBody = (criterios.body === "all") || cBody.includes(fBody) || fBody.includes(cBody);
+            const matchesFuel = (criterios.fuel === "all") || cFuel.includes(fFuel) || fFuel.includes(cFuel);
+            const matchesTrans = (criterios.transmission === "all") || cTrans.includes(fTrans) || fTrans.includes(cTrans);
+
+            // El auto debe cumplir TODOS los requisitos
+            return matchesSearch && matchesBrand && matchesModel && matchesLocation && 
+                   matchesYear && matchesPrice && matchesKm && 
+                   matchesBody && matchesFuel && matchesTrans;
         });
+
         renderCars(filtered);
     }
 
@@ -136,6 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Event listeners a todos los campos para que filtren en tiempo real
     const allInputs = document.querySelectorAll('.advanced-filters-panel input, .advanced-filters-panel select, #busqueda');
     allInputs.forEach(el => {
         el.addEventListener('input', aplicarFiltros);
