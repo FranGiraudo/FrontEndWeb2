@@ -10,7 +10,6 @@ document.addEventListener('DOMContentLoaded', () => {
             profileLink.textContent = "Mi Perfil";
         }
         
-        // Si no existe el botón de salir, lo agregamos como un <li> normal
         if (navUl && !document.getElementById('logout-btn')) {
             const logoutHtml = `<li><a href="#" id="logout-btn" class="logout-link">Salir</a></li>`;
             navUl.insertAdjacentHTML('beforeend', logoutHtml);
@@ -20,6 +19,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 localStorage.removeItem('user_session');
                 window.location.href = "index.html";
             });
+        }
+    } else {
+        // Si NO hay sesión iniciada
+        if (profileLink) {
+            profileLink.href = "login.html";
+            profileLink.textContent = "Iniciar Sesión";
         }
     }
 

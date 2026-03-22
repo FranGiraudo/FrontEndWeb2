@@ -22,36 +22,82 @@
     </header>
 
     <div class="login-wrapper">
-        <div class="login-card">
+        <div class="login-card" id="card-login">
             <h2>Ingresar</h2>
             <p>Accede para gestionar tus publicaciones con IA.</p>
 
             <form id="login-form">
                 <div class="form-group">
                     <label>Email</label>
-                    <input type="email" placeholder="tu@email.com" required>
+                    <input type="email" id="login-email" placeholder="tu@email.com" required>
                 </div>
-
                 <div class="form-group">
                     <label>Contraseña</label>
-                    <input type="password" placeholder="••••••••" required>
+                    <input type="password" id="login-password" placeholder="••••••••" required>
                 </div>
-
-                <div class="form-group">
-                    <label>Tipo de Usuario</label>
-                    <select>
-                        <option value="comprador">Comprador</option>
-                        <option value="vendedor">Vendedor</option>
-                    </select>
-                </div>
-
-                <button type="submit" class="login-submit-btn">
-                     ENTRAR AL SISTEMA
-                </button>
+                
+                <button type="submit" class="login-submit-btn">ENTRAR AL SISTEMA</button>
             </form>
 
             <div class="footer-link">
-                ¿No tenés cuenta? <a href="#">Registrate</a>
+                ¿No tenés cuenta? <a href="#" id="link-to-register">Registrate</a>
+            </div>
+        </div>
+
+        <div class="login-card" id="card-register" style="display: none; max-width: 500px;">
+            <h2>Crear Cuenta</h2>
+            <p>Completá tus datos para unirte a SmartAuto.</p>
+
+            <div class="segmented-control role-selector" id="reg-rol-selector">
+                <input type="radio" name="reg_role" id="reg_role_comprador" value="comprador" checked>
+                <label for="reg_role_comprador" class="role-label-left">Comprador</label>
+                
+                <input type="radio" name="reg_role" id="reg_role_vendedor" value="vendedor">
+                <label for="reg_role_vendedor" class="role-label-right">Vendedor</label>
+                
+                <div class="segmented-control__slider"></div>
+            </div>
+
+            <form id="register-form">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label>Nombre</label>
+                        <input type="text" id="reg-nombre" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Apellido</label>
+                        <input type="text" id="reg-apellido" required>
+                    </div>
+                    <div class="form-group">
+                        <label>DNI</label>
+                        <input type="tel" id="reg-dni" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Teléfono</label>
+                        <input type="tel" id="reg-tel" required>
+                    </div>
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label>Dirección</label>
+                        <input type="text" id="reg-dir" required>
+                    </div>
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label>Email</label>
+                        <input type="email" id="reg-email" placeholder="tu@email.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Contraseña</label>
+                        <input type="password" id="reg-pass" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Confirmar Contraseña</label>
+                        <input type="password" id="reg-pass-confirm" required>
+                    </div>
+                </div>
+                <button type="submit" class="login-submit-btn">REGISTRARME</button>
+            </form>
+
+            <div class="footer-link">
+                ¿Ya tenés cuenta? <a href="#" id="link-to-login">Ingresar</a>
             </div>
         </div>
     </div>

@@ -119,7 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
 
         if (!fotoValidadaIA || fotosCargadas.length === 0) {
-            alert("❌ Por favor, esperá la validación de la IA.");
+            alert("Por favor, esperá la validación de la IA.");
             return;
         }
 
@@ -144,7 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
             publicaciones.push(nuevoAuto);
             localStorage.setItem('misAutosPublicados', JSON.stringify(publicaciones));
 
-            btnSubmit.innerHTML = "✨ PUBLICANDO...";
+            btnSubmit.innerHTML = "PUBLICANDO...";
             btnSubmit.disabled = true;
 
             setTimeout(() => {
