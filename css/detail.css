@@ -1,0 +1,217 @@
+/* --- LAYOUT PRINCIPAL --- */
+.product-container {
+    max-width: 1300px;
+    margin: 2rem auto;
+    padding: 0 2%;
+    display: grid;
+    grid-template-columns: 1fr 380px; 
+    gap: 2.5rem;
+    align-items: start;
+}
+
+/* --- COLUMNA IZQUIERDA: GALERÍA --- */
+.gallery-column {
+    background-color: #1a1a1d;
+    border-radius: 1rem;
+    padding: 1rem;
+    border: 1px solid var(--border);
+}
+
+.main-photo-wrapper {
+    width: 100%;
+    height: 600px;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    cursor: zoom-in;
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+
+.main-photo-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.zoom-hint {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 0.7rem;
+}
+
+.thumbnail-carousel {
+    display: flex;
+    gap: 0.75rem;
+    overflow-x: auto;
+    padding-bottom: 10px;
+}
+
+.thumb-img {
+    width: 80px;
+    height: 80px;
+    border-radius: 0.5rem;
+    object-fit: cover;
+    cursor: pointer;
+    border: 2px solid transparent;
+    opacity: 0.6;
+}
+
+.thumb-img.active {
+    border-color: var(--accent-lavender);
+    opacity: 1;
+}
+
+/* --- ESPECIFICACIONES E ICONOS --- */
+.details-section {
+    margin-top: 2rem;
+    background-color: #35353d;
+    padding: 2.5rem;
+    border-radius: 1rem;
+    border: 1px solid var(--border);
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.info-item {
+    background: linear-gradient(145deg, #3a3a42, #2e2e36);
+    border: 1px solid var(--border);
+    padding: 1.25rem;
+    border-radius: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s ease;
+}
+
+.info-item:hover {
+    transform: translateY(-3px);
+    border-color: var(--accent-lavender);
+}
+
+.spec-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.spec-icon svg {
+    color: var(--accent-lavender);
+    width: 20px;
+    height: 20px;
+}
+
+.spec-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: #888;
+    font-weight: 700;
+}
+
+.spec-value {
+    font-size: 1.05rem;
+    color: var(--white);
+    font-weight: 600;
+}
+
+/* --- SIDEBAR --- */
+.action-sidebar {
+    position: sticky;
+    top: 2rem;
+    background-color: #35353d;
+    padding: 2rem;
+    border-radius: 1rem;
+    border: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.price-box {
+    background: var(--bg-shark);
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    border-left: 5px solid var(--accent-lavender);
+}
+
+.price-value {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--white);
+}
+
+/* --- LIGHTBOX --- */
+.lightbox-overlay {
+    display: none;
+    position: fixed;
+    z-index: 10000;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.95);
+    backdrop-filter: blur(10px);
+    justify-content: center;
+    align-items: center;
+}
+
+.lightbox-content {
+    max-width: 85%;
+    max-height: 80vh;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+    cursor: zoom-in;
+}
+
+.lightbox-content.zoomed {
+    transform: scale(1.5);
+    cursor: zoom-out;
+}
+
+.nav-arrow {
+    position: absolute;
+    top: 50%;
+    color: white;
+    font-size: 3rem;
+    cursor: pointer;
+    padding: 20px;
+    user-select: none;
+}
+
+.prev-arrow { left: 20px; }
+.next-arrow { right: 20px; }
+
+.close-lightbox {
+    position: absolute;
+    top: 20px; right: 30px;
+    color: white;
+    font-size: 3rem;
+    cursor: pointer;
+}
+
+/* --- BOTÓN CONTACTO --- */
+.btn-contact {
+    width: 100%;
+    height: 55px;
+    background-color: var(--white);
+    color: var(--bg-shark);
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 1.1rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-contact:hover {
+    background-color: var(--text-slate);
+    transform: translateY(-3px);
+}

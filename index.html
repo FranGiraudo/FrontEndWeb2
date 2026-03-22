@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartAuto | Marketplace</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+        <a href="index.html" style="text-decoration: none; color: inherit;">SmartAuto</a>
+    </div>
+        <nav>
+            <ul>
+                <li><a href="index.html">Explorar</a></li>
+                <li><a href="publish.html">Publicar</a></li>
+                <li><a href="login.html" id="nav-profile-link">Mi Perfil</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h1>Encontrá tu nuevo auto</h1>
+            <p>Filtros avanzados con inteligencia real.</p>
+            <div class="search-container">
+                <input type="text" id="busqueda" placeholder="Marca o modelo...">
+                <button class="btn-filter-toggle" id="btn-toggle-filters">
+                    <span>Filtros</span>
+                </button>
+            </div>
+        </section>
+
+        <section class="content">
+            <div class="advanced-filters-panel" id="advanced-filters">
+                <div class="filter-grid">
+                    <div class="filter-item">
+                        <label>Marca</label>
+                        <input type="text" id="filter-brand" placeholder="Ej: Toyota">
+                    </div>
+                    <div class="filter-item">
+                        <label>Modelo</label>
+                        <input type="text" id="filter-model" placeholder="Ej: Hilux">
+                    </div>
+
+                    <div class="filter-item">
+                        <label>Año</label>
+                        <div class="range-inputs">
+                            <input type="number" id="filter-year-min" placeholder="Desde">
+                            <input type="number" id="filter-year-max" placeholder="Hasta">
+                        </div>
+                    </div>
+
+                    <div class="filter-item">
+                        <label>Ubicación</label>
+                        <input type="text" id="filter-location" placeholder="Ej: Córdoba">
+                    </div>
+
+                    <div class="filter-item">
+                        <label>Precio (u$s)</label>
+                        <div class="range-inputs">
+                            <input type="number" id="filter-price-min" placeholder="Min">
+                            <input type="number" id="filter-price-max" placeholder="Max">
+                        </div>
+                    </div>
+                    <div class="filter-item">
+                        <label>Kilómetros</label>
+                        <div class="range-inputs">
+                            <input type="number" id="filter-km-min" placeholder="Min">
+                            <input type="number" id="filter-km-max" placeholder="Max">
+                        </div>
+                    </div>
+
+                    <div class="filter-item">
+                        <label>Carrocería</label>
+                        <select id="filter-body">
+                            <option value="all">Todas</option>
+                            <option value="SUV / Crossover">SUV / Crossover</option>
+                            <option value="Pickup">Pickup</option>
+                            <option value="Hatchback">Hatchback</option>
+                            <option value="Sedán">Sedán</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <label>Combustible</label>
+                        <select id="filter-fuel">
+                            <option value="all">Todos</option>
+                            <option value="Nafta">Nafta</option>
+                            <option value="Diesel">Diesel</option>
+                            <option value="GNC">GNC</option>
+                            <option value="Híbrido">Híbrido</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <label>Transmisión</label>
+                        <select id="filter-trans">
+                            <option value="all">Todas</option>
+                            <option value="Manual">Manual</option>
+                            <option value="Automática">Automática</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-item">
+                        <button class="btn-reset" id="btn-reset">Limpiar Filtros</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="container-autos" class="grid-autos"></div>
+        </section>
+    </main>
+
+    <script src="js/database.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

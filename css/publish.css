@@ -1,0 +1,191 @@
+/* ==========================================================================
+   SmartAuto - Publish Page Styles (Versión Pro)
+   ========================================================================== */
+
+.publish-page {
+    background: radial-gradient(circle at top right, #35353d 0%, var(--bg-shark) 100%);
+    min-height: 100vh;
+}
+
+.main-container {
+    padding: 3rem 5%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: calc(100vh - 70px); 
+}
+
+.publish-card {
+    background-color: var(--card-bg);
+    width: 100%;
+    max-width: 800px;
+    padding: 3rem;
+    border-radius: 1.2rem;
+    border: 1px solid var(--border);
+    box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+}
+
+.card-header {
+    text-align: left;
+    margin-bottom: 2.5rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 1.5rem;
+}
+
+.card-header h1 {
+    color: var(--white);
+    font-size: 2.2rem;
+    font-weight: 800;
+    letter-spacing: -1px;
+}
+
+.card-header p {
+    color: var(--text-slate);
+    font-size: 1rem;
+    margin-top: 0.5rem;
+}
+
+/* Grilla del Formulario */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+}
+
+.full-width {
+    grid-column: span 2;
+}
+
+.input-group label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-slate);
+    margin-bottom: 0.6rem;
+}
+
+/* Inputs Estilizados */
+input, select, textarea {
+    width: 100%;
+    padding: 0.9rem 1rem;
+    background-color: var(--bg-shark);
+    border: 1px solid var(--border);
+    border-radius: 0.6rem;
+    color: var(--white);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--accent-lavender);
+    box-shadow: 0 0 0 4px rgba(110, 85, 107, 0.15);
+}
+
+textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+/* Zona de Carga de Imágenes */
+.drop-zone {
+    border: 2px dashed var(--dark-don-juan);
+    border-radius: 1rem;
+    padding: 2.5rem 1rem;
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-top: 0.5rem;
+}
+
+.drop-zone:hover {
+    border-color: var(--accent-lavender);
+    background-color: rgba(110, 85, 107, 0.05);
+}
+
+.drop-text {
+    color: var(--text-slate);
+    font-weight: 500;
+    display: block;
+}
+
+/* Caja de Info de IA (Efecto Glassmorphism) */
+.ai-info-box {
+    background: rgba(110, 85, 107, 0.1);
+    padding: 1.25rem;
+    border-radius: 0.8rem;
+    border: 1px solid var(--accent-lavender);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 2rem 0;
+    color: var(--white);
+    transition: all 0.5s ease;
+}
+
+/* --- BOTÓN DE PUBLICAR (CORREGIDO) --- */
+.btn-submit {
+    width: 100%;
+    padding: 1.2rem;
+    background-color: var(--accent-lavender);
+    color: var(--white);
+    border: none;
+    border-radius: 0.75rem;
+    font-weight: 800;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    
+    /* Estado inicial: El JS se encargará de habilitarlo */
+    cursor: not-allowed;
+    opacity: 0.5;
+    
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+/* Efecto hover solo cuando está habilitado */
+.btn-submit:not(:disabled):hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+    filter: brightness(1.2);
+}
+
+/* Estado deshabilitado explícito */
+.btn-submit:disabled {
+    background-color: #4a4a52 !important;
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+}
+
+/* Previsualización de Galería */
+.gallery-preview-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+    justify-content: center;
+}
+
+.thumb-preview {
+    width: 85px;
+    height: 85px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid var(--border);
+    animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+@media (max-width: 650px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .full-width { grid-column: span 1; }
+    .publish-card { padding: 1.5rem; }
+}

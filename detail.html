@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>SmartAuto | Detalle</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/detail.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body class="bg-dark">
+
+    <header>
+        <div class="logo">
+            <a href="index.html" style="text-decoration: none; color: inherit;">SmartAuto</a>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index.html">Explorar</a></li>
+                <li><a href="publish.html">Publicar</a></li>
+                <li><a href="login.html" id="nav-profile-link">Mi Perfil</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="product-container" id="car-detail-content">
+        <div class="loading">Cargando datos del vehículo...</div>
+    </main>
+
+    <div id="photo-lightbox" class="lightbox-overlay">
+        <span class="close-lightbox">&times;</span>
+        <span class="nav-arrow prev-arrow" id="prev-btn">&#10094;</span>
+        <div class="lightbox-image-container">
+            <img class="lightbox-content" id="lightbox-image" src="" alt="Cargando...">
+        </div>
+        <span class="nav-arrow next-arrow" id="next-btn">&#10095;</span>
+    </div>
+
+    <script src="js/database.js"></script>
+    <script src="js/detail.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

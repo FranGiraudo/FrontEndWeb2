@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartAuto | Publicar</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/publish.css">
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <a href="index.html" style="text-decoration: none; color: inherit;">SmartAuto</a>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index.html">Explorar</a></li>
+                <li><a href="publish.html">Publicar</a></li>
+                <li><a href="login.html" id="nav-profile-link">Mi Perfil</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="main-container">
+        <section class="publish-card">
+            <div class="card-header">
+                <h1>Publicar Vehículo</h1>
+                <p>Completá los datos para que nuestra IA analice tu auto.</p>
+            </div>
+
+            <form id="form-publicar">
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label>Marca</label>
+                        <input type="text" id="input-marca" placeholder="Ej: Volkswagen" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Modelo</label>
+                        <input type="text" id="input-modelo" placeholder="Ej: Golf" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Año</label>
+                        <input type="number" id="input-anio" min="1886" max="2027" placeholder="2024" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Kilometraje (km)</label>
+                        <input type="number" id="input-km" min="0" placeholder="0" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Combustible</label>
+                        <select id="input-fuel" required>
+                            <option value="Nafta">Nafta</option>
+                            <option value="Diesel">Diesel</option>
+                            <option value="GNC">GNC</option>
+                            <option value="Híbrido">Híbrido</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Transmisión</label>
+                        <select id="input-trans" required>
+                            <option value="" disabled selected>Seleccionar...</option>
+                            <option value="Manual">Manual</option>
+                            <option value="Automática">Automática</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Ubicación</label>
+                        <input type="text" id="input-ubicacion" placeholder="Ej: Córdoba, Capital" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Precio (u$s)</label>
+                        <input type="number" id="input-precio" min="1" placeholder="15000" required>
+                    </div>
+
+                    <div class="input-group full-width">
+                        <label>Descripción del Vehículo</label>
+                        <textarea id="input-descripcion" placeholder="Detalles sobre el estado, service, único dueño..." rows="4"></textarea>
+                    </div>
+                </div>
+
+                <div class="upload-area">
+                    <label>Fotos del vehículo</label>
+                    <div class="drop-zone" id="drop-zone">
+                        <div id="gallery-preview" class="gallery-preview-container"></div>
+                        
+                        <span class="drop-text" id="drop-text">Arrastrá tus fotos aquí o hacé click</span>
+                        <input type="file" id="file-input" accept="image/*" multiple hidden>
+                    </div>
+                </div>
+
+                <div class="ai-info-box" id="ai-container">
+                    <div class="ai-content">
+                        <p id="ai-text">✨ <b>Análisis IA:</b> Subí al menos una foto para iniciar el escaneo de seguridad.</p>
+                        <div id="correction-ui" style="display: none; margin-top: 10px;">
+                            <label style="font-size: 0.7rem; opacity: 0.8;">¿La IA se equivocó? Corregí la categoría:</label>
+                            <select id="select-carroceria-manual" style="padding: 5px; margin-top: 5px; background: #2a2a32; color: white; border: 1px solid var(--accent-lavender); border-radius: 5px; width: 100%;">
+                                <option value="Sedán">Sedán</option>
+                                <option value="Hatchback">Hatchback</option>
+                                <option value="SUV / Crossover">SUV / Crossover</option>
+                                <option value="Pickup">Pickup</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit" id="btn-publish" disabled>Publicar Ahora</button>
+            </form>
+        </section>
+    </main>
+
+    <script src="js/database.js"></script>
+    <script src="js/main.js"></script> 
+    <script src="js/publish.js"></script>
+
+</body>
+</html>

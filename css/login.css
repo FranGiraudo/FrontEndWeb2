@@ -1,0 +1,124 @@
+/* Heredamos variables de style.css, así que no hace falta redeclararlas */
+
+.login-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    /* Fondo con un degradado sutil para que no sea un plano negro */
+    background: radial-gradient(circle at center, #35353d 0%, var(--bg-shark) 100%);
+}
+
+.login-wrapper {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.login-card {
+    background-color: #35353d; /* Tono de las cards del home */
+    width: 100%;
+    max-width: 400px;
+    padding: 3rem;
+    border-radius: 1rem; /* Radio consistente con las cards */
+    border: 1px solid var(--border);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    text-align: center;
+}
+
+.login-card h2 {
+    color: var(--white);
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+}
+
+.login-card p {
+    color: var(--text-slate);
+    font-size: 0.9rem;
+    margin-bottom: 2.5rem;
+}
+
+/* Estilo de los Inputs */
+.form-group {
+    text-align: left;
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-slate);
+    margin-bottom: 0.6rem;
+    font-weight: 700;
+}
+
+.form-group input, 
+.form-group select {
+    width: 100%;
+    background-color: var(--bg-shark);
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    color: var(--white);
+    padding: 0.8rem 1rem;
+    font-size: 1rem;
+    transition: all 0.2s;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--accent-lavender);
+    box-shadow: 0 0 0 3px rgba(110, 85, 107, 0.2);
+}
+
+/* El botón de login ahora se parece al del buscador */
+/* Botón de Login Estilizado */
+.login-submit-btn {
+    width: 100%;
+    height: 55px; /* Un poco más alto para que sea fácil de clickear */
+    margin-top: 1.5rem;
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    
+    /* Colores consistentes con la marca */
+    background: linear-gradient(135deg, var(--dark-don-juan) 0%, var(--accent-lavender) 100%);
+    color: var(--white);
+    
+    border: none;
+    border-radius: 0.75rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.login-submit-btn:hover {
+    /* Efecto de iluminación y levante */
+    transform: translateY(-3px);
+    box-shadow: 0 12px 25px rgba(110, 85, 107, 0.4);
+    filter: brightness(1.1);
+}
+
+.login-submit-btn:active {
+    transform: translateY(-1px);
+}
+
+.footer-link {
+    margin-top: 2rem;
+    font-size: 0.85rem;
+    color: var(--text-slate);
+}
+
+.footer-link a {
+    color: var(--white);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.footer-link a:hover {
+    color: var(--accent-lavender);
+}

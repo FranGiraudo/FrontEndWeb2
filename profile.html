@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>SmartAuto | Mi Perfil</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/profile.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body class="bg-dark">
+    <header>
+        <div class="logo">
+            <a href="index.html">SmartAuto</a>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index.html">Explorar</a></li>
+                <li><a href="publish.html">Publicar</a></li>
+                <li><a href="login.html" id="nav-profile-link" class="active-page">Mi Perfil</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="profile-container">
+        <aside class="profile-sidebar">
+            <div class="user-info">
+                <div class="avatar" id="user-avatar">U</div>
+                <h2 id="display-email">Cargando...</h2>
+                <span class="badge-role" id="display-role">Rol</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="active">Panel General</a>
+                <a href="index.html">Explorar Marketplace</a>
+                <a href="#" class="logout-danger" id="btn-logout-sidebar">Cerrar Sesión</a>
+            </nav>
+        </aside>
+
+        <section class="profile-content">
+            <div id="vendedor-view" style="display: none;">
+                <h1>Panel de Vendedor</h1>
+                <p>Métricas de rendimiento de tus publicaciones.</p>
+                <div id="my-cars-grid"></div>
+            </div>
+
+            <div id="comprador-view" style="display: none;">
+                <h1>Panel de Comprador</h1>
+                <p>Tu actividad reciente en SmartAuto.</p>
+                <div class="empty-state"></div>
+            </div>
+        </section>
+    </main>
+
+
+
+    <script src="js/database.js"></script>
+    <script src="js/profile.js"></script>
+    <script src="js/main.js"></script>
+    
+</body>
+</html>
