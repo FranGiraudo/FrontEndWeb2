@@ -12,8 +12,8 @@
 
     <header>
         <div class="logo">
-        <a href="index.html" style="text-decoration: none; color: inherit;">SmartAuto</a>
-    </div>
+            <a href="index.html" style="text-decoration: none; color: inherit;">SmartAuto</a>
+        </div>
         <nav>
             <ul>
                 <li><a href="index.html">Volver al Inicio</a></li>
@@ -28,12 +28,17 @@
 
             <form id="login-form">
                 <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" id="login-email" placeholder="tu@email.com" required>
+                    <input type="email" id="login-email" placeholder="Email (ej: tu@email.com)" required>
                 </div>
-                <div class="form-group">
-                    <label>Contraseña</label>
-                    <input type="password" id="login-password" placeholder="••••••••" required>
+                
+                <div class="form-group input-with-icon">
+                    <input type="password" id="login-password" placeholder="Contraseña" required>
+                    <button type="button" class="btn-toggle-pass" id="toggle-login-pass">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                    </button>
                 </div>
                 
                 <button type="submit" class="login-submit-btn">ENTRAR AL SISTEMA</button>
@@ -61,38 +66,45 @@
             <form id="register-form">
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                     <div class="form-group">
-                        <label>Nombre</label>
-                        <input type="text" id="reg-nombre" required>
+                        <input type="text" id="reg-nombre" placeholder="Nombre" required>
                     </div>
                     <div class="form-group">
-                        <label>Apellido</label>
-                        <input type="text" id="reg-apellido" required>
+                        <input type="text" id="reg-apellido" placeholder="Apellido" required>
                     </div>
                     <div class="form-group">
-                        <label>DNI</label>
-                        <input type="tel" id="reg-dni" required>
+                        <input type="number" id="reg-dni" placeholder="DNI" required>
                     </div>
                     <div class="form-group">
-                        <label>Teléfono</label>
-                        <input type="tel" id="reg-tel" required>
+                        <input type="tel" id="reg-tel" placeholder="Teléfono" required>
                     </div>
                     <div class="form-group" style="grid-column: span 2;">
-                        <label>Dirección</label>
-                        <input type="text" id="reg-dir" required>
+                        <input type="text" id="reg-dir" placeholder="Dirección completa" required>
                     </div>
                     <div class="form-group" style="grid-column: span 2;">
-                        <label>Email</label>
-                        <input type="email" id="reg-email" placeholder="tu@email.com" required>
+                        <input type="email" id="reg-email" placeholder="Email (ej: tu@email.com)" required>
                     </div>
-                    <div class="form-group">
-                        <label>Contraseña</label>
-                        <input type="password" id="reg-pass" required>
+                    
+                    <div class="form-group input-with-icon">
+                        <input type="password" id="reg-pass" placeholder="Contraseña" required>
+                        <button type="button" class="btn-toggle-pass" id="toggle-reg-pass">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </button>
                     </div>
-                    <div class="form-group">
-                        <label>Confirmar Contraseña</label>
-                        <input type="password" id="reg-pass-confirm" required>
+                    
+                    <div class="form-group input-with-icon">
+                        <input type="password" id="reg-pass-confirm" placeholder="Confirmar Contraseña" required>
+                        <button type="button" class="btn-toggle-pass" id="toggle-reg-pass-confirm">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </button>
                     </div>
                 </div>
+                
                 <button type="submit" class="login-submit-btn">REGISTRARME</button>
             </form>
 

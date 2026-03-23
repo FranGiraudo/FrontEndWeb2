@@ -110,6 +110,17 @@
     transition: color 0.3s ease;
 }
 
+/* --- ESTILO PARA LOS PLACEHOLDERS --- */
+.form-group input::placeholder {
+    color: var(--text-slate);
+    opacity: 0.6; /* Un poco transparente para que contraste cuando el usuario escriba */
+    font-weight: 500;
+}
+
+/* Opcional: Reducir un poco el margen debajo de los inputs ya que sacamos las labels */
+.form-group {
+    margin-bottom: 1rem; /* Antes estaba en 1.5rem */
+}
 /* Styles the moving white-ish segment */
 .segmented-control__slider {
     position: absolute;
@@ -188,3 +199,37 @@ input#reg_role_vendedor:checked ~ label.role-label-right {
     color: var(--accent-lavender);
 }
 
+/* --- BOTÓN MOSTRAR/OCULTAR CONTRASEÑA --- */
+.input-with-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+/* Le damos un poco de padding a la derecha para que el texto no pise el icono */
+.input-with-icon input {
+    padding-right: 45px;
+}
+
+.btn-toggle-pass {
+    position: absolute;
+    right: 12px;
+    background: none;
+    border: none;
+    color: var(--text-slate);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    transition: color 0.2s ease;
+}
+
+.btn-toggle-pass:hover {
+    color: var(--accent-lavender);
+}
+
+.btn-toggle-pass svg {
+    width: 20px;
+    height: 20px;
+}

@@ -108,3 +108,47 @@ function trackMetric(id, type) {
     localStorage.setItem('smartauto_analytics', JSON.stringify(stats));
     console.log(`[SmartAuto Analytics] ID ${id}: +1 ${type}`);
 }
+/**
+ * ==========================================
+ * 4. SISTEMA DE USUARIOS (Simulación de API Backend)
+ * ==========================================
+ */
+
+// Función privada para obtener la "tabla" de usuarios
+function _getUsersTable() {
+    return JSON.parse(localStorage.getItem('smartauto_users')) || [];
+}
+
+// SIMULACIÓN ENDPOINT: POST /api/register
+function registerUserInDB(userData) {
+    const users = _getUsersTable();
+    
+    // Validar si el email ya existe
+    if (users.some(u => u.email === userData.email)) {
+        return { success: false, error: "Este email ya se encuentra registrado." };
+    }
+
+    // Insertar en la "base de datos"
+    users.push(userData);
+    localStorage.setItem('smartauto_users', JSON.stringify(users));
+    
+    return { success: true };
+}
+
+// SIMULACIÓN ENDPOINT: POST /api/login
+function authenticateUserInDB(email, password) {
+    // 1. Verificar atajos/backdoors de prueba
+    if (email === "admin@vendor" && password === "123") return { success: true, user: { email, rol: 'vendedor', nombre: 'Test Vendor' } };
+    if (email === "admin@client" && password === "123") return { success: true, user: { email, rol: 'comprador', nombre: 'Test Client' } };
+    if (email === "admin@admin.com" && password === "123") return { success: true, user: { email, rol: 'vendedor', nombre: 'Admin Master' } };
+
+    // 2. Buscar en la base de datos local
+    const users = _getUsersTable();
+    const validUser = users.find(u => u.email === email && u.password === password);
+
+    if (validUser) {
+        return { success: true, user: validUser };
+    }
+
+    return { success: false, error: "Email o contraseña incorrectos." };
+}
