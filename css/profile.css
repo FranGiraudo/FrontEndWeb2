@@ -200,3 +200,60 @@
 
 .btn-edit:hover { background: #5a5a63; }
 .btn-delete:hover { background: #ff5252; color: white; }
+
+/* --- ANIMACIÓN DEL FILTRO DE MENSAJES (ESTILO LOGIN) --- */
+.filter-segmented-control {
+    position: relative;
+    display: flex;
+    background: #1a1c23; /* Un gris un poco más claro que el fondo para que resalte */
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    padding: 4px;
+    width: 300px; /* Ancho fijo para calcular bien la mitad */
+    height: 44px; /* Un poco más alto, más cómodo para hacer clic */
+}
+
+.filter-segmented-control input[type="radio"] {
+    display: none;
+}
+
+.filter-segmented-control label {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-slate);
+    cursor: pointer;
+    z-index: 2;
+    transition: color 0.3s ease;
+    border-radius: 6px;
+}
+
+/* El fondo animado que se mueve (la píldora violeta) */
+.filter-segmented-control .slider {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    height: calc(100% - 8px);
+    width: calc(50% - 4px); /* Exactamente la mitad del contenedor menos el padding interno */
+    background: var(--accent-lavender);
+    border-radius: 6px;
+    z-index: 1;
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1); /* Curva más smooth */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* --- ESTADOS ACTIVOS --- */
+
+/* Si selecciono "Todas" (el primero), el slider va a la posición 0 */
+#filter-all:checked ~ .slider {
+    transform: translateX(0);
+}
+
+/* Si selecciono "Pendientes" (el segundo), el slider se mueve a la derecha */
+#filter-unanswered:checked ~ .slider {
+    transform: translateX(100%);
+}

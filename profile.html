@@ -25,11 +25,13 @@
         <aside class="profile-sidebar">
             <div class="user-info">
                 <div class="avatar" id="user-avatar">U</div>
-                <h2 id="display-email">Cargando...</h2>
+                <h2 id="display-name">Cargando...</h2>
+                <p id="display-email" style="font-size: 0.8rem; opacity: 0.7; margin-bottom: 5px;"></p>
                 <span class="badge-role" id="display-role">Rol</span>
             </div>
             <nav class="sidebar-nav">
-                <a href="#" class="active">Panel General</a>
+                <a href="#" id="nav-panel-general" class="active">Panel General</a>
+                <a href="#" id="nav-consultas">Consultas</a>
                 <a href="index.html">Explorar Marketplace</a>
                 <a href="#" class="logout-danger" id="btn-logout-sidebar">Cerrar Sesión</a>
             </nav>
@@ -47,6 +49,14 @@
                 <p>Tu actividad reciente en SmartAuto.</p>
                 <div class="empty-state"></div>
             </div>
+            <div id="mensajes-view" class="dashboard-content" style="display: none;">
+            <div class="card-header">
+                <h1 id="titulo-mensajes">Bandeja de Consultas</h1>
+                <p id="subtitulo-mensajes">Gestioná la comunicación sobre los vehículos.</p>
+            </div>
+            <div id="grid-mensajes" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
+                </div>
+        </div>
         </section>
     </main>
 

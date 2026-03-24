@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     carImages = car.images;
 
-    // --- 3. Inyectar Contenido ---
+// --- 3. Inyectar Contenido ---
     container.innerHTML = `
         <div class="gallery-column">
             <div class="main-photo-wrapper" id="main-photo-container">
@@ -98,7 +98,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 <p style="font-size: 0.7rem; color: #888; margin-bottom: 5px;">PRECIO SUGERIDO IA</p>
                 <h2 class="price-value">u$s ${car.price.toLocaleString()}</h2>
             </div>
-            <button class="btn-contact" id="btn-whatsapp">CONTACTAR DUEÑO</button>
+            
+            <div class="contact-form-container" style="margin-top: 2rem; background: var(--bg-card); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border);">
+                <h3 style="color: white; margin-bottom: 1rem; font-size: 1.1rem;">Consultar al vendedor</h3>
+                <form id="form-contactar-vendedor">
+                    <textarea id="input-inquiry-message" rows="4" placeholder="Hola, me interesa este vehículo..." style="width: 100%; padding: 10px; border-radius: 5px; background: #1a1a1a; border: 1px solid var(--border); color: white; margin-bottom: 1rem; resize: vertical;" required></textarea>
+                    <button type="submit" class="btn-contact" style="width: 100%; padding: 12px; font-weight: bold; background: var(--accent-lavender); color: var(--bg-shark); border: none; border-radius: 5px; cursor: pointer; transition: opacity 0.3s;">ENVIAR CONSULTA</button>
+                </form>
+            </div>
         </aside>
     `;
 
@@ -121,22 +128,28 @@ document.addEventListener('DOMContentLoaded', () => {
     const lightboxImg = document.getElementById('lightbox-image');
 
     const updateLightbox = () => {
-        lightboxImg.src = carImages[currentIndex];
+        if(lightboxImg) lightboxImg.src = carImages[currentIndex];
     };
 
-    document.getElementById('main-photo-container').addEventListener('click', () => {
-        updateLightbox();
-        lightbox.style.display = "flex";
-        document.body.style.overflow = "hidden";
-    });
+    const mainContainer = document.getElementById('main-photo-container');
+    if(mainContainer && lightbox) {
+        mainContainer.addEventListener('click', () => {
+            updateLightbox();
+            lightbox.style.display = "flex";
+            document.body.style.overflow = "hidden";
+        });
+    }
 
     const closeLightbox = () => {
-        lightbox.style.display = "none";
-        document.body.style.overflow = "auto";
-        lightboxImg.classList.remove('zoomed');
+        if(lightbox) {
+            lightbox.style.display = "none";
+            document.body.style.overflow = "auto";
+            if(lightboxImg) lightboxImg.classList.remove('zoomed');
+        }
     };
 
-    document.querySelector('.close-lightbox')?.addEventListener('click', closeLightbox);
+    const closeBtn = document.querySelector('.close-lightbox');
+    if(closeBtn) closeBtn.addEventListener('click', closeLightbox);
     
     document.getElementById('next-btn')?.addEventListener('click', (e) => { 
         e.stopPropagation(); 
@@ -152,7 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- 6. Navegación por Teclado ---
     document.addEventListener('keydown', (e) => {
-        if (lightbox.style.display === "flex") {
+        if (lightbox && lightbox.style.display === "flex") {
             if (e.key === "ArrowRight") { 
                 currentIndex = (currentIndex + 1) % carImages.length; 
                 updateLightbox(); 
@@ -165,13 +178,49 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // --- 7. Registro de Contacto ---
-    const btnWhatsapp = document.getElementById('btn-whatsapp');
-    if (btnWhatsapp) {
-        btnWhatsapp.addEventListener('click', () => {
-            trackMetric(car.id, 'contactos');
-            const msg = `Hola! Vi tu ${car.brand} ${car.model} en SmartAuto y me interesa.`;
-            window.open(`https://wa.me/549351000000?text=${encodeURIComponent(msg)}`, '_blank');
+    // --- 7. Lógica de Contacto al Vendedor ---
+    const contactForm = document.getElementById('form-contactar-vendedor');
+    if (contactForm) {
+        contactForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            const session = JSON.parse(localStorage.getItem('user_session'));
+            
+            if (!session) {
+                alert("Debes iniciar sesión para enviar una consulta.");
+                window.location.href = "login.html";
+                return;
+            }
+
+            if (session.role !== 'comprador') {
+                alert("Solo los usuarios con rol de comprador pueden enviar consultas sobre vehículos.");
+                return;
+            }
+
+            const messageText = document.getElementById('input-inquiry-message').value;
+
+            if (!messageText.trim()) {
+                alert("El mensaje no puede estar vacío.");
+                return;
+            }
+
+            // Llamada a la DB (Esta función debe existir en database.js)
+            if (typeof sendInquiryToSeller === 'function') {
+                const response = sendInquiryToSeller(car.id, session.email, session.nombre, messageText);
+
+                if (response.success) {
+                    alert("Consulta enviada con éxito al vendedor.");
+                    document.getElementById('input-inquiry-message').value = "";
+                    
+                    // Opcional: Registrar la métrica de contacto
+                    if (typeof trackMetric === 'function') trackMetric(car.id, 'contactos');
+                } else {
+                    alert(response.error);
+                }
+            } else {
+                console.error("La función sendInquiryToSeller no está definida en database.js");
+                alert("Error del sistema. No se pudo enviar el mensaje.");
+            }
         });
     }
 });

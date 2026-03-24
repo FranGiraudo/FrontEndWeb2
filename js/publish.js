@@ -1,3 +1,5 @@
+// js/publish.js
+
 document.addEventListener('DOMContentLoaded', () => {
     const dropZone = document.getElementById('drop-zone');
     const fileInput = document.getElementById('file-input');
@@ -11,13 +13,86 @@ document.addEventListener('DOMContentLoaded', () => {
     let fotosCargadas = []; 
     let fotoValidadaIA = false;
     let carroceriaDetectada = "Sedán";
+    let editModeId = null;
 
-    // 1. Lógica de selección de archivos
+    // --- 1. LÓGICA DE MODO EDICIÓN ---
+    const urlParams = new URLSearchParams(window.location.search);
+    const editId = urlParams.get('edit');
+
+    if (editId) {
+        editModeId = Number(editId);
+        const publicaciones = JSON.parse(localStorage.getItem('misAutosPublicados')) || [];
+        const autoAEditar = publicaciones.find(a => a.id === editModeId);
+
+        if (autoAEditar) {
+            // Llenar inputs de texto
+            document.getElementById('input-marca').value = autoAEditar.marca;
+            document.getElementById('input-modelo').value = autoAEditar.modelo;
+            document.getElementById('input-anio').value = autoAEditar.anio;
+            document.getElementById('input-precio').value = autoAEditar.precio;
+            document.getElementById('input-km').value = autoAEditar.kilometraje;
+            document.getElementById('input-fuel').value = autoAEditar.combustible;
+            document.getElementById('input-trans').value = autoAEditar.transmision;
+            document.getElementById('input-ubicacion').value = autoAEditar.ubicacion;
+            document.getElementById('input-descripcion').value = autoAEditar.descripcion;
+
+            // Cargar fotos existentes
+            fotosCargadas = autoAEditar.fotos || [];
+            if (fotosCargadas.length > 0) {
+                if (dropText) dropText.style.display = 'none';
+                fotosCargadas.forEach(fotoUrl => {
+                    const imgThumb = document.createElement('img');
+                    imgThumb.src = fotoUrl;
+                    imgThumb.classList.add('thumb-preview');
+                    galleryPreview.appendChild(imgThumb);
+                });
+            }
+
+            fotoValidadaIA = true;
+            carroceriaDetectada = autoAEditar.carroceriaIA || "Sedán";
+            
+            // Cambiar textos del botón
+            btnSubmit.disabled = false;
+            btnSubmit.style.opacity = "1";
+            btnSubmit.style.cursor = "pointer";
+            btnSubmit.textContent = "GUARDAR CAMBIOS";
+
+            // Mostrar estado en la caja de IA
+            aiBox.innerHTML = `Categoría actual: <b>${carroceriaDetectada}</b>.`;
+            aiContainer.style.backgroundColor = "rgba(76, 175, 80, 0.15)"; 
+            aiContainer.style.borderLeft = "4px solid #4caf50";
+
+            inyectarSelectorManual();
+            document.getElementById('select-manual-body').value = carroceriaDetectada;
+        }
+    }
+
+    function inyectarSelectorManual() {
+        if(!document.getElementById('manual-fix-container')){
+            const fixHTML = `
+                <div id="manual-fix-container" style="margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
+                    <label style="font-size: 0.7rem; color: #bbb;">Ajustar categoría manualmente:</label>
+                    <select id="select-manual-body" style="background: #1a1a1a; color: white; border: 1px solid var(--accent-lavender); border-radius: 5px; width: 100%; padding: 5px; margin-top: 5px;">
+                        <option value="Sedán">Sedán</option>
+                        <option value="Hatchback">Hatchback</option>
+                        <option value="SUV / Crossover">SUV / Crossover</option>
+                        <option value="Pickup">Pickup</option>
+                    </select>
+                </div>`;
+            aiContainer.insertAdjacentHTML('beforeend', fixHTML);
+            
+            document.getElementById('select-manual-body').addEventListener('change', (e) => {
+                carroceriaDetectada = e.target.value;
+                aiBox.innerHTML = `Categoría ajustada: <b>${carroceriaDetectada}</b>.`;
+            });
+        }
+    }
+
+    // --- 2. LÓGICA DE SELECCIÓN DE ARCHIVOS ---
     dropZone.addEventListener('click', (e) => {
         if (e.target !== fileInput) fileInput.click();
     });
 
-    // 2. Procesar y COMPRIMIR imágenes
     fileInput.addEventListener('change', function() {
         if (this.files && this.files.length > 0) {
             galleryPreview.innerHTML = ""; 
@@ -38,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         canvas.height = img.height * scale;
 
                         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                        const optimizedUrl = canvas.toDataURL('image/jpeg', 0.6); // Compresión al 60%
+                        const optimizedUrl = canvas.toDataURL('image/jpeg', 0.6); 
                         fotosCargadas.push(optimizedUrl);
                         
                         const imgThumb = document.createElement('img');
@@ -50,10 +125,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 reader.readAsDataURL(file);
             });
 
-            // Lógica de Simulación de IA
             fotoValidadaIA = false;
             btnSubmit.disabled = true;
-            aiBox.innerHTML = "🔍 <b>IA Analizando imágenes...</b>";
+            aiBox.innerHTML = "Analizando imágenes...";
             aiContainer.style.backgroundColor = "rgba(255, 255, 255, 0.05)";
             
             setTimeout(() => {
@@ -61,7 +135,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 const modeloVal = document.getElementById('input-modelo').value.trim().toLowerCase();
                 const textoBusqueda = `${marcaVal} ${modeloVal}`;
 
-                // DICCIONARIO SINCRONIZADO CON EL HOME
                 const diccionarios = {
                     "Hatchback": ["golf", "208", "308", "onix", "sandero", "etios", "fiesta", "focus", "argo", "mobi", "kwid", "up"],
                     "SUV / Crossover": ["sw4", "crv", "tracker", "renegade", "duster", "kicks", "t-cross", "nivus", "compass", "hrv", "ecosport", "taos", "corolla cross"],
@@ -69,7 +142,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     "Sedán": ["corolla", "cruze", "cronos", "virtus", "yaris", "civic", "sentra", "logan", "prisma"]
                 };
 
-                // Detección inicial
                 carroceriaDetectada = "Sedán"; 
                 for (const [categoria, palabras] of Object.entries(diccionarios)) {
                     if (palabras.some(p => textoBusqueda.includes(p))) {
@@ -78,32 +150,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
 
-                // UI DE RESULTADO E IA
-                aiBox.innerHTML = `✨ <b>IA Resultado:</b> ✅ Carrocería detectada: <b>${carroceriaDetectada}</b>.`;
+                aiBox.innerHTML = `Carrocería detectada: <b>${carroceriaDetectada}</b>.`;
                 aiContainer.style.backgroundColor = "rgba(76, 175, 80, 0.15)"; 
                 aiContainer.style.borderLeft = "4px solid #4caf50";
 
-                // Inyectamos selector manual para evitar errores de sincronización
-                if(!document.getElementById('manual-fix-container')){
-                    const fixHTML = `
-                        <div id="manual-fix-container" style="margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
-                            <label style="font-size: 0.7rem; color: #bbb;">¿La IA falló? Ajustar categoría:</label>
-                            <select id="select-manual-body" style="background: #1a1a1a; color: white; border: 1px solid var(--accent-lavender); border-radius: 5px; width: 100%; padding: 5px; margin-top: 5px;">
-                                <option value="Sedán">Sedán</option>
-                                <option value="Hatchback">Hatchback</option>
-                                <option value="SUV / Crossover">SUV / Crossover</option>
-                                <option value="Pickup">Pickup</option>
-                            </select>
-                        </div>`;
-                    aiContainer.insertAdjacentHTML('beforeend', fixHTML);
-                    
-                    document.getElementById('select-manual-body').addEventListener('change', (e) => {
-                        carroceriaDetectada = e.target.value;
-                        aiBox.innerHTML = `✨ <b>Categoría ajustada:</b> <b>${carroceriaDetectada}</b>.`;
-                    });
-                }
-                
-                // Seteamos el valor detectado en el select
+                inyectarSelectorManual();
                 document.getElementById('select-manual-body').value = carroceriaDetectada;
                 
                 fotoValidadaIA = true;
@@ -114,46 +165,70 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 3. Envío del Formulario
+    // --- 3. ENVÍO DEL FORMULARIO ---
     publishForm.addEventListener('submit', (e) => {
         e.preventDefault();
 
         if (!fotoValidadaIA || fotosCargadas.length === 0) {
-            alert("Por favor, esperá la validación de la IA.");
+            alert("Por favor, esperá la validación de la IA o cargá imágenes.");
             return;
         }
 
-        const nuevoAuto = {
-            id: Date.now(),
-            marca: document.getElementById('input-marca').value,
-            modelo: document.getElementById('input-modelo').value,
-            anio: document.getElementById('input-anio').value,
-            precio: document.getElementById('input-precio').value,
-            kilometraje: document.getElementById('input-km').value,
-            combustible: document.getElementById('input-fuel').value,
-            transmision: document.getElementById('input-trans').value,
-            ubicacion: document.getElementById('input-ubicacion').value,
-            descripcion: document.getElementById('input-descripcion').value,
-            carroceriaIA: carroceriaDetectada, // IMPORTANTE: Guarda el valor final
-            fotos: fotosCargadas,
-            fotoPrincipal: fotosCargadas[0]
-        };
-
         try {
             let publicaciones = JSON.parse(localStorage.getItem('misAutosPublicados')) || [];
-            publicaciones.push(nuevoAuto);
+
+            if (editModeId) {
+                // ACTUALIZAR
+                const index = publicaciones.findIndex(a => a.id === editModeId);
+                if (index !== -1) {
+                    publicaciones[index] = {
+                        ...publicaciones[index],
+                        marca: document.getElementById('input-marca').value,
+                        modelo: document.getElementById('input-modelo').value,
+                        anio: document.getElementById('input-anio').value,
+                        precio: document.getElementById('input-precio').value,
+                        kilometraje: document.getElementById('input-km').value,
+                        combustible: document.getElementById('input-fuel').value,
+                        transmision: document.getElementById('input-trans').value,
+                        ubicacion: document.getElementById('input-ubicacion').value,
+                        descripcion: document.getElementById('input-descripcion').value,
+                        carroceriaIA: carroceriaDetectada,
+                        fotos: fotosCargadas,
+                        fotoPrincipal: fotosCargadas[0]
+                    };
+                }
+            } else {
+                // CREAR NUEVO
+                const nuevoAuto = {
+                    id: Date.now(),
+                    marca: document.getElementById('input-marca').value,
+                    modelo: document.getElementById('input-modelo').value,
+                    anio: document.getElementById('input-anio').value,
+                    precio: document.getElementById('input-precio').value,
+                    kilometraje: document.getElementById('input-km').value,
+                    combustible: document.getElementById('input-fuel').value,
+                    transmision: document.getElementById('input-trans').value,
+                    ubicacion: document.getElementById('input-ubicacion').value,
+                    descripcion: document.getElementById('input-descripcion').value,
+                    carroceriaIA: carroceriaDetectada,
+                    fotos: fotosCargadas,
+                    fotoPrincipal: fotosCargadas[0]
+                };
+                publicaciones.push(nuevoAuto);
+            }
+
             localStorage.setItem('misAutosPublicados', JSON.stringify(publicaciones));
 
-            btnSubmit.innerHTML = "PUBLICANDO...";
+            btnSubmit.innerHTML = "GUARDANDO...";
             btnSubmit.disabled = true;
 
             setTimeout(() => {
-                alert(" Vehículo publicado con éxito!");
+                alert(editModeId ? "Publicación actualizada con éxito." : "Vehículo publicado con éxito.");
                 window.location.href = "profile.html";
             }, 1000);
 
         } catch (error) {
-            alert(" Error: Memoria llena. Borrá publicaciones viejas en tu perfil.");
+            alert("Error: Memoria llena. Borrá publicaciones viejas en tu perfil.");
             btnSubmit.disabled = false;
         }
     });
