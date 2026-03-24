@@ -126,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="contact-form-container" style="margin-top: 2rem; background: var(--card-bg); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border);">
                     <h3 style="color: white; margin-bottom: 1rem; font-size: 1.1rem;">Consultar al vendedor</h3>
                     <form id="form-contactar-vendedor">
-                        <textarea id="input-inquiry-message" rows="4" placeholder="Hola, me interesa este vehículo..." style="width: 100%; padding: 10px; border-radius: 5px; background: #1a1a1a; border: 1px solid var(--border); color: white; margin-bottom: 1rem; resize: vertical;" required></textarea>
+                        <textarea id="input-inquiry-message" autocomplete="off" rows="4" placeholder="Hola, me interesa este vehículo..." style="width: 100%; padding: 10px; border-radius: 5px; background: #1a1a1a; border: 1px solid var(--border); color: white; margin-bottom: 1rem; resize: vertical;" required></textarea>
                         <button type="submit" class="btn-contact" style="width: 100%; padding: 12px; font-weight: bold; background: var(--accent-lavender); color: var(--bg-shark); border: none; border-radius: 5px; cursor: pointer; transition: opacity 0.3s;">ENVIAR CONSULTA</button>
                     </form>
                 </div>
@@ -233,15 +233,15 @@ document.addEventListener('DOMContentLoaded', () => {
             event.preventDefault();
 
             if (!sessionData) {
+                // CAMBIO: Se elimina el alert y se usa showToast
                 if(typeof showToast === 'function') showToast("Debes iniciar sesión para consultar.", "error");
-                else alert("Debes iniciar sesión para enviar una consulta.");
                 window.location.href = "login.html";
                 return;
             }
 
             if (sessionData.role !== 'comprador') {
+                // CAMBIO: Se elimina el alert y se usa showToast
                 if(typeof showToast === 'function') showToast("Solo los compradores pueden enviar consultas.", "error");
-                else alert("Solo los compradores pueden enviar consultas.");
                 return;
             }
 

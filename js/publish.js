@@ -17,7 +17,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Validación 2: ¿Es un vendedor?
     if (session.role !== 'vendedor') {
-        alert("Acceso denegado. Solo las cuentas de Vendedor pueden publicar vehículos.");
+        // CAMBIO: alert -> showToast
+        if(typeof showToast === 'function') showToast("Acceso denegado: Se requiere rol Vendedor.", "error");
         window.location.href = "index.html";
         return; 
     }
@@ -253,8 +254,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 1000);
 
         } catch (error) {
-            if(typeof showToast === 'function') showToast("Error: Memoria llena. Borrá publicaciones viejas.", "error");
-            else alert("Error: Memoria llena. Borrá publicaciones viejas en tu perfil.");
+            // CAMBIO: Se prioriza el Toast sobre el alert para el error de LocalStorage (Memoria llena)
+            if(typeof showToast === 'function') showToast("Error: Memoria del navegador llena. Borrá publicaciones antiguas.", "error");
             btnSubmit.disabled = false;
         }
     });

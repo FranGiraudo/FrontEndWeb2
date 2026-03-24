@@ -361,7 +361,7 @@ function renderizarBandejaMensajes(userEmail, userRole) {
                             </div>
                             
                             <div style="display: flex; gap: 10px; margin-top: 15px;">
-                                <input type="text" id="reply-input-${msg.id}" onkeypress="if(event.key === 'Enter') enviarRespuesta(${msg.id}, '${userRole}')" placeholder="Escribir respuesta..." style="flex-grow: 1; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a1a; color: white; font-family: inherit; outline: none;">
+                                <input type="text" id="reply-input-${msg.id}" autocomplete="off" onkeypress="if(event.key === 'Enter') enviarRespuesta(${msg.id}, '${userRole}')" placeholder="Escribir respuesta..." style="flex-grow: 1; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a1a; color: white; font-family: inherit; outline: none;">
                                 
                                 ${isUnanswered ? `<button class="btn-action" onclick="window.marcarComoLeido(${msg.id}, '${userRole}')" style="background: transparent; color: var(--text-slate); border: 1px solid var(--border); border-radius: 6px; padding: 0 15px; cursor: pointer; font-size: 0.8rem; transition: background 0.3s;">Marcar como leído</button>` : ''}
                                 
@@ -424,13 +424,14 @@ window.marcarComoLeido = function(msgId, userRole) {
         if (response.success) {
             const session = JSON.parse(localStorage.getItem('user_session'));
             renderizarBandejaMensajes(session.email, userRole);
-            
             setTimeout(() => window.mantenerChatAbierto(msgId), 50);
         } else {
-            alert(response.error);
+            // CAMBIO: alert -> showToast
+            if(typeof showToast === 'function') showToast(response.error, "error");
         }
     } else {
-        alert("Error: Faltó actualizar database.js con la función de lectura.");
+        // CAMBIO: alert -> showToast
+        if(typeof showToast === 'function') showToast("Error técnico: database.js desactualizado.", "error");
     }
 };
 
@@ -439,24 +440,23 @@ window.enviarRespuesta = function(msgId, userRole) {
     const text = input.value.trim();
     
     if (!text) {
-        alert("Por favor, escribí un mensaje antes de enviar.");
+        // CAMBIO: alert -> showToast
+        if(typeof showToast === 'function') showToast("Escribí un mensaje antes de enviar.", "error");
         return;
     }
-
-    const session = JSON.parse(localStorage.getItem('user_session'));
-    const senderName = session.nombre || session.email.split('@')[0];
-
+    // ... resto de la función ...
     if (typeof addReplyToMessage === 'function') {
         const response = addReplyToMessage(msgId, text, senderName, userRole);
-        
         if (response.success) {
             renderizarBandejaMensajes(session.email, userRole);
             setTimeout(() => window.mantenerChatAbierto(msgId), 50);
         } else {
-            alert("Error de guardado: " + response.error);
+            // CAMBIO: alert -> showToast
+            if(typeof showToast === 'function') showToast("Error: " + response.error, "error");
         }
     } else {
-        alert("ERROR: La función 'addReplyToMessage' no existe en database.js");
+        // CAMBIO: alert -> showToast
+        if(typeof showToast === 'function') showToast("Error crítico: Función faltante en DB.", "error");
     }
 };
 
