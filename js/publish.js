@@ -1,6 +1,28 @@
 // js/publish.js
 
 document.addEventListener('DOMContentLoaded', () => {
+    // --- 0. CONTROL DE SEGURIDAD Y ACCESO (Route Guard) ---
+    let session = null;
+    try {
+        session = JSON.parse(localStorage.getItem('user_session'));
+    } catch (e) {
+        console.error("Error leyendo la sesión", e);
+    }
+
+    // Validación 1: ¿Está logueado?
+    if (!session) {
+        window.location.href = "login.html";
+        return; // Detiene la ejecución del script inmediatamente
+    }
+
+    // Validación 2: ¿Es un vendedor?
+    if (session.role !== 'vendedor') {
+        alert("Acceso denegado. Solo las cuentas de Vendedor pueden publicar vehículos.");
+        window.location.href = "index.html";
+        return; 
+    }
+
+    // --- REFERENCIAS AL DOM ---
     const dropZone = document.getElementById('drop-zone');
     const fileInput = document.getElementById('file-input');
     const dropText = document.getElementById('drop-text');
@@ -170,7 +192,8 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
 
         if (!fotoValidadaIA || fotosCargadas.length === 0) {
-            alert("Por favor, esperá la validación de la IA o cargá imágenes.");
+            if(typeof showToast === 'function') showToast("Esperá la validación de la IA o cargá imágenes.", "error");
+            else alert("Por favor, esperá la validación de la IA o cargá imágenes.");
             return;
         }
 
@@ -223,12 +246,15 @@ document.addEventListener('DOMContentLoaded', () => {
             btnSubmit.disabled = true;
 
             setTimeout(() => {
-                alert(editModeId ? "Publicación actualizada con éxito." : "Vehículo publicado con éxito.");
+                if(typeof showToast === 'function') showToast(editModeId ? "Publicación actualizada" : "Vehículo publicado", "success");
+                else alert(editModeId ? "Publicación actualizada con éxito." : "Vehículo publicado con éxito.");
+                
                 window.location.href = "profile.html";
             }, 1000);
 
         } catch (error) {
-            alert("Error: Memoria llena. Borrá publicaciones viejas en tu perfil.");
+            if(typeof showToast === 'function') showToast("Error: Memoria llena. Borrá publicaciones viejas.", "error");
+            else alert("Error: Memoria llena. Borrá publicaciones viejas en tu perfil.");
             btnSubmit.disabled = false;
         }
     });

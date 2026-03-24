@@ -6,11 +6,21 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     const container = document.getElementById('car-detail-content');
-    const carId = Number(localStorage.getItem('car_id_view'));
+    
+    // Obtener sesión
+    let sessionData = null;
+    try { sessionData = JSON.parse(localStorage.getItem('user_session')); } catch(e){}
+    const isComprador = sessionData && sessionData.role === 'comprador';
+    const userIdentifier = sessionData ? sessionData.email : null; 
+
+    // Obtener ID del auto
+    const carIdStr = localStorage.getItem('car_id_view') || new URLSearchParams(window.location.search).get('id');
+    const carId = isNaN(carIdStr) ? carIdStr : Number(carIdStr);
+    
     let currentIndex = 0;
     let carImages = [];
 
-    // --- Iconos SVG (Mantenemos los iconos aquí para no ensuciar el database.js) ---
+    // --- Iconos SVG ---
     const icons = {
         motor: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M14 4a1 1 0 0 1 0 2h-1v1h.383a2 2 0 0 1 1.787 1.106l1.45 2.894h.38v-1a1 1 0 0 1 .883 -.993l.117 -.007h2a2 2 0 0 1 2 2v6a2 2 0 0 1 -2 2h-2a1 1 0 0 1 -1 -1v-1h-1v1a2 2 0 0 1 -1.85 1.995l-.15 .005h-3.465a2 2 0 0 1 -1.664 -.89l-1.407 -2.11h-1.464a1 1 0 0 1 -.993 -.883l-.007 -.117v-2h-1v2a1 1 0 0 1 -2 0v-6a1 1 0 1 1 2 0v2h1v-2a1 1 0 0 1 1 -1h1.584l1.709 -1.707a1 1 0 0 1 .576 -.284l.131 -.009h1v-1h-1a1 1 0 1 1 0 -2z" /></svg>`,
         transmision: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3a3 3 0 0 1 1 5.829v1.171a3 3 0 0 1 -3 3h-4v2.171a3.001 3.001 0 1 1 -4 2.829l.005 -.176a3 3 0 0 1 1.995 -2.654v-2.17h-5v2.171a3.001 3.001 0 1 1 -4 2.829l.005 -.176a3 3 0 0 1 1.995 -2.654v-6.341a3 3 0 0 1 -2 -2.829l.005 -.176a3 3 0 1 1 3.996 3.005l-.001 2.171h5v-2.17a3 3 0 0 1 -2 -2.83l.005 -.176a3 3 0 1 1 3.996 3.005l-.001 2.171h4a1 1 0 0 0 1 -1v-1.17a3 3 0 0 1 -2 -2.83l.005 -.176a3 3 0 0 1 2.995 -2.824" /></svg>`,
@@ -22,94 +32,132 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // --- 1. Obtener auto desde la Base de Datos Centralizada ---
-    const allCars = getAllCars(); // Función global de database.js
+    const allCars = typeof getAllCars === 'function' ? getAllCars() : [];
     const car = allCars.find(c => c.id === carId);
 
     if (!car) {
-        container.innerHTML = `<div class="error-msg"><h2>Vehículo no encontrado</h2><a href="index.html">Volver</a></div>`;
+        if(container) container.innerHTML = `<div class="error-msg" style="text-align:center; padding: 4rem;"><h2>Vehículo no encontrado</h2><a href="index.html" class="btn-detail">Volver</a></div>`;
         return;
     }
 
-    // --- 2. Registro de Visita con Seguro (sessionStorage) ---
+    // --- 2. Registro de Visita con Seguro ---
     const sessionKey = `viewed_${car.id}`;
     if (!sessionStorage.getItem(sessionKey)) {
         if (typeof trackMetric === 'function') {
             trackMetric(car.id, 'visitas');
         } else {
-            console.warn("Advertencia: trackMetric no está definida. Revisá la carga de database.js");
-        } // Función global de database.js
+            console.warn("Advertencia: trackMetric no está definida.");
+        }
         sessionStorage.setItem(sessionKey, 'true');
     }
 
     carImages = car.images;
 
-// --- 3. Inyectar Contenido ---
-    container.innerHTML = `
-        <div class="gallery-column">
-            <div class="main-photo-wrapper" id="main-photo-container">
-                <img id="main-car-photo" src="${carImages[0]}" alt="${car.model}">
-                <div class="zoom-hint">Click para pantalla completa (Usa flechas ◄ ►)</div>
-            </div>
-            <div class="thumbnail-carousel">
-                ${carImages.map((img, i) => `<img src="${img}" class="thumb-img ${i===0?'active':''}" data-index="${i}">`).join('')}
-            </div>
+    // --- 3. Generar Botón de Favoritos (Si aplica) ---
+    const isFav = (isComprador && userIdentifier) ? isCarFavorite(userIdentifier, car.id) : false;
+    let htmlFavorito = '';
+    
+    if (isComprador) {
+        htmlFavorito = `
+            <button id="btn-detail-favorite" class="btn-favorite ${isFav ? 'active' : ''}" title="${isFav ? 'Quitar de favoritos' : 'Agregar a favoritos'}" style="top: 1rem; right: 1rem; left: auto; transform: scale(1.2);">
+                <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+            </button>
+        `;
+    }
 
-            <div class="details-section">
-                <h3>Especificaciones Técnicas</h3>
-                <div class="info-grid">
-                    <div class="info-item">
-                        <div class="spec-header"><span class="spec-icon">${icons.anio}</span><span class="spec-label">Año</span></div>
-                        <span class="spec-value">${car.year}</span>
+    // --- 4. Inyectar Contenido ---
+    if(container) {
+        container.innerHTML = `
+            <div class="gallery-column">
+                <div class="main-photo-wrapper" id="main-photo-container" style="position: relative;">
+                    ${htmlFavorito}
+                    <img id="main-car-photo" src="${carImages[0]}" alt="${car.model}">
+                    <div class="zoom-hint">Click para pantalla completa (Usa flechas ◄ ►)</div>
+                </div>
+                <div class="thumbnail-carousel">
+                    ${carImages.map((img, i) => `<img src="${img}" class="thumb-img ${i===0?'active':''}" data-index="${i}">`).join('')}
+                </div>
+
+                <div class="details-section">
+                    <h3>Especificaciones Técnicas</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="spec-header"><span class="spec-icon">${icons.anio}</span><span class="spec-label">Año</span></div>
+                            <span class="spec-value">${car.year}</span>
+                        </div>
+                        <div class="info-item">
+                            <div class="spec-header"><span class="spec-icon">${icons.km}</span><span class="spec-label">Kilómetros</span></div>
+                            <span class="spec-value">${car.km.toLocaleString()} km</span>
+                        </div>
+                        <div class="info-item">
+                            <div class="spec-header"><span class="spec-icon">${icons.transmision}</span><span class="spec-label">Transmisión</span></div>
+                            <span class="spec-value">${car.transmission || 'No especificada'}</span>
+                        </div>
+                        <div class="info-item">
+                            <div class="spec-header"><span class="spec-icon">${icons.combustible}</span><span class="spec-label">Combustible</span></div>
+                            <span class="spec-value">${car.fuel || 'No especificado'}</span>
+                        </div>
+                        <div class="info-item">
+                            <div class="spec-header"><span class="spec-icon">${icons.carroceria}</span><span class="spec-label">Carrocería</span></div>
+                            <span class="spec-value">${car.bodyType}</span>
+                        </div>
+                        <div class="info-item">
+                            <div class="spec-header"><span class="spec-icon">${icons.ubicacion}</span><span class="spec-label">Ubicación</span></div>
+                            <span class="spec-value">${car.location}</span>
+                        </div>
                     </div>
-                    <div class="info-item">
-                        <div class="spec-header"><span class="spec-icon">${icons.km}</span><span class="spec-label">Kilómetros</span></div>
-                        <span class="spec-value">${car.km.toLocaleString()} km</span>
-                    </div>
-                    <div class="info-item">
-                        <div class="spec-header"><span class="spec-icon">${icons.transmision}</span><span class="spec-label">Transmisión</span></div>
-                        <span class="spec-value">${car.transmission || 'No especificada'}</span>
-                    </div>
-                    <div class="info-item">
-                        <div class="spec-header"><span class="spec-icon">${icons.combustible}</span><span class="spec-label">Combustible</span></div>
-                        <span class="spec-value">${car.fuel || 'No especificado'}</span>
-                    </div>
-                    <div class="info-item">
-                        <div class="spec-header"><span class="spec-icon">${icons.carroceria}</span><span class="spec-label">Carrocería</span></div>
-                        <span class="spec-value">${car.bodyType}</span>
-                    </div>
-                    <div class="info-item">
-                        <div class="spec-header"><span class="spec-icon">${icons.ubicacion}</span><span class="spec-label">Ubicación</span></div>
-                        <span class="spec-value">${car.location}</span>
+                    <div class="description-box">
+                        <h3>Descripción del vendedor</h3>
+                        <div class="description-text">${car.description || "Sin descripción adicional."}</div>
                     </div>
                 </div>
-                <div class="description-box">
-                    <h3>Descripción del vendedor</h3>
-                    <div class="description-text">${car.description || "Sin descripción adicional."}</div>
-                </div>
             </div>
-        </div>
 
-        <aside class="action-sidebar">
-            <div class="sidebar-header">
-                <h1>${car.brand} ${car.model}</h1>
-                <p class="subtitle">Publicado hoy | ID: ${car.id}</p>
-            </div>
-            <div class="price-box">
-                <p style="font-size: 0.7rem; color: #888; margin-bottom: 5px;">PRECIO SUGERIDO IA</p>
-                <h2 class="price-value">u$s ${car.price.toLocaleString()}</h2>
-            </div>
+            <aside class="action-sidebar">
+                <div class="sidebar-header">
+                    <h1>${car.brand} ${car.model}</h1>
+                    <p class="subtitle">Publicado hoy | ID: ${car.id}</p>
+                </div>
+                <div class="price-box">
+                    <p style="font-size: 0.7rem; color: #888; margin-bottom: 5px;">PRECIO SUGERIDO IA</p>
+                    <h2 class="price-value">u$s ${Number(car.price).toLocaleString()}</h2>
+                </div>
+                
+                <div class="contact-form-container" style="margin-top: 2rem; background: var(--card-bg); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border);">
+                    <h3 style="color: white; margin-bottom: 1rem; font-size: 1.1rem;">Consultar al vendedor</h3>
+                    <form id="form-contactar-vendedor">
+                        <textarea id="input-inquiry-message" rows="4" placeholder="Hola, me interesa este vehículo..." style="width: 100%; padding: 10px; border-radius: 5px; background: #1a1a1a; border: 1px solid var(--border); color: white; margin-bottom: 1rem; resize: vertical;" required></textarea>
+                        <button type="submit" class="btn-contact" style="width: 100%; padding: 12px; font-weight: bold; background: var(--accent-lavender); color: var(--bg-shark); border: none; border-radius: 5px; cursor: pointer; transition: opacity 0.3s;">ENVIAR CONSULTA</button>
+                    </form>
+                </div>
+            </aside>
+        `;
+    }
+
+    // --- 5. Lógica de Interacciones (Recién ahora que el HTML existe) ---
+
+    // A) Botón Favoritos
+    const btnDetailFav = document.getElementById('btn-detail-favorite');
+    if (btnDetailFav) {
+        btnDetailFav.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
             
-            <div class="contact-form-container" style="margin-top: 2rem; background: var(--bg-card); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border);">
-                <h3 style="color: white; margin-bottom: 1rem; font-size: 1.1rem;">Consultar al vendedor</h3>
-                <form id="form-contactar-vendedor">
-                    <textarea id="input-inquiry-message" rows="4" placeholder="Hola, me interesa este vehículo..." style="width: 100%; padding: 10px; border-radius: 5px; background: #1a1a1a; border: 1px solid var(--border); color: white; margin-bottom: 1rem; resize: vertical;" required></textarea>
-                    <button type="submit" class="btn-contact" style="width: 100%; padding: 12px; font-weight: bold; background: var(--accent-lavender); color: var(--bg-shark); border: none; border-radius: 5px; cursor: pointer; transition: opacity 0.3s;">ENVIAR CONSULTA</button>
-                </form>
-            </div>
-        </aside>
-    `;
+            const isAdded = toggleFavoriteStatus(userIdentifier, car.id);
+            
+            if (isAdded) {
+                btnDetailFav.classList.add('active');
+                btnDetailFav.title = 'Quitar de favoritos';
+                if(typeof showToast === 'function') showToast("Vehículo guardado en favoritos.", "success");
+            } else {
+                btnDetailFav.classList.remove('active');
+                btnDetailFav.title = 'Agregar a favoritos';
+                if(typeof showToast === 'function') showToast("Vehículo eliminado de favoritos.", "error");
+            }
+        });
+    }
 
-    // --- 4. Lógica de Galería y Miniaturas ---
+    // B) Galería y Miniaturas
     const mainPhoto = document.getElementById('main-car-photo');
     const thumbnails = document.querySelectorAll('.thumb-img');
 
@@ -123,7 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // --- 5. Lógica de Lightbox ---
+    // C) Lightbox
     const lightbox = document.getElementById('photo-lightbox');
     const lightboxImg = document.getElementById('lightbox-image');
 
@@ -163,7 +211,7 @@ document.addEventListener('DOMContentLoaded', () => {
         updateLightbox(); 
     });
 
-    // --- 6. Navegación por Teclado ---
+    // D) Navegación por Teclado (Lightbox)
     document.addEventListener('keydown', (e) => {
         if (lightbox && lightbox.style.display === "flex") {
             if (e.key === "ArrowRight") { 
@@ -178,48 +226,47 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // --- 7. Lógica de Contacto al Vendedor ---
+    // E) Formulario Contactar al Vendedor
     const contactForm = document.getElementById('form-contactar-vendedor');
     if (contactForm) {
         contactForm.addEventListener('submit', (event) => {
             event.preventDefault();
 
-            const session = JSON.parse(localStorage.getItem('user_session'));
-            
-            if (!session) {
-                alert("Debes iniciar sesión para enviar una consulta.");
+            if (!sessionData) {
+                if(typeof showToast === 'function') showToast("Debes iniciar sesión para consultar.", "error");
+                else alert("Debes iniciar sesión para enviar una consulta.");
                 window.location.href = "login.html";
                 return;
             }
 
-            if (session.role !== 'comprador') {
-                alert("Solo los usuarios con rol de comprador pueden enviar consultas sobre vehículos.");
+            if (sessionData.role !== 'comprador') {
+                if(typeof showToast === 'function') showToast("Solo los compradores pueden enviar consultas.", "error");
+                else alert("Solo los compradores pueden enviar consultas.");
                 return;
             }
 
             const messageText = document.getElementById('input-inquiry-message').value;
 
             if (!messageText.trim()) {
-                alert("El mensaje no puede estar vacío.");
+                if(typeof showToast === 'function') showToast("El mensaje no puede estar vacío.", "error");
                 return;
             }
 
-            // Llamada a la DB (Esta función debe existir en database.js)
             if (typeof sendInquiryToSeller === 'function') {
-                const response = sendInquiryToSeller(car.id, session.email, session.nombre, messageText);
+                const response = sendInquiryToSeller(car.id, sessionData.email, sessionData.nombre, messageText);
 
                 if (response.success) {
-                    alert("Consulta enviada con éxito al vendedor.");
-                    document.getElementById('input-inquiry-message').value = "";
+                    if(typeof showToast === 'function') showToast("Consulta enviada con éxito.", "success");
+                    else alert("Consulta enviada con éxito.");
                     
-                    // Opcional: Registrar la métrica de contacto
+                    document.getElementById('input-inquiry-message').value = "";
                     if (typeof trackMetric === 'function') trackMetric(car.id, 'contactos');
                 } else {
-                    alert(response.error);
+                    if(typeof showToast === 'function') showToast(response.error, "error");
+                    else alert(response.error);
                 }
             } else {
-                console.error("La función sendInquiryToSeller no está definida en database.js");
-                alert("Error del sistema. No se pudo enviar el mensaje.");
+                console.error("La función sendInquiryToSeller no está en database.js");
             }
         });
     }

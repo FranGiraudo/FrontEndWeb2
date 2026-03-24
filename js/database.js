@@ -250,3 +250,51 @@ function markMessageAsReadInDB(messageId, userRole) {
     }
     return { success: false, error: "No se encontró el mensaje." };
 }
+/* ==========================================================================
+   SISTEMA DE FAVORITOS (ESTRUCTURA RELACIONAL ESCALABLE)
+   ========================================================================== */
+// En una DB real, esto sería una tabla: id_favorito | id_usuario | id_vehiculo
+const FAVORITES_TABLE = 'smartauto_favorites_db';
+
+// Obtiene todos los favoritos (Simula el SELECT general)
+function getAllFavoritesTable() {
+    return JSON.parse(localStorage.getItem(FAVORITES_TABLE)) || {};
+}
+
+// Devuelve un array con los IDs de los autos favoritos de un usuario específico
+function getUserFavorites(userIdentifier) {
+    if (!userIdentifier) return [];
+    const db = getAllFavoritesTable();
+    return db[userIdentifier] || [];
+}
+
+// Verifica si un vehículo específico es favorito del usuario
+function isCarFavorite(userIdentifier, carId) {
+    const favs = getUserFavorites(userIdentifier);
+    return favs.includes(carId);
+}
+
+// Alterna el estado de favorito (Simula un INSERT o DELETE)
+function toggleFavoriteStatus(userIdentifier, carId) {
+    if (!userIdentifier) return false;
+    
+    const db = getAllFavoritesTable();
+    if (!db[userIdentifier]) {
+        db[userIdentifier] = [];
+    }
+    
+    const index = db[userIdentifier].indexOf(carId);
+    let isAdded = false;
+
+    if (index > -1) {
+        // Si existe, lo elimina (DELETE)
+        db[userIdentifier].splice(index, 1);
+    } else {
+        // Si no existe, lo agrega (INSERT)
+        db[userIdentifier].push(carId);
+        isAdded = true;
+    }
+
+    localStorage.setItem(FAVORITES_TABLE, JSON.stringify(db));
+    return isAdded; // Retorna true si se guardó, false si se eliminó
+}

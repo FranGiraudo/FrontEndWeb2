@@ -1,16 +1,34 @@
 /* ==========================================================================
-   1. VARIABLES Y BASE
+   1. VARIABLES Y BASE (DESIGN TOKENS REFINADOS - PALETA ORIGINAL)
    ========================================================================== */
 :root {
-    --bg-shark: #2c2c33;        
-    --text-slate: #c2bcbf;      
-    --accent-lavender: #584556; 
-    --dark-don-juan: #664f59;   
-    --border: #4a4a52;          
-    --white: #ffffff;
-    --card-bg: #35353d;
-}
+    /* 1.1 Colores Base (Ajustados para neutralidad y profundidad) */
+    --bg-shark: #232329;        /* Un tono más profundo que el anterior para limpiar el rojizo */
+    --card-bg: #2c2c33;         /* Tu color shark original ahora como fondo de tarjeta */
+    --bg-darker: #1a1a1f;       /* Fondos de inputs e imágenes */
 
+    /* 1.2 Colores de Marca (Tus tonos berenjena/lavender originales) */
+    --accent-lavender: #7a6077; /* Un lavender más visible y menos marrón */
+    --accent-hover: #91768d;    /* Iluminación para interacción */
+    --dark-don-juan: #584556;   /* Tu lavender original ahora para estados secundarios */
+
+    /* 1.3 Textos y Bordes */
+    --text-slate: #c2bcbf;      /* Tu slate original */
+    --white: #ffffff;
+    --border: #3f3f46;          /* Borde más frío para contrastar el calor del lavender */
+
+    /* 1.4 Colores Semánticos */
+    --error: #ff5252;
+    --error-dark: #b71c1c;      
+    --success: #66bb6a;
+    --success-dark: #1b5e20;    
+
+    /* 1.5 Capas y Transparencias */
+    --glass-light: rgba(255, 255, 255, 0.03);
+    --glass-medium: rgba(255, 255, 255, 0.08);
+    --overlay-dark: rgba(0, 0, 0, 0.92);
+    --overlay-light: rgba(35, 35, 41, 0.7);
+}
 * {
     margin: 0;
     padding: 0;
@@ -26,12 +44,40 @@ body {
 }
 
 /* ==========================================================================
+   SCROLLBAR PREMIUM "SMARTAUTO" (GLASS & GRADIENT EFFECT)
+   ========================================================================== */
+html {
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent-lavender) transparent;
+}
+
+::-webkit-scrollbar {
+    width: 0.625rem; 
+    height: 0.625rem;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--overlay-light); 
+    border-radius: 0.625rem;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--dark-don-juan) 0%, var(--accent-lavender) 100%);
+    border-radius: 0.625rem;
+    border: 0.125rem solid var(--bg-shark); 
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, var(--accent-lavender) 0%, var(--accent-hover) 100%);
+}
+
+/* ==========================================================================
    2. HEADER & NAVEGACIÓN
    ========================================================================== */
 header {
     background-color: var(--accent-lavender);
     padding: 1rem 5%;
-    border-bottom: 0.0625rem solid var(--border);
+    border-bottom: 1px solid var(--border);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -44,7 +90,7 @@ header {
     font-weight: 800;
     color: var(--white);
     font-size: 1.5rem;
-    letter-spacing: -0.03rem;
+    letter-spacing: -0.03125rem;
 }
 
 .logo a {
@@ -68,7 +114,6 @@ nav ul li {
     align-items: center;
 }
 
-/* Estado base de los links */
 nav ul li a {
     color: var(--text-slate) !important;
     text-decoration: none;
@@ -76,11 +121,10 @@ nav ul li a {
     font-weight: 500;
     transition: all 0.2s ease;
     border-bottom: 2px solid transparent;
-    padding-bottom: 5px;
+    padding-bottom: 0.3125rem;
     opacity: 0.7;
 }
 
-/* Hover general y Clase Página Activa (Blanco) */
 nav ul li a:hover,
 nav ul li a.active-page {
     color: var(--white) !important;
@@ -89,23 +133,22 @@ nav ul li a.active-page {
     font-weight: 700;
 }
 
-/* --- BOTÓN SALIR (ROJO) --- */
 .logout-link {
-    color: #ff4d4d !important;
+    color: var(--error) !important;
     opacity: 0.8;
 }
 
 .logout-link:hover {
-    color: #ff4d4d !important;
-    border-bottom: 2px solid #ff4d4d !important;
+    color: var(--error) !important;
+    border-bottom: 2px solid var(--error) !important;
     opacity: 1 !important;
     background: transparent !important;
     box-shadow: none !important;
 }
 
-@media (max-width: 600px) {
-    header { flex-direction: column; gap: 10px; padding: 1rem; }
-    nav ul { gap: 15px; flex-wrap: wrap; justify-content: center; }
+@media (max-width: 37.5rem) {
+    header { flex-direction: column; gap: 0.625rem; padding: 1rem; }
+    nav ul { gap: 0.9375rem; flex-wrap: wrap; justify-content: center; }
 }
 
 /* ==========================================================================
@@ -114,14 +157,14 @@ nav ul li a.active-page {
 .hero {
     padding: 4rem 5%;
     text-align: center;
-    background: linear-gradient(rgba(44, 44, 51, 0.85), rgba(44, 44, 51, 0.95)),
+    background: linear-gradient(rgba(51, 44, 48, 0.85), rgba(51, 44, 48, 0.95)),
                 url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&q=80&w=1500'); 
     background-size: cover;
     background-position: center;
     border-bottom: 0.125rem solid var(--dark-don-juan);
 }
 
-.hero h1 { color: var(--white); font-size: 2.5rem; font-weight: 800; letter-spacing: -1px; margin-bottom: 0.75rem; }
+.hero h1 { color: var(--white); font-size: 2.5rem; font-weight: 800; letter-spacing: -0.0625rem; margin-bottom: 0.75rem; }
 .hero p { color: var(--text-slate); font-size: 1.1rem; margin-bottom: 2rem; }
 
 .search-container { max-width: 45rem; margin: 0 auto; display: flex; gap: 0.75rem; }
@@ -135,10 +178,10 @@ nav ul li a.active-page {
     background-color: var(--dark-don-juan); color: var(--white);
     border: none; padding: 0 1.5rem; border-radius: 0.5rem;
     font-weight: 600; cursor: pointer; transition: 0.3s;
-    display: flex; align-items: center; gap: 8px;
+    display: flex; align-items: center; gap: 0.5rem;
 }
 
-.btn-filter-toggle:hover { background-color: var(--accent-lavender); transform: translateY(-2px); }
+.btn-filter-toggle:hover { background-color: var(--accent-lavender); transform: translateY(-0.125rem); }
 
 /* ==========================================================================
    4. FILTROS AVANZADOS
@@ -150,8 +193,8 @@ nav ul li a.active-page {
 }
 
 .advanced-filters-panel.active {
-    max-height: 800px; opacity: 1; padding: 2rem; margin-top: 2rem;
-    border: 1px solid var(--border); box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+    max-height: 50rem; opacity: 1; padding: 2rem; margin-top: 2rem;
+    border: 1px solid var(--border); box-shadow: 0 0.9375rem 2.1875rem rgba(0,0,0,0.4);
 }
 
 .filter-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; }
@@ -163,26 +206,27 @@ nav ul li a.active-page {
     border-radius: 0.4rem; color: var(--white); padding: 0.7rem; outline: none;
 }
 
-.range-inputs { display: flex; gap: 8px; }
+.range-inputs { display: flex; gap: 0.5rem; }
 .range-inputs input { width: 50% !important; }
 
 .btn-reset {
-    background: transparent; border: 1px solid #ff4d4d; color: #ff4d4d;
+    background: transparent; border: 1px solid var(--error); color: var(--error);
     padding: 0.7rem; border-radius: 0.4rem; cursor: pointer; font-weight: 700;
 }
-.btn-reset:hover { background: #ff4d4d; color: white; }
+.btn-reset:hover { background: var(--error); color: var(--white); }
+
 /* ==========================================================================
    5. GRID DE AUTOS & CARDS
    ========================================================================== */
 .content {
     padding: 3rem 5%;
-    max-width: 1400px;
+    max-width: 87.5rem;
     margin: 0 auto;
 }
 
 .grid-autos {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(18.75rem, 1fr));
     gap: 2.5rem;
 }
 
@@ -194,25 +238,27 @@ nav ul li a.active-page {
     transition: all 0.3s ease;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
     animation: fadeIn 0.5s ease forwards;
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(15px); }
+    from { opacity: 0; transform: translateY(0.9375rem); }
     to { opacity: 1; transform: translateY(0); }
 }
 
 .card-auto:hover {
-    transform: translateY(-8px);
+    transform: translateY(-0.5rem);
     border-color: var(--accent-lavender);
-    box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+    box-shadow: 0 0.9375rem 1.875rem rgba(0,0,0,0.4);
 }
 
 .img-container {
     position: relative;
     width: 100%;
-    height: 200px;
-    background-color: #1a1a1f;
+    height: 12.5rem;
+    background-color: var(--bg-darker);
 }
 
 .img-container img {
@@ -232,8 +278,8 @@ nav ul li a.active-page {
     font-size: 0.7rem;
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    letter-spacing: 0.03125rem;
+    box-shadow: 0 0.25rem 0.625rem rgba(0,0,0,0.3);
 }
 
 .info-auto {
@@ -241,6 +287,7 @@ nav ul li a.active-page {
     flex: 1;
     display: flex;
     flex-direction: column;
+    flex-grow: 1;
 }
 
 .info-auto h3 {
@@ -263,33 +310,62 @@ nav ul li a.active-page {
 }
 
 .car-footer {
-    margin-top: 1.5rem;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column; 
+    gap: 1.2rem; 
+    margin-top: auto; 
+    padding-top: 1rem;
     border-top: 1px solid var(--border);
-    padding-top: 1.2rem;
 }
 
-.price {
-    font-size: 1.4rem;
+.car-footer .price {
+    font-size: 1.5rem;
     font-weight: 800;
-    color: var(--white);
+    color: var(--accent-lavender);
+    margin: 0;
+    text-align: left;
+    display: block;
+    width: 100%;
 }
 
-.btn-detail {
-    background-color: transparent;
-    border: 1px solid var(--accent-lavender);
-    color: var(--white);
-    padding: 0.6rem 1.2rem;
+.car-footer > div[style*="display: flex;"] {
+    display: flex !important;
+    gap: 0.625rem !important;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.car-footer .btn-compare-card,
+.car-footer .btn-detail {
+    flex: 1; 
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+    padding: 0.8rem 1rem; 
+    text-align: center;
     border-radius: 0.6rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s;
+    font-size: 0.9rem;
 }
 
-.btn-detail:hover {
-    background-color: var(--accent-lavender);
+.btn-compare-card {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-slate);
+    transition: all 0.2s ease;
+}
+
+.btn-compare-card:hover {
+    border-color: var(--white);
+    color: var(--white);
+    background: var(--glass-light);
+}
+
+.btn-compare-card.active {
+    background: rgba(162, 126, 222, 0.2);
+    border-color: var(--accent-lavender);
+    color: var(--white);
 }
 
 /* ==========================================================================
@@ -303,9 +379,302 @@ nav ul li a.active-page {
     font-size: 1.2rem;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 48rem) {
     .hero h1 { font-size: 2rem; }
     .search-container { flex-direction: column; }
-    .btn-filter-toggle { padding: 12px; justify-content: center; }
+    .btn-filter-toggle { padding: 0.75rem; justify-content: center; }
     .advanced-filters-panel.active { padding: 1rem; }
+}
+
+/* ==========================================================================
+   7. SISTEMA DE COMPARACIÓN
+   ========================================================================== */
+.compare-floating-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: var(--card-bg);
+    border-top: 1px solid var(--accent-lavender);
+    padding: 1rem 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 900;
+    box-shadow: 0 -0.625rem 1.875rem rgba(0,0,0,0.5);
+    animation: slideUp 0.3s ease forwards;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+
+.compare-info {
+    font-size: 1.1rem;
+    color: var(--white);
+    font-weight: 600;
+}
+
+.compare-info span {
+    color: var(--accent-lavender);
+    font-weight: 800;
+    font-size: 1.3rem;
+    margin-right: 0.3125rem;
+}
+
+.compare-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+/* Modal de Comparación */
+.compare-modal-content {
+    background-color: var(--bg-shark);
+    width: 90%;
+    max-width: 62.5rem;
+    border-radius: 1rem;
+    border: 1px solid var(--border);
+    box-shadow: 0 1.5625rem 3.125rem rgba(0,0,0,0.6);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    max-height: 90vh;
+}
+
+.compare-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid var(--border);
+    background-color: var(--card-bg);
+}
+
+.compare-modal-header h2 {
+    color: var(--white);
+    font-size: 1.5rem;
+}
+
+.compare-modal-body {
+    padding: 2rem;
+    overflow-y: auto;
+}
+
+.table-responsive {
+    overflow-x: auto;
+}
+
+.compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    color: var(--white);
+    text-align: left;
+}
+
+.compare-table th, .compare-table td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border);
+    min-width: 9.375rem;
+}
+
+.compare-table th {
+    background-color: var(--card-bg);
+    color: var(--text-slate);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+}
+
+.compare-table img {
+    width: 100%;
+    border-radius: 0.5rem;
+    object-fit: cover;
+    height: 7.5rem;
+}
+
+/* Clases del Overlay heredadas */
+.lightbox-overlay {
+    display: none;
+    position: fixed;
+    z-index: 10000;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: var(--overlay-dark);
+    backdrop-filter: blur(0.625rem);
+    justify-content: center;
+    align-items: center;
+}
+
+.close-lightbox {
+    color: var(--text-slate);
+    font-size: 2.5rem;
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.3s;
+}
+
+.close-lightbox:hover {
+    color: var(--error);
+}
+
+/* Scrollbar específico del modal */
+.compare-modal-body::-webkit-scrollbar {
+    height: 0.5rem;
+    width: 0.5rem;
+}
+.compare-modal-body::-webkit-scrollbar-track {
+    background: var(--glass-light);
+    border-radius: 0.25rem;
+}
+.compare-modal-body::-webkit-scrollbar-thumb {
+    background: var(--accent-lavender);
+    border-radius: 0.25rem;
+}
+
+/* ==========================================================================
+   8. COMPONENTES GLOBALES (TOAST NOTIFICATIONS)
+   ========================================================================== */
+.toast-container {
+    position: fixed;
+    bottom: 1.5625rem;
+    right: 1.5625rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    z-index: 10000;
+}
+
+.toast {
+    min-width: 17.5rem;
+    padding: 1rem 1.5rem;
+    border-radius: 0.625rem;
+    color: var(--white);
+    font-size: 0.95rem;
+    font-weight: 600;
+    box-shadow: 0 0.625rem 1.875rem rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    animation: slideInRight 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.toast svg {
+    width: 1.5rem;
+    height: 1.5rem;
+    flex-shrink: 0;
+}
+
+.toast.success {
+    background-color: var(--success-dark);
+    border-left: 0.3125rem solid var(--success);
+}
+
+.toast.error {
+    background-color: var(--error-dark);
+    border-left: 0.3125rem solid var(--error);
+}
+
+@keyframes slideInRight {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+/* ==========================================================================
+   BOTÓN DE FAVORITOS (CORAZÓN)
+   ========================================================================== */
+.btn-favorite {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    background: rgba(44, 44, 51, 0.6);
+    backdrop-filter: blur(0.25rem);
+    -webkit-backdrop-filter: blur(0.25rem);
+    border: 0.0625rem solid var(--glass-medium);
+    border-radius: 50%;
+    width: 2.2rem;
+    height: 2.2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    color: var(--white);
+}
+
+.btn-favorite:hover {
+    transform: scale(1.1);
+    background: rgba(44, 44, 51, 0.9);
+}
+
+.btn-favorite svg {
+    width: 1.1rem;
+    height: 1.1rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    transition: all 0.3s;
+}
+
+.btn-favorite.active {
+    border-color: var(--error);
+}
+
+.btn-favorite.active svg {
+    fill: var(--error);
+    stroke: var(--error);
+    transform: scale(1.15);
+}
+
+/* ==========================================================================
+   RESTAURACIÓN DE ESTILOS: BOTONES GLOBALES
+   ========================================================================== */
+.btn-detail {
+    background-color: transparent;
+    border: 0.0625rem solid var(--accent-lavender);
+    color: var(--white);
+    padding: 0.8rem 1.2rem;
+    border-radius: 0.6rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    text-align: center;
+    text-decoration: none;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.btn-detail:hover {
+    background-color: var(--accent-lavender);
+    color: var(--white);
+}
+
+/* Estilo específico y jerarquía para el botón principal de la barra flotante */
+#btn-open-compare {
+    background-color: var(--accent-lavender) !important;
+    color: var(--bg-shark) !important;
+    border-color: var(--accent-lavender) !important;
+    box-shadow: 0 0.25rem 0.625rem rgba(88, 69, 86, 0.3);
+}
+
+#btn-open-compare:hover {
+    background-color: var(--accent-hover) !important;
+    transform: translateY(-0.125rem);
+    box-shadow: 0 0.5rem 1.25rem rgba(88, 69, 86, 0.5);
+}
+
+/* Ajuste para el botón de limpiar en la barra flotante */
+#btn-clear-compare {
+    padding: 0.8rem 1.2rem;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
 }

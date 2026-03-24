@@ -112,7 +112,31 @@
             <div id="container-autos" class="grid-autos"></div>
         </section>
     </main>
+    
+    <div id="compare-floating-bar" class="compare-floating-bar" style="display: none;">
+        <div class="compare-info">
+            <span id="compare-count">0</span> vehículos listos para comparar
+        </div>
+        <div class="compare-actions">
+            <button id="btn-open-compare" class="btn-detail" style="background: var(--accent-lavender); border-color: var(--accent-lavender); color: var(--bg-shark);">Comparar Selección</button>
+            <button id="btn-clear-compare" class="btn-reset" style="padding: 0.6rem 1.2rem;">Limpiar</button>
+        </div>
+    </div>
 
+    <div id="compare-modal" class="lightbox-overlay" style="display: none; align-items: center;">
+        <div class="compare-modal-content">
+            <div class="compare-modal-header">
+                <h2>Análisis Comparativo</h2>
+                <span class="close-lightbox" id="btn-close-compare" style="position: static;">&times;</span>
+            </div>
+            <div class="compare-modal-body">
+                <div class="table-responsive">
+                    <table class="compare-table" id="compare-table">
+                        </table>
+                </div>
+            </div>
+        </div>
+    </div>
     <script src="js/database.js"></script>
     <script src="js/main.js"></script>
 </body>

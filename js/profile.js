@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return; 
     }
 
+    // Referencias al DOM (Header del perfil)
     const displayEmail = document.getElementById('display-email');
     const displayRole = document.getElementById('display-role');
     const userAvatar = document.getElementById('user-avatar');
@@ -25,6 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
         navConsultas.textContent = session.role === 'vendedor' ? 'Consultas Recibidas' : 'Consultas Realizadas';
     }
 
+    // Inicialización de la vista según el rol
     if (session.role === 'vendedor') {
         const vendedorView = document.getElementById('vendedor-view');
         if (vendedorView) {
@@ -35,19 +37,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const compradorView = document.getElementById('comprador-view');
         if (compradorView) {
             compradorView.style.display = 'block';
-            renderizarPanelComprador();
+            renderizarPanelComprador(session.email);
         }
     }
 
+    // --- SISTEMA DE PESTAÑAS (TABS) ---
     const navPanel = document.getElementById('nav-panel-general');
     const viewVendedor = document.getElementById('vendedor-view');
     const viewComprador = document.getElementById('comprador-view');
     const viewMensajes = document.getElementById('mensajes-view');
 
     function switchTab(tabName) {
+        // Reiniciar botones
         if (navPanel) navPanel.classList.remove('active');
         if (navConsultas) navConsultas.classList.remove('active');
         
+        // Ocultar todas las vistas
         if (viewVendedor) viewVendedor.style.display = 'none';
         if (viewComprador) viewComprador.style.display = 'none';
         if (viewMensajes) viewMensajes.style.display = 'none';
@@ -76,11 +81,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (navPanel) navPanel.addEventListener('click', (e) => { e.preventDefault(); switchTab('panel'); });
     if (navConsultas) navConsultas.addEventListener('click', (e) => { e.preventDefault(); switchTab('mensajes'); });
 
+    /// --- LOGOUT ---
     const btnLogout = document.getElementById('btn-logout-sidebar');
     if (btnLogout) {
         btnLogout.addEventListener('click', (e) => {
             e.preventDefault();
-            if (confirm("¿Estás seguro de que quieres salir?")) {
+            if (typeof window.confirmarCierreSesion === 'function') {
+                window.confirmarCierreSesion();
+            } else {
+                // Fallback de seguridad en caso de que main.js falle
                 localStorage.removeItem('user_session');
                 window.location.href = "index.html";
             }
@@ -88,6 +97,82 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+/* ==========================================================================
+   PANEL DEL COMPRADOR (FAVORITOS)
+   ========================================================================== */
+function renderizarPanelComprador(userEmail) {
+    const viewComprador = document.getElementById('comprador-view');
+    if (!viewComprador) return;
+
+    // Obtener datos reales de la base de datos simulada
+    const favIds = typeof getUserFavorites === 'function' ? getUserFavorites(userEmail) : [];
+    const allCars = typeof getAllCars === 'function' ? getAllCars() : [];
+    const favCars = allCars.filter(car => favIds.includes(car.id));
+
+    // Inyectar estructura HTML dentro de la pestaña para que se oculte correctamente
+    viewComprador.innerHTML = `
+        <h2 style="color: var(--white); font-size: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 2rem;">
+            Mis Vehículos Guardados
+        </h2>
+        <div id="profile-favorites-grid" class="grid-autos"></div>
+    `;
+
+    const favGrid = document.getElementById('profile-favorites-grid');
+
+    if (favCars.length === 0) {
+        favGrid.innerHTML = `<p class="no-results" style="grid-column: 1/-1;">Aún no tenés vehículos guardados. ¡Explorá el marketplace!</p>`;
+        return;
+    }
+
+    favCars.forEach(car => {
+        const card = document.createElement('div');
+        card.className = 'card-auto';
+        
+        // Botón para eliminar directo desde el perfil
+        const btnRemove = `
+            <button class="btn-favorite active" data-fav-id="${car.id}" title="Quitar de favoritos" style="position: absolute; top: 1rem; left: 1rem; z-index: 10;">
+                <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+            </button>
+        `;
+
+        card.innerHTML = `
+            <div class="img-container">
+                ${btnRemove}
+                <img src="${car.image}" alt="${car.model}">
+                <span class="badge-ia">${car.bodyType}</span>
+            </div>
+            <div class="info-auto">
+                <h3>${car.brand} ${car.model}</h3>
+                <p>${car.year} • ${car.km.toLocaleString()} km</p>
+                <div class="car-footer">
+                    <span class="price">u$s ${Number(car.price).toLocaleString()}</span>
+                    <div style="display: flex; gap: 10px; width: 100%;">
+                        <button class="btn-detail" onclick="window.verDetalleVehiculo('${car.id}')" style="width: 100%;">Ver Detalles</button>
+                    </div>
+                </div>
+            </div>`;
+        
+        favGrid.appendChild(card);
+    });
+
+    // Eventos para quitar de favoritos y recargar automáticamente
+    favGrid.querySelectorAll('.btn-favorite').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const idStr = e.currentTarget.getAttribute('data-fav-id');
+            const id = isNaN(idStr) ? idStr : Number(idStr);
+            
+            toggleFavoriteStatus(userEmail, id);
+            if(typeof showToast === 'function') showToast("Vehículo eliminado de la lista.", "success");
+            
+            // Re-renderizamos solo este panel
+            renderizarPanelComprador(userEmail);
+        });
+    });
+}
+
+/* ==========================================================================
+   PANEL DEL VENDEDOR
+   ========================================================================== */
 function renderizarPanelVendedor() {
     const grid = document.getElementById('my-cars-grid');
     if (!grid) return;
@@ -149,7 +234,7 @@ function renderizarPanelVendedor() {
     });
 }
 
-function eliminarPublicacion(id) {
+window.eliminarPublicacion = function(id) {
     if (confirm("¿Estás seguro de que querés eliminar esta publicación? Esta acción no se puede deshacer.")) {
         let publicaciones = JSON.parse(localStorage.getItem('misAutosPublicados')) || [];
         publicaciones = publicaciones.filter(auto => auto.id !== id);
@@ -163,26 +248,7 @@ function eliminarPublicacion(id) {
     }
 }
 
-function renderizarPanelComprador() {
-    const container = document.querySelector('#comprador-view .empty-state');
-    if (container) {
-        container.style.display = "grid";
-        container.style.gridTemplateColumns = "repeat(auto-fill, minmax(250px, 1fr))";
-        container.style.gap = "1.5rem";
-        container.style.marginTop = "1.5rem";
-
-        container.innerHTML = `
-            <div style="background: var(--bg-shark); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border);">
-                <span style="font-size: 0.8rem; color: var(--accent-lavender); font-weight: 700;">VISTO RECIENTEMENTE</span>
-                <h4 style="color: white; margin: 0.5rem 0;">Volkswagen Golf GTI</h4>
-                <p style="font-size: 0.9rem; color: var(--text-slate); margin-bottom: 1rem;">u$s 35,000</p>
-                <button class="btn-detail" onclick="location.href='index.html'" style="width: 100%;">Ver publicación</button>
-            </div>
-        `;
-    }
-}
-
-// --- SISTEMA DE MENSAJERÍA ---
+// --- SISTEMA DE MENSAJERÍA Y GLOBALES ---
 
 window.filtroMensajesActual = 'all';
 
@@ -216,7 +282,6 @@ function renderizarBandejaMensajes(userEmail, userRole) {
         mensajesFiltrados = messages.filter(estaSinResponder);
     }
 
-    // NUEVO DISEÑO DEL FILTRO: Animado y con inputs ocultos
     let htmlContent = `
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; background: var(--bg-shark); padding: 1rem 1.5rem; border-radius: 8px; border: 1px solid var(--border); flex-wrap: wrap; gap: 1rem;">
             <span style="color: white; font-weight: 600;">
@@ -303,7 +368,7 @@ function renderizarBandejaMensajes(userEmail, userRole) {
                                 <button class="btn-action" onclick="enviarRespuesta(${msg.id}, '${userRole}')" style="background: var(--accent-lavender); color: var(--bg-shark); font-weight: bold; border: none; border-radius: 6px; padding: 0 20px; cursor: pointer;">Enviar</button>
                             </div>
                             
-                            ${userRole === 'comprador' ? `<div style="margin-top: 15px; text-align: center;"><a href="#" onclick="verDetalleVehiculo(${msg.autoId})" style="color: var(--text-slate); font-size: 0.8rem; text-decoration: underline;">Ver publicación original</a></div>` : ''}
+                            ${userRole === 'comprador' ? `<div style="margin-top: 15px; text-align: center;"><a href="#" onclick="window.verDetalleVehiculo('${msg.autoId}')" style="color: var(--text-slate); font-size: 0.8rem; text-decoration: underline;">Ver publicación original</a></div>` : ''}
                         </div>
                     </div>
                 </div>
@@ -313,8 +378,6 @@ function renderizarBandejaMensajes(userEmail, userRole) {
 
     gridMensajes.innerHTML = htmlContent + mensajesHtml;
 }
-
-// --- CONTROLES DE INTERFAZ DEL CHAT ---
 
 window.cambiarFiltroMensajes = function(filterValue, userEmail, userRole) {
     window.filtroMensajesActual = filterValue;
