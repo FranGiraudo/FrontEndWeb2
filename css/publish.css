@@ -1,10 +1,40 @@
 /* ==========================================================================
-   SmartAuto - Publish Page Styles (Versión Pro y Unificada)
+   SmartAuto - Publish Page Styles (Versión Pro - Unificada & Estricta)
    ========================================================================== */
 
 .publish-page {
+    position: relative;
+    overflow-x: hidden;
     background: radial-gradient(circle at top right, var(--bg-elevated) 0%, var(--bg-shark) 100%);
     min-height: 100vh;
+}
+
+/* Orbes de luz dinámicos (Sin colores fijos) */
+.publish-page::before,
+.publish-page::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(6.25rem); /* 100px */
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+.publish-page::before {
+    width: 25rem; /* 400px */
+    height: 25rem;
+    background: var(--accent-alpha-15);
+    top: -6.25rem;
+    right: -5%;
+}
+
+.publish-page::after {
+    width: 18.75rem; /* 300px */
+    height: 18.75rem;
+    background: var(--white-alpha-05);
+    bottom: 5%;
+    left: -5%;
 }
 
 .main-container {
@@ -12,37 +42,46 @@
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    min-height: calc(100vh - 70px); 
+    min-height: calc(100vh - 4.375rem); /* 70px */
+    position: relative;
+    z-index: 1;
 }
 
+/* Tarjeta Principal Glassmorphism */
 .publish-card {
-    background-color: var(--card-bg);
+    background: var(--card-bg-alpha-60);
+    backdrop-filter: blur(1rem);
+    -webkit-backdrop-filter: blur(1rem);
     width: 100%;
-    max-width: 800px;
+    max-width: 53.125rem; /* 850px */
     padding: 3rem;
-    border-radius: 1.2rem;
-    border: 1px solid var(--border);
-    box-shadow: 0 25px 50px var(--black-alpha-50);
+    border-radius: 1.5rem;
+    border: 0.0625rem solid var(--white-alpha-10);
+    box-shadow: 0 1.5625rem 3.125rem var(--black-alpha-50);
+    animation: fadeIn 0.6s ease-out;
 }
 
 .card-header {
     text-align: left;
     margin-bottom: 2.5rem;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 0.0625rem solid var(--white-alpha-10);
     padding-bottom: 1.5rem;
 }
 
 .card-header h1 {
     color: var(--white);
-    font-size: 2.2rem;
+    font-size: 2.4rem;
     font-weight: 800;
-    letter-spacing: -1px;
+    letter-spacing: -0.0938rem; /* -1.5px */
+    background: linear-gradient(135deg, var(--white) 0%, var(--accent-lavender) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 .card-header p {
     color: var(--text-slate);
     font-size: 1rem;
-    margin-top: 0.5rem;
+    opacity: 0.8;
 }
 
 /* Grilla del Formulario */
@@ -58,72 +97,94 @@
 
 .input-group label {
     display: block;
-    font-size: 0.75rem;
-    font-weight: 700;
+    font-size: 0.7rem;
+    font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    color: var(--text-slate);
+    letter-spacing: 0.075rem; /* 1.2px */
+    color: var(--text-muted);
     margin-bottom: 0.6rem;
 }
 
 /* Inputs Estilizados */
 input, select, textarea {
     width: 100%;
-    padding: 0.9rem 1rem;
-    background-color: var(--bg-shark);
-    border: 1px solid var(--border);
-    border-radius: 0.6rem;
+    padding: 1rem;
+    background-color: var(--black-alpha-20);
+    border: 0.0625rem solid var(--border);
+    border-radius: 0.75rem;
     color: var(--white);
     font-size: 1rem;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    outline: none;
 }
 
 input:focus, select:focus, textarea:focus {
-    outline: none;
     border-color: var(--accent-lavender);
-    box-shadow: 0 0 0 4px var(--accent-alpha-15);
+    background-color: var(--bg-darker);
+    box-shadow: 0 0 0 0.25rem var(--accent-alpha-15), inset 0 0.125rem 0.25rem var(--black-alpha-30);
 }
 
 textarea {
     resize: vertical;
-    min-height: 120px;
+    min-height: 8.75rem; /* 140px */
 }
 
 /* Zona de Carga de Imágenes */
 .drop-zone {
-    border: 2px dashed var(--dark-don-juan);
-    border-radius: 1rem;
-    padding: 2.5rem 1rem;
+    border: 0.125rem dashed var(--border);
+    border-radius: 1.2rem;
+    padding: 3rem 1.5rem;
     text-align: center;
-    background-color: var(--black-alpha-20);
+    background-color: var(--black-alpha-15);
     cursor: pointer;
-    transition: all 0.3s;
-    margin-top: 0.5rem;
+    transition: all 0.3s ease;
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
 }
 
 .drop-zone:hover {
     border-color: var(--accent-lavender);
     background-color: var(--accent-alpha-05);
+    transform: translateY(-0.125rem);
 }
 
 .drop-text {
     color: var(--text-slate);
-    font-weight: 500;
-    display: block;
+    font-weight: 600;
+    font-size: 0.95rem;
 }
 
-/* Caja de Info de IA (Efecto Glassmorphism) */
+/* Caja de Info de IA (Efecto HUD) */
 .ai-info-box {
     background: var(--accent-alpha-10);
-    padding: 1.25rem;
-    border-radius: 0.8rem;
-    border: 1px solid var(--accent-lavender);
+    padding: 1.5rem;
+    border-radius: 1rem;
+    border: 0.0625rem solid var(--accent-lavender);
     display: flex;
     align-items: center;
-    gap: 1rem;
-    margin: 2rem 0;
+    gap: 1.2rem;
+    margin: 2.5rem 0;
     color: var(--white);
-    transition: all 0.5s ease;
+    box-shadow: 0 0 1.25rem var(--accent-alpha-10);
+    position: relative;
+    overflow: hidden;
+}
+
+.ai-info-box::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 50%; height: 100%;
+    background: linear-gradient(90deg, transparent, var(--white-alpha-05), transparent);
+    animation: scanIA 3s infinite;
+}
+
+@keyframes scanIA {
+    0% { left: -100%; }
+    100% { left: 200%; }
 }
 
 /* --- BOTÓN DE PUBLICAR --- */
@@ -131,61 +192,64 @@ textarea {
     width: 100%;
     padding: 1.2rem;
     background-color: var(--accent-lavender);
-    color: var(--white);
+    color: var(--bg-darker);
     border: none;
-    border-radius: 0.75rem;
+    border-radius: 1rem;
     font-weight: 800;
     font-size: 1.1rem;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    
-    /* Estado inicial: El JS se encargará de habilitarlo */
-    cursor: not-allowed;
-    opacity: 0.5;
-    
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 10px 20px var(--black-alpha-20);
+    letter-spacing: 0.0938rem; /* 1.5px */
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 0.5rem 1.25rem var(--black-alpha-30);
 }
 
-/* Efecto hover solo cuando está habilitado */
 .btn-submit:not(:disabled):hover {
-    transform: translateY(-3px);
-    box-shadow: 0 15px 30px var(--black-alpha-40);
-    filter: brightness(1.2);
+    transform: translateY(-0.25rem) scale(1.01);
+    background-color: var(--accent-hover);
+    box-shadow: 0 0.9375rem 1.875rem var(--accent-alpha-20);
 }
 
-/* Estado deshabilitado explícito */
 .btn-submit:disabled {
     background-color: var(--btn-disabled) !important;
-    opacity: 0.5 !important;
+    opacity: 0.4 !important;
     cursor: not-allowed !important;
+    transform: none !important;
 }
 
 /* Previsualización de Galería */
 .gallery-preview-container {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 15px;
+    gap: 0.75rem; /* 12px */
+    margin-bottom: 1.5rem;
     justify-content: center;
 }
 
 .thumb-preview {
-    width: 85px;
-    height: 85px;
+    width: 5.625rem; /* 90px */
+    height: 5.625rem;
     object-fit: cover;
-    border-radius: 8px;
-    border: 2px solid var(--border);
-    animation: fadeIn 0.4s ease;
+    border-radius: 0.625rem;
+    border: 0.125rem solid var(--white-alpha-10);
+    box-shadow: 0 0.25rem 0.625rem var(--black-alpha-30);
+    animation: thumbEnter 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes thumbEnter {
+    from { opacity: 0; transform: scale(0.5) translateY(1.25rem); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: scale(0.9); }
-    to { opacity: 1; transform: scale(1); }
+    from { opacity: 0; transform: translateY(1.25rem); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-@media (max-width: 650px) {
+/* --- RESPONSIVE OPTIMIZADO --- */
+@media (max-width: 40.625rem) { /* 650px */
     .form-grid { grid-template-columns: 1fr; }
     .full-width { grid-column: span 1; }
-    .publish-card { padding: 1.5rem; }
+    .publish-card { padding: 2rem 1.5rem; }
+    .card-header h1 { font-size: 1.8rem; }
 }

@@ -49,29 +49,36 @@
                 <p>Tu actividad reciente en SmartAuto.</p>
                 <div class="empty-state"></div>
             </div>
+
             <div id="favorites-section" style="display: none; margin-top: 3rem; width: 100%;">
                 <h2 style="color: var(--white); font-size: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 2rem;">
                     Mis Vehículos Guardados
                 </h2>
-                <div id="profile-favorites-grid" class="grid-autos">
-                    </div>
+                <div id="profile-favorites-grid" class="grid-autos"></div>
             </div>
+
             <div id="mensajes-view" class="dashboard-content" style="display: none;">
-            <div class="card-header">
-                <h1 id="titulo-mensajes">Bandeja de Consultas</h1>
-                <p id="subtitulo-mensajes">Gestioná la comunicación sobre los vehículos.</p>
-            </div>
-            <div id="grid-mensajes" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
+                <div class="card-header">
+                    <h1 id="titulo-mensajes">Bandeja de Consultas</h1>
+                    <p id="subtitulo-mensajes">Gestioná la comunicación sobre los vehículos.</p>
                 </div>
-        </div>
+                <div id="grid-mensajes" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; margin-top: 2rem;"></div>
+            </div>
         </section>
     </main>
 
-
+    <div id="delete-toast" class="toast-container">
+        <div class="confirmation-toast">
+            <span class="toast-message">¿Estás seguro de que querés eliminar esta publicación?</span>
+            <div class="toast-actions">
+                <button id="cancel-delete" class="btn-toast btn-toast-cancel">Cancelar</button>
+                <button id="confirm-delete" class="btn-toast btn-toast-confirm">Eliminar</button>
+            </div>
+        </div>
+    </div>
 
     <script src="js/database.js"></script>
     <script src="js/profile.js"></script>
     <script src="js/main.js"></script>
-    
 </body>
 </html>

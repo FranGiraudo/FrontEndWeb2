@@ -1,26 +1,52 @@
 /* ==========================================================================
-   profile.css - Rediseño Total y Paleta Unificada
+   profile.css - Rediseño Tech/IA y Estilo Unificado
    ========================================================================== */
 
+.profile-page {
+    position: relative;
+    overflow-x: hidden;
+    background: radial-gradient(circle at top left, var(--bg-elevated) 0%, var(--bg-shark) 100%);
+    min-height: 100vh;
+}
+
+/* Orbes de luz de fondo (Consistencia con Home y Detalle) */
+.profile-page::before {
+    content: '';
+    position: absolute;
+    width: 25rem;
+    height: 25rem;
+    background: var(--accent-alpha-15);
+    filter: blur(6.25rem);
+    top: -6.25rem;
+    left: -5%;
+    z-index: 0;
+    pointer-events: none;
+}
+
 .profile-container {
-    max-width: 1200px;
+    max-width: 75rem; /* 1200px */
     margin: 2rem auto;
     display: grid;
-    grid-template-columns: 300px 1fr;
+    grid-template-columns: 18.75rem 1fr; /* 300px */
     gap: 2rem;
     padding: 0 5%;
+    position: relative;
+    z-index: 1;
+    animation: fadeIn 0.5s ease-out;
 }
 
 /* ==========================================================================
-   SIDEBAR Y USUARIO
+   SIDEBAR Y USUARIO (Glassmorphism)
    ========================================================================== */
 .profile-sidebar {
-    background: var(--card-bg);
-    border-radius: 20px;
+    background: var(--card-bg-alpha-60);
+    backdrop-filter: blur(1rem);
+    -webkit-backdrop-filter: blur(1rem);
+    border-radius: 1.25rem;
     padding: 2.5rem 1.5rem;
-    border: 1px solid var(--border);
+    border: 0.0625rem solid var(--white-alpha-10);
     height: fit-content;
-    box-shadow: 0 10px 30px var(--black-alpha-30);
+    box-shadow: 0 0.625rem 1.875rem var(--black-alpha-30);
 }
 
 .user-info {
@@ -29,9 +55,9 @@
 }
 
 .avatar {
-    width: 80px;
-    height: 80px;
-    background: linear-gradient(135deg, var(--accent-lavender), var(--dark-don-juan));
+    width: 5rem; /* 80px */
+    height: 5rem;
+    background: linear-gradient(135deg, var(--accent-lavender), var(--accent-alpha-15));
     border-radius: 50%;
     margin: 0 auto 1rem;
     display: flex;
@@ -40,19 +66,21 @@
     font-size: 1.5rem;
     font-weight: 800;
     color: var(--white);
-    box-shadow: 0 5px 15px var(--don-juan-alpha-40);
+    box-shadow: 0 0.3125rem 0.9375rem var(--accent-alpha-30);
+    border: 0.125rem solid var(--white-alpha-10);
 }
 
 .badge-role {
     display: inline-block;
     background: var(--accent-alpha-20);
     color: var(--accent-lavender);
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: 700;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1.25rem;
+    font-size: 0.7rem;
+    font-weight: 800;
     text-transform: uppercase;
-    margin-top: 5px;
+    margin-top: 0.3125rem;
+    border: 0.0625rem solid var(--accent-alpha-15);
 }
 
 /* Navegación lateral */
@@ -65,54 +93,69 @@
 .sidebar-nav a {
     text-decoration: none;
     color: var(--text-slate);
-    padding: 12px 15px;
-    border-radius: 10px;
-    transition: 0.3s;
+    padding: 0.75rem 0.9375rem;
+    border-radius: 0.625rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     font-weight: 600;
+    font-size: 0.95rem;
 }
 
 .sidebar-nav a:hover, 
 .sidebar-nav a.active {
     background: var(--white-alpha-05);
     color: var(--white);
+    transform: translateX(0.3125rem);
 }
 
 .logout-danger {
     color: var(--error) !important;
     margin-top: 1rem;
+    border: 0.0625rem solid var(--error-alpha-10);
+}
+
+.logout-danger:hover {
+    background: var(--error-alpha-10) !important;
 }
 
 /* ==========================================================================
    CONTENIDO PRINCIPAL Y DASHBOARD
    ========================================================================== */
 .profile-content h1 {
-    font-size: 2rem;
-    margin-bottom: 0.5rem;
+    font-size: 2.2rem;
+    font-weight: 800;
+    letter-spacing: -0.0625rem;
     color: var(--white);
+    margin-bottom: 0.5rem;
 }
 
 .profile-content p {
     margin-bottom: 2rem;
-    opacity: 0.7;
+    color: var(--text-slate);
+    opacity: 0.8;
 }
 
-/* --- LA MINI CARD DEL AUTO (DASHBOARD) --- */
+/* --- MINI CARD (Estilo Glass / Tech) --- */
 .mini-card {
-    background: var(--bg-hover);
-    border-radius: 18px;
+    background: var(--card-bg-alpha-40);
+    backdrop-filter: blur(0.5rem);
+    border-radius: 1.125rem;
     display: flex;
     overflow: hidden;
-    border: 1px solid var(--border);
-    transition: transform 0.3s;
+    border: 0.0625rem solid var(--white-alpha-10);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-bottom: 1.5rem;
 }
 
 .mini-card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-0.3125rem);
+    border-color: var(--accent-lavender);
+    box-shadow: 0 1rem 2rem var(--black-alpha-40);
 }
 
 .mini-card-img {
-    width: 280px;
+    width: 17.5rem; /* 280px */
     position: relative;
+    border-right: 0.0625rem solid var(--white-alpha-05);
 }
 
 .mini-card-img img {
@@ -123,41 +166,48 @@
 
 .status-tag {
     position: absolute;
-    top: 15px;
-    left: 15px;
+    top: 0.9375rem;
+    left: 0.9375rem;
     background: var(--success);
     color: var(--white);
-    padding: 4px 10px;
-    border-radius: 6px;
-    font-size: 0.7rem;
+    padding: 0.25rem 0.625rem;
+    border-radius: 0.375rem;
+    font-size: 0.65rem;
     font-weight: 800;
+    text-transform: uppercase;
+    box-shadow: 0 0.25rem 0.625rem var(--black-alpha-30);
 }
 
 .mini-card-details {
-    padding: 2rem;
+    padding: 1.5rem;
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .mini-card-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 0.5rem;
+    margin-bottom: 1rem;
 }
 
 .mini-card-header h4 {
-    font-size: 1.4rem;
+    font-size: 1.3rem;
+    font-weight: 700;
     color: var(--white);
 }
 
 .mini-price {
-    font-size: 1.2rem;
+    font-size: 1.25rem;
     font-weight: 800;
     color: var(--accent-lavender);
+    text-shadow: 0 0 0.625rem var(--accent-alpha-20);
 }
 
 /* ==========================================================================
-   ESTADÍSTICAS Y ACCIONES
+   ESTADÍSTICAS Y ACCIONES (HUD Style)
    ========================================================================== */
 .analytics-container {
     display: grid;
@@ -168,23 +218,30 @@
 
 .stat-box {
     background: var(--black-alpha-20);
-    padding: 1rem;
-    border-radius: 12px;
+    padding: 0.8rem;
+    border-radius: 0.75rem;
     text-align: center;
-    border: 1px solid var(--white-alpha-05);
+    border: 0.0625rem solid var(--white-alpha-05);
+    transition: all 0.3s ease;
+}
+
+.stat-box:hover {
+    background: var(--white-alpha-05);
+    border-color: var(--white-alpha-10);
 }
 
 .stat-label {
     display: block;
-    font-size: 0.65rem;
+    font-size: 0.6rem;
     color: var(--text-muted);
     text-transform: uppercase;
-    margin-bottom: 5px;
-    font-weight: 700;
+    margin-bottom: 0.3125rem;
+    font-weight: 800;
+    letter-spacing: 0.0625rem;
 }
 
 .stat-value {
-    font-size: 1.3rem;
+    font-size: 1.2rem;
     font-weight: 800;
     color: var(--white);
 }
@@ -192,50 +249,116 @@
 /* Acciones */
 .action-bar {
     display: flex;
-    gap: 12px;
+    gap: 0.75rem;
+    margin-top: 1rem;
 }
 
 .btn-action {
-    padding: 10px 20px;
-    border-radius: 8px;
+    padding: 0.625rem 1.25rem;
+    border-radius: 0.5rem;
     border: none;
-    font-weight: 700;
+    font-weight: 800;
+    font-size: 0.85rem;
+    text-transform: uppercase;
     cursor: pointer;
-    transition: 0.2s;
+    transition: all 0.3s ease;
 }
 
 .btn-edit { 
-    background: var(--border); 
-    color: var(--white); 
+    background: var(--white-alpha-05); 
+    color: var(--white);
+    border: 0.0625rem solid var(--white-alpha-10);
 }
 
 .btn-delete { 
     background: var(--error-alpha-10); 
     color: var(--error); 
-    border: 1px solid var(--error); 
+    border: 0.0625rem solid var(--error-alpha-20); 
 }
 
 .btn-edit:hover { 
-    background: var(--border-hover); 
+    background: var(--white-alpha-10); 
+    border-color: var(--accent-lavender);
 }
 
 .btn-delete:hover { 
     background: var(--error); 
     color: var(--white); 
+    box-shadow: 0 0.3125rem 0.9375rem var(--error-alpha-20);
+}
+/* ==========================================================================
+   TOAST DE CONFIRMACIÓN - POSICIONAMIENTO CORREGIDO
+   ========================================================================== */
+.toast-container {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    /* El transform es clave para que el 50% sea el centro real del div */
+    transform: translateX(-50%) translateY(10rem); 
+    z-index: 9999;
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+    width: max-content; /* Para que no ocupe todo el ancho */
 }
 
+.toast-container.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+    pointer-events: all;
+}
+
+.confirmation-toast {
+    background: var(--card-bg);
+    backdrop-filter: blur(1rem);
+    -webkit-backdrop-filter: blur(1rem);
+    padding: 1.5rem 2rem;
+    border-radius: 1rem;
+    border: 1px solid var(--accent-lavender);
+    box-shadow: 0 1rem 3rem var(--black-alpha-50);
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.toast-message {
+    color: var(--white);
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.toast-actions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.btn-toast {
+    padding: 0.6rem 1.2rem;
+    border-radius: 0.5rem;
+    font-size: 0.8rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+}
+
+.btn-toast-confirm { background: var(--error); color: var(--white); }
+.btn-toast-cancel { background: var(--white-alpha-10); color: var(--white); border: 1px solid var(--white-alpha-10); }
+
+.btn-toast:hover { transform: translateY(-2px); filter: brightness(1.1); }
 /* ==========================================================================
-   FILTRO DE MENSAJES (SLIDER ANIMADO)
+   FILTRO DE MENSAJES (Modernizado)
    ========================================================================== */
 .filter-segmented-control {
     position: relative;
     display: flex;
-    background: var(--bg-darker); 
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    padding: 4px;
-    width: 300px; 
-    height: 44px; 
+    background: var(--black-alpha-30); 
+    border-radius: 0.625rem;
+    border: 0.0625rem solid var(--white-alpha-10);
+    padding: 0.25rem;
+    width: 18.75rem; /* 300px */
+    height: 2.75rem; /* 44px */
 }
 
 .filter-segmented-control input[type="radio"] {
@@ -247,35 +370,45 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    text-align: center;
-    font-size: 0.85rem;
-    font-weight: 600;
+    font-size: 0.8rem;
+    font-weight: 700;
     color: var(--text-slate);
     cursor: pointer;
     z-index: 2;
     transition: color 0.3s ease;
-    border-radius: 6px;
 }
 
-/* El fondo animado que se mueve (la píldora violeta) */
+/* El fondo animado */
 .filter-segmented-control .slider {
     position: absolute;
-    top: 4px;
-    left: 4px;
-    height: calc(100% - 8px);
-    width: calc(50% - 4px); 
+    top: 0.25rem;
+    left: 0.25rem;
+    height: calc(100% - 0.5rem);
+    width: calc(50% - 0.25rem); 
     background: var(--accent-lavender);
-    border-radius: 6px;
+    border-radius: 0.5rem;
     z-index: 1;
-    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1); 
-    box-shadow: 0 2px 5px var(--black-alpha-20);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+    box-shadow: 0 0.25rem 0.625rem var(--accent-alpha-20);
 }
 
-/* --- ESTADOS ACTIVOS --- */
-#filter-all:checked ~ .slider {
-    transform: translateX(0);
+#filter-all:checked ~ label[for="filter-all"],
+#filter-unanswered:checked ~ label[for="filter-unanswered"] {
+    color: var(--bg-darker);
 }
 
-#filter-unanswered:checked ~ .slider {
-    transform: translateX(100%);
+#filter-all:checked ~ .slider { transform: translateX(0); }
+#filter-unanswered:checked ~ .slider { transform: translateX(100%); }
+
+/* --- RESPONSIVE --- */
+@media (max-width: 64rem) {
+    .profile-container { grid-template-columns: 1fr; }
+    .profile-sidebar { position: static; }
+    .mini-card { flex-direction: column; }
+    .mini-card-img { width: 100%; height: 12rem; border-right: none; border-bottom: 0.0625rem solid var(--white-alpha-05); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(1.25rem); }
+    to { opacity: 1; transform: translateY(0); }
 }

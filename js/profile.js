@@ -8,6 +8,26 @@ document.addEventListener('DOMContentLoaded', () => {
         return; 
     }
 
+    // --- INTEGRACIÓN DE BOTONES DEL TOAST ---
+    const btnConfirmDelete = document.getElementById('confirm-delete');
+    const btnCancelDelete = document.getElementById('cancel-delete');
+
+    if (btnConfirmDelete) {
+        btnConfirmDelete.addEventListener('click', () => {
+            if (window.carIdToDelete !== null) {
+                ejecutarEliminacionReal(window.carIdToDelete);
+                window.hideDeleteToast();
+            } else if (window.chatIdToDelete !== null) {
+                ejecutarEliminacionChat(window.chatIdToDelete);
+                window.hideDeleteToast();
+            }
+        });
+    }
+
+    if (btnCancelDelete) {
+        btnCancelDelete.addEventListener('click', () => window.hideDeleteToast());
+    }
+
     // Referencias al DOM (Header del perfil)
     const displayEmail = document.getElementById('display-email');
     const displayRole = document.getElementById('display-role');
@@ -48,11 +68,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const viewMensajes = document.getElementById('mensajes-view');
 
     function switchTab(tabName) {
-        // Reiniciar botones
         if (navPanel) navPanel.classList.remove('active');
         if (navConsultas) navConsultas.classList.remove('active');
         
-        // Ocultar todas las vistas
         if (viewVendedor) viewVendedor.style.display = 'none';
         if (viewComprador) viewComprador.style.display = 'none';
         if (viewMensajes) viewMensajes.style.display = 'none';
@@ -89,7 +107,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (typeof window.confirmarCierreSesion === 'function') {
                 window.confirmarCierreSesion();
             } else {
-                // Fallback de seguridad en caso de que main.js falle
                 localStorage.removeItem('user_session');
                 window.location.href = "index.html";
             }
@@ -98,18 +115,76 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /* ==========================================================================
+   SISTEMA DE ELIMINACIÓN CON TOAST
+   ========================================================================== */
+window.carIdToDelete = null;
+window.chatIdToDelete = null;
+
+window.showDeleteToast = function(id, type = 'car') {
+    const toast = document.getElementById('delete-toast');
+    const message = toast.querySelector('.toast-message');
+    
+    if (type === 'car') {
+        window.carIdToDelete = id;
+        window.chatIdToDelete = null;
+        message.textContent = "¿Estás seguro de que querés eliminar esta publicación?";
+    } else {
+        window.chatIdToDelete = id;
+        window.carIdToDelete = null;
+        message.textContent = "¿Estás seguro de que querés eliminar esta conversación?";
+    }
+    
+    if (toast) toast.classList.add('show');
+}
+
+window.hideDeleteToast = function() {
+    const toast = document.getElementById('delete-toast');
+    if (toast) toast.classList.remove('show');
+    window.carIdToDelete = null;
+    window.chatIdToDelete = null;
+}
+
+window.eliminarPublicacion = function(id) {
+    window.showDeleteToast(id, 'car');
+}
+
+window.confirmarEliminarChat = function(id) {
+    window.showDeleteToast(id, 'chat');
+}
+
+function ejecutarEliminacionReal(id) {
+    let publicaciones = JSON.parse(localStorage.getItem('misAutosPublicados')) || [];
+    publicaciones = publicaciones.filter(auto => auto.id !== id);
+    localStorage.setItem('misAutosPublicados', JSON.stringify(publicaciones));
+    
+    let analytics = JSON.parse(localStorage.getItem('smartauto_analytics')) || {};
+    delete analytics[id];
+    localStorage.setItem('smartauto_analytics', JSON.stringify(analytics));
+
+    location.reload();
+}
+
+function ejecutarEliminacionChat(id) {
+    let allMessages = JSON.parse(localStorage.getItem('smartauto_messages')) || [];
+    allMessages = allMessages.filter(msg => msg.id !== id);
+    localStorage.setItem('smartauto_messages', JSON.stringify(allMessages));
+    
+    const session = JSON.parse(localStorage.getItem('user_session'));
+    renderizarBandejaMensajes(session.email, session.role);
+    if(typeof showToast === 'function') showToast("Conversación eliminada.", "success");
+}
+
+/* ==========================================================================
    PANEL DEL COMPRADOR (FAVORITOS)
    ========================================================================== */
 function renderizarPanelComprador(userEmail) {
     const viewComprador = document.getElementById('comprador-view');
     if (!viewComprador) return;
 
-    // Obtener datos reales de la base de datos simulada
     const favIds = typeof getUserFavorites === 'function' ? getUserFavorites(userEmail) : [];
     const allCars = typeof getAllCars === 'function' ? getAllCars() : [];
     const favCars = allCars.filter(car => favIds.includes(car.id));
 
-    // Inyectar estructura HTML dentro de la pestaña para que se oculte correctamente
     viewComprador.innerHTML = `
         <h2 style="color: var(--white); font-size: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 2rem;">
             Mis Vehículos Guardados
@@ -127,8 +202,6 @@ function renderizarPanelComprador(userEmail) {
     favCars.forEach(car => {
         const card = document.createElement('div');
         card.className = 'card-auto';
-        
-        // Botón para eliminar directo desde el perfil
         const btnRemove = `
             <button class="btn-favorite active" data-fav-id="${car.id}" title="Quitar de favoritos" style="position: absolute; top: 1rem; left: 1rem; z-index: 10;">
                 <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
@@ -151,20 +224,15 @@ function renderizarPanelComprador(userEmail) {
                     </div>
                 </div>
             </div>`;
-        
         favGrid.appendChild(card);
     });
 
-    // Eventos para quitar de favoritos y recargar automáticamente
     favGrid.querySelectorAll('.btn-favorite').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const idStr = e.currentTarget.getAttribute('data-fav-id');
             const id = isNaN(idStr) ? idStr : Number(idStr);
-            
             toggleFavoriteStatus(userEmail, id);
             if(typeof showToast === 'function') showToast("Vehículo eliminado de la lista.", "success");
-            
-            // Re-renderizamos solo este panel
             renderizarPanelComprador(userEmail);
         });
     });
@@ -176,137 +244,66 @@ function renderizarPanelComprador(userEmail) {
 function renderizarPanelVendedor() {
     const grid = document.getElementById('my-cars-grid');
     if (!grid) return;
-
     const misPublicaciones = JSON.parse(localStorage.getItem('misAutosPublicados')) || [];
     const analytics = JSON.parse(localStorage.getItem('smartauto_analytics')) || {};
 
     if (misPublicaciones.length === 0) {
-        grid.innerHTML = `
-            <div class="empty-state" style="text-align: center; padding: 3rem; background: var(--bg-shark); border-radius: 12px; border: 1px dashed var(--border);">
-                <p style="margin-bottom: 1rem; color: var(--text-slate);">Todavía no tenés vehículos publicados.</p>
-                <button class="btn-detail" onclick="location.href='publish.html'">Publicar mi primer auto</button>
-            </div>`;
+        grid.innerHTML = `<div class="empty-state" style="text-align: center; padding: 3rem; background: var(--bg-shark); border-radius: 12px; border: 1px dashed var(--border);"><p style="margin-bottom: 1rem; color: var(--text-slate);">Todavía no tenés vehículos publicados.</p><button class="btn-detail" onclick="location.href='publish.html'">Publicar mi primer auto</button></div>`;
         return;
     }
 
     grid.innerHTML = "";
     misPublicaciones.forEach(auto => {
         const stats = analytics[auto.id] || { visitas: 0, contactos: 0 };
-        
         const card = document.createElement('div');
         card.className = 'mini-card';
         card.style.marginBottom = "1.5rem";
-        
         card.innerHTML = `
             <div class="mini-card-img">
                 <img src="${auto.fotoPrincipal}" alt="${auto.modelo}">
                 <span class="status-tag">ACTIVO</span>
             </div>
             <div class="mini-card-details">
-                <div class="mini-card-header">
-                    <h4>${auto.marca} ${auto.modelo}</h4>
-                    <span class="mini-price">u$s ${Number(auto.precio).toLocaleString()}</span>
-                </div>
+                <div class="mini-card-header"><h4>${auto.marca} ${auto.modelo}</h4><span class="mini-price">u$s ${Number(auto.precio).toLocaleString()}</span></div>
                 <p class="meta-text">${auto.anio} • ${auto.combustible} • ${auto.carroceriaIA || 'Sedán'}</p>
-                
                 <div class="analytics-container">
-                    <div class="stat-box">
-                        <span class="stat-label">Visitas</span>
-                        <span class="stat-value">${stats.visitas}</span>
-                    </div>
-                    <div class="stat-box">
-                        <span class="stat-label">Contactos</span>
-                        <span class="stat-value">${stats.contactos}</span>
-                    </div>
-                    <div class="stat-box">
-                        <span class="stat-label">IA Score</span>
-                        <span class="stat-value" style="color: #4caf50;">98%</span>
-                    </div>
+                    <div class="stat-box"><span class="stat-label">Visitas</span><span class="stat-value">${stats.visitas}</span></div>
+                    <div class="stat-box"><span class="stat-label">Contactos</span><span class="stat-value">${stats.contactos}</span></div>
+                    <div class="stat-box"><span class="stat-label">IA Score</span><span class="stat-value" style="color: #4caf50;">98%</span></div>
                 </div>
-
                 <div class="action-bar">
                     <button class="btn-action btn-edit" onclick="location.href='publish.html?edit=${auto.id}'">Editar</button>
-                    <button class="btn-action btn-delete" onclick="eliminarPublicacion(${auto.id})">Eliminar</button>
+                    <button class="btn-action btn-delete" onclick="window.eliminarPublicacion(${auto.id})">Eliminar</button>
                 </div>
-            </div>
-        `;
+            </div>`;
         grid.appendChild(card);
     });
 }
 
-window.eliminarPublicacion = function(id) {
-    if (confirm("¿Estás seguro de que querés eliminar esta publicación? Esta acción no se puede deshacer.")) {
-        let publicaciones = JSON.parse(localStorage.getItem('misAutosPublicados')) || [];
-        publicaciones = publicaciones.filter(auto => auto.id !== id);
-        localStorage.setItem('misAutosPublicados', JSON.stringify(publicaciones));
-        
-        let analytics = JSON.parse(localStorage.getItem('smartauto_analytics')) || {};
-        delete analytics[id];
-        localStorage.setItem('smartauto_analytics', JSON.stringify(analytics));
-
-        location.reload();
-    }
-}
-
-// --- SISTEMA DE MENSAJERÍA Y GLOBALES ---
-
+// --- SISTEMA DE MENSAJERÍA ---
 window.filtroMensajesActual = 'all';
 
 function renderizarBandejaMensajes(userEmail, userRole) {
     const gridMensajes = document.getElementById('grid-mensajes');
     if (!gridMensajes) return;
-
     gridMensajes.style.gridTemplateColumns = "1fr";
 
-    let messages = [];
-    if (userRole === 'vendedor') {
-        messages = typeof getMessagesForSeller === 'function' ? getMessagesForSeller(userEmail) : [];
-    } else {
-        messages = typeof getMessagesForBuyer === 'function' ? getMessagesForBuyer(userEmail) : [];
-    }
+    let messages = (userRole === 'vendedor') ? (typeof getMessagesForSeller === 'function' ? getMessagesForSeller(userEmail) : []) : (typeof getMessagesForBuyer === 'function' ? getMessagesForBuyer(userEmail) : []);
 
     const estaSinResponder = (msg) => {
         if (msg.markedAsReadBy === userRole) return false;
-        
-        if (!msg.replies || msg.replies.length === 0) {
-            return userRole === 'vendedor'; 
-        }
+        if (!msg.replies || msg.replies.length === 0) return userRole === 'vendedor'; 
         const lastReply = msg.replies[msg.replies.length - 1];
         return lastReply.senderRole !== userRole;
     };
 
     const cantidadSinResponder = messages.filter(estaSinResponder).length;
+    let mensajesFiltrados = (window.filtroMensajesActual === 'unanswered') ? messages.filter(estaSinResponder) : messages;
 
-    let mensajesFiltrados = messages;
-    if (window.filtroMensajesActual === 'unanswered') {
-        mensajesFiltrados = messages.filter(estaSinResponder);
-    }
-
-    let htmlContent = `
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; background: var(--bg-shark); padding: 1rem 1.5rem; border-radius: 8px; border: 1px solid var(--border); flex-wrap: wrap; gap: 1rem;">
-            <span style="color: white; font-weight: 600;">
-                <span style="color: ${cantidadSinResponder > 0 ? '#ff5252' : '#4caf50'}; font-size: 1.2rem; margin-right: 5px;">•</span>
-                ${cantidadSinResponder} consulta(s) esperando tu respuesta
-            </span>
-            
-            <div class="filter-segmented-control">
-                <input type="radio" name="msg_filter" id="filter-all" value="all" ${window.filtroMensajesActual === 'all' ? 'checked' : ''} onchange="window.cambiarFiltroMensajes('all', '${userEmail}', '${userRole}')">
-                <label for="filter-all">Todas</label>
-
-                <input type="radio" name="msg_filter" id="filter-unanswered" value="unanswered" ${window.filtroMensajesActual === 'unanswered' ? 'checked' : ''} onchange="window.cambiarFiltroMensajes('unanswered', '${userEmail}', '${userRole}')">
-                <label for="filter-unanswered">Pendientes</label>
-
-                <div class="slider"></div>
-            </div>
-        </div>
-    `;
+    let htmlContent = `<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; background: var(--bg-shark); padding: 1rem 1.5rem; border-radius: 8px; border: 1px solid var(--border); flex-wrap: wrap; gap: 1rem;"><span style="color: white; font-weight: 600;"><span style="color: ${cantidadSinResponder > 0 ? '#ff5252' : '#4caf50'}; font-size: 1.2rem; margin-right: 5px;">•</span>${cantidadSinResponder} consulta(s) esperando respuesta</span><div class="filter-segmented-control"><input type="radio" name="msg_filter" id="filter-all" value="all" ${window.filtroMensajesActual === 'all' ? 'checked' : ''} onchange="window.cambiarFiltroMensajes('all', '${userEmail}', '${userRole}')"><label for="filter-all">Todas</label><input type="radio" name="msg_filter" id="filter-unanswered" value="unanswered" ${window.filtroMensajesActual === 'unanswered' ? 'checked' : ''} onchange="window.cambiarFiltroMensajes('unanswered', '${userEmail}', '${userRole}')"><label for="filter-unanswered">Pendientes</label><div class="slider"></div></div></div>`;
 
     if (mensajesFiltrados.length === 0) {
-        htmlContent += `
-            <div style="background: var(--bg-shark); padding: 3rem; border-radius: 12px; border: 1px dashed var(--border); text-align: center;">
-                <p style="color: var(--text-slate); font-size: 1rem;">No hay mensajes para mostrar en esta vista.</p>
-            </div>
-        `;
+        htmlContent += `<div style="background: var(--bg-shark); padding: 3rem; border-radius: 12px; border: 1px dashed var(--border); text-align: center;"><p style="color: var(--text-slate); font-size: 1rem;">No hay mensajes para mostrar en esta vista.</p></div>`;
         gridMensajes.innerHTML = htmlContent;
         return;
     }
@@ -315,31 +312,17 @@ function renderizarBandejaMensajes(userEmail, userRole) {
         const fechaOriginal = new Date(msg.date).toLocaleDateString('es-AR', { day: 'numeric', month: 'short' });
         const tituloInterlocutor = userRole === 'vendedor' ? `Comprador: ${msg.senderName}` : `Vendedor`;
         const isUnanswered = estaSinResponder(msg);
-
         const replies = msg.replies || [];
-        let chatHistoryHTML = `
-            <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 10px;">
-                <div style="align-self: ${userRole === 'comprador' ? 'flex-end' : 'flex-start'}; background: ${userRole === 'comprador' ? 'var(--accent-lavender)' : 'rgba(255,255,255,0.05)'}; color: ${userRole === 'comprador' ? 'var(--bg-shark)' : 'white'}; padding: 10px 14px; border-radius: 12px; max-width: 85%; font-size: 0.9rem; border: 1px solid rgba(255,255,255,0.1);">
-                    <strong style="font-size: 0.75rem; display: block; margin-bottom: 4px; opacity: 0.8;">${msg.senderName}</strong>
-                    ${msg.text}
-                </div>
-        `;
 
+        let chatHistoryHTML = `<div style="display: flex; flex-direction: column; gap: 8px; margin-top: 10px;"><div style="align-self: ${userRole === 'comprador' ? 'flex-end' : 'flex-start'}; background: ${userRole === 'comprador' ? 'var(--accent-lavender)' : 'rgba(255,255,255,0.05)'}; color: ${userRole === 'comprador' ? 'var(--bg-shark)' : 'white'}; padding: 10px 14px; border-radius: 12px; max-width: 85%; font-size: 0.9rem; border: 1px solid rgba(255,255,255,0.1);"><strong style="font-size: 0.75rem; display: block; margin-bottom: 4px; opacity: 0.8;">${msg.senderName}</strong>${msg.text}</div>`;
         replies.forEach(r => {
             const isMe = r.senderRole === userRole;
-            chatHistoryHTML += `
-                <div style="align-self: ${isMe ? 'flex-end' : 'flex-start'}; background: ${isMe ? 'var(--accent-lavender)' : 'rgba(255,255,255,0.05)'}; color: ${isMe ? 'var(--bg-shark)' : 'white'}; padding: 10px 14px; border-radius: 12px; max-width: 85%; font-size: 0.9rem; border: 1px solid rgba(255,255,255,0.1);">
-                    <strong style="font-size: 0.75rem; display: block; margin-bottom: 4px; opacity: 0.8;">${r.senderName}</strong>
-                    ${r.text}
-                </div>
-            `;
+            chatHistoryHTML += `<div style="align-self: ${isMe ? 'flex-end' : 'flex-start'}; background: ${isMe ? 'var(--accent-lavender)' : 'rgba(255,255,255,0.05)'}; color: ${isMe ? 'var(--bg-shark)' : 'white'}; padding: 10px 14px; border-radius: 12px; max-width: 85%; font-size: 0.9rem; border: 1px solid rgba(255,255,255,0.1);"><strong style="font-size: 0.75rem; display: block; margin-bottom: 4px; opacity: 0.8;">${r.senderName}</strong>${r.text}</div>`;
         });
-
         chatHistoryHTML += `</div>`;
 
         return `
             <div class="mini-card" style="display: flex; flex-direction: column; background: var(--bg-shark); border: 1px solid var(--border); border-radius: 12px; overflow: hidden;">
-                
                 <div onclick="window.toggleChat(${msg.id})" style="cursor: pointer; padding: 1.2rem; display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2);">
                     <div style="display: flex; flex-direction: column; gap: 6px;">
                         <div style="display: flex; align-items: center; gap: 10px;">
@@ -348,27 +331,23 @@ function renderizarBandejaMensajes(userEmail, userRole) {
                         </div>
                         <span style="font-size: 0.85rem; color: var(--text-slate);">${tituloInterlocutor} • ${fechaOriginal}</span>
                     </div>
-                    <div id="chevron-${msg.id}" style="color: var(--text-slate); font-size: 1.2rem; transition: transform 0.3s ease;">
-                        ▼
+                    <div style="display: flex; gap: 15px; align-items: center;">
+                        <button onclick="event.stopPropagation(); window.confirmarEliminarChat(${msg.id})" style="background: transparent; border: none; color: var(--error); cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 5px;" title="Eliminar conversación">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                        </button>
+                        <div id="chevron-${msg.id}" style="color: var(--text-slate); font-size: 1.2rem; transition: transform 0.3s ease;">▼</div>
                     </div>
                 </div>
-                
                 <div id="chat-wrapper-${msg.id}" style="display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
                     <div style="overflow: hidden;">
                         <div id="chat-body-${msg.id}" style="display: flex; flex-direction: column; padding: 0 1.2rem 1.2rem 1.2rem; border-top: 1px solid rgba(255,255,255,0.05);">
-                            <div class="chat-box" style="flex-grow: 1; max-height: 350px; overflow-y: auto; background: #0f1115; border-radius: 8px; padding: 15px; display: flex; flex-direction: column; gap: 5px; margin-top: 1rem; border: 1px solid rgba(255,255,255,0.05);">
-                                ${chatHistoryHTML}
-                            </div>
-                            
+                            <div class="chat-box" style="flex-grow: 1; max-height: 350px; overflow-y: auto; background: #0f1115; border-radius: 8px; padding: 15px; display: flex; flex-direction: column; gap: 5px; margin-top: 1rem; border: 1px solid rgba(255,255,255,0.05);">${chatHistoryHTML}</div>
                             <div style="display: flex; gap: 10px; margin-top: 15px;">
                                 <input type="text" id="reply-input-${msg.id}" autocomplete="off" onkeypress="if(event.key === 'Enter') enviarRespuesta(${msg.id}, '${userRole}')" placeholder="Escribir respuesta..." style="flex-grow: 1; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a1a; color: white; font-family: inherit; outline: none;">
-                                
                                 ${isUnanswered ? `<button class="btn-action" onclick="window.marcarComoLeido(${msg.id}, '${userRole}')" style="background: transparent; color: var(--text-slate); border: 1px solid var(--border); border-radius: 6px; padding: 0 15px; cursor: pointer; font-size: 0.8rem; transition: background 0.3s;">Marcar como leído</button>` : ''}
-                                
                                 <button class="btn-action" onclick="enviarRespuesta(${msg.id}, '${userRole}')" style="background: var(--accent-lavender); color: var(--bg-shark); font-weight: bold; border: none; border-radius: 6px; padding: 0 20px; cursor: pointer;">Enviar</button>
                             </div>
-                            
-                            ${userRole === 'comprador' ? `<div style="margin-top: 15px; text-align: center;"><a href="#" onclick="window.verDetalleVehiculo('${msg.autoId}')" style="color: var(--text-slate); font-size: 0.8rem; text-decoration: underline;">Ver publicación original</a></div>` : ''}
+                            <div style="margin-top: 15px; text-align: center;"><a href="#" onclick="window.verDetalleVehiculo('${msg.autoId}')" style="color: var(--text-slate); font-size: 0.8rem; text-decoration: underline;">Ver publicación original</a></div>
                         </div>
                     </div>
                 </div>
@@ -379,19 +358,13 @@ function renderizarBandejaMensajes(userEmail, userRole) {
     gridMensajes.innerHTML = htmlContent + mensajesHtml;
 }
 
-window.cambiarFiltroMensajes = function(filterValue, userEmail, userRole) {
-    window.filtroMensajesActual = filterValue;
-    renderizarBandejaMensajes(userEmail, userRole);
-};
-
+window.cambiarFiltroMensajes = (f, e, r) => { window.filtroMensajesActual = f; renderizarBandejaMensajes(e, r); };
 window.toggleChat = function(msgId) {
     const wrapper = document.getElementById(`chat-wrapper-${msgId}`);
     const chevron = document.getElementById(`chevron-${msgId}`);
-    
     if (wrapper.style.gridTemplateRows === '0fr' || wrapper.style.gridTemplateRows === '') {
         wrapper.style.gridTemplateRows = '1fr';
         if(chevron) chevron.style.transform = 'rotate(180deg)';
-        
         setTimeout(() => {
             const chatBox = document.querySelector(`#chat-body-${msgId} .chat-box`);
             if (chatBox) chatBox.scrollTop = chatBox.scrollHeight;
@@ -409,7 +382,6 @@ window.mantenerChatAbierto = function(msgId) {
         wrapper.style.transition = 'none'; 
         wrapper.style.gridTemplateRows = '1fr';
         if(chevron) chevron.style.transform = 'rotate(180deg)';
-        
         setTimeout(() => {
             wrapper.style.transition = 'grid-template-rows 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
             const chatBox = document.querySelector(`#chat-body-${msgId} .chat-box`);
@@ -426,37 +398,26 @@ window.marcarComoLeido = function(msgId, userRole) {
             renderizarBandejaMensajes(session.email, userRole);
             setTimeout(() => window.mantenerChatAbierto(msgId), 50);
         } else {
-            // CAMBIO: alert -> showToast
             if(typeof showToast === 'function') showToast(response.error, "error");
         }
-    } else {
-        // CAMBIO: alert -> showToast
-        if(typeof showToast === 'function') showToast("Error técnico: database.js desactualizado.", "error");
     }
 };
 
 window.enviarRespuesta = function(msgId, userRole) {
     const input = document.getElementById(`reply-input-${msgId}`);
     const text = input.value.trim();
-    
     if (!text) {
-        // CAMBIO: alert -> showToast
         if(typeof showToast === 'function') showToast("Escribí un mensaje antes de enviar.", "error");
         return;
     }
-    // ... resto de la función ...
+    const session = JSON.parse(localStorage.getItem('user_session'));
+    const senderName = session.nombre || session.email;
     if (typeof addReplyToMessage === 'function') {
         const response = addReplyToMessage(msgId, text, senderName, userRole);
         if (response.success) {
             renderizarBandejaMensajes(session.email, userRole);
             setTimeout(() => window.mantenerChatAbierto(msgId), 50);
-        } else {
-            // CAMBIO: alert -> showToast
-            if(typeof showToast === 'function') showToast("Error: " + response.error, "error");
         }
-    } else {
-        // CAMBIO: alert -> showToast
-        if(typeof showToast === 'function') showToast("Error crítico: Función faltante en DB.", "error");
     }
 };
 
