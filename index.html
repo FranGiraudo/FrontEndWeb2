@@ -113,21 +113,21 @@
         </section>
     </main>
     
-    <div id="compare-floating-bar" class="compare-floating-bar" style="display: none;">
+    <div id="compare-floating-bar" class="compare-floating-bar">
         <div class="compare-info">
             <span id="compare-count">0</span> vehículos listos para comparar
         </div>
         <div class="compare-actions">
-            <button id="btn-open-compare" class="btn-detail" style="background: var(--accent-lavender); border-color: var(--accent-lavender); color: var(--bg-shark);">Comparar Selección</button>
+            <button id="btn-open-compare" class="btn-detail" id="btn-open-compare">Comparar Selección</button>
             <button id="btn-clear-compare" class="btn-reset" style="padding: 0.6rem 1.2rem;">Limpiar</button>
         </div>
     </div>
 
-    <div id="compare-modal" class="lightbox-overlay" style="display: none; align-items: center;">
+    <div id="compare-modal" class="lightbox-overlay">
         <div class="compare-modal-content">
             <div class="compare-modal-header">
                 <h2>Análisis Comparativo</h2>
-                <span class="close-lightbox" id="btn-close-compare" style="position: static;">&times;</span>
+                <span class="close-lightbox" id="btn-close-compare" style="position: static; cursor: pointer;">&times;</span>
             </div>
             <div class="compare-modal-body">
                 <div class="table-responsive">
