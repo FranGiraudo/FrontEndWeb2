@@ -1,4 +1,6 @@
-/* profile.css - Rediseño Total */
+/* ==========================================================================
+   profile.css - Rediseño Total y Paleta Unificada
+   ========================================================================== */
 
 .profile-container {
     max-width: 1200px;
@@ -9,14 +11,16 @@
     padding: 0 5%;
 }
 
-/* Sidebar Estilizada */
+/* ==========================================================================
+   SIDEBAR Y USUARIO
+   ========================================================================== */
 .profile-sidebar {
     background: var(--card-bg);
     border-radius: 20px;
     padding: 2.5rem 1.5rem;
     border: 1px solid var(--border);
     height: fit-content;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    box-shadow: 0 10px 30px var(--black-alpha-30);
 }
 
 .user-info {
@@ -35,13 +39,13 @@
     justify-content: center;
     font-size: 1.5rem;
     font-weight: 800;
-    color: white;
-    box-shadow: 0 5px 15px rgba(110, 85, 107, 0.4);
+    color: var(--white);
+    box-shadow: 0 5px 15px var(--don-juan-alpha-40);
 }
 
 .badge-role {
     display: inline-block;
-    background: rgba(110, 85, 107, 0.2);
+    background: var(--accent-alpha-20);
     color: var(--accent-lavender);
     padding: 4px 12px;
     border-radius: 20px;
@@ -67,17 +71,20 @@
     font-weight: 600;
 }
 
-.sidebar-nav a:hover, .sidebar-nav a.active {
-    background: rgba(255,255,255,0.05);
+.sidebar-nav a:hover, 
+.sidebar-nav a.active {
+    background: var(--white-alpha-05);
     color: var(--white);
 }
 
 .logout-danger {
-    color: #ff5252 !important;
+    color: var(--error) !important;
     margin-top: 1rem;
 }
 
-/* Contenido Principal */
+/* ==========================================================================
+   CONTENIDO PRINCIPAL Y DASHBOARD
+   ========================================================================== */
 .profile-content h1 {
     font-size: 2rem;
     margin-bottom: 0.5rem;
@@ -91,7 +98,7 @@
 
 /* --- LA MINI CARD DEL AUTO (DASHBOARD) --- */
 .mini-card {
-    background: #3e3e47;
+    background: var(--bg-hover);
     border-radius: 18px;
     display: flex;
     overflow: hidden;
@@ -118,8 +125,8 @@
     position: absolute;
     top: 15px;
     left: 15px;
-    background: #4caf50;
-    color: white;
+    background: var(--success);
+    color: var(--white);
     padding: 4px 10px;
     border-radius: 6px;
     font-size: 0.7rem;
@@ -149,7 +156,9 @@
     color: var(--accent-lavender);
 }
 
-/* Contenedor de Estadísticas */
+/* ==========================================================================
+   ESTADÍSTICAS Y ACCIONES
+   ========================================================================== */
 .analytics-container {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -158,17 +167,17 @@
 }
 
 .stat-box {
-    background: rgba(0,0,0,0.2);
+    background: var(--black-alpha-20);
     padding: 1rem;
     border-radius: 12px;
     text-align: center;
-    border: 1px solid rgba(255,255,255,0.05);
+    border: 1px solid var(--white-alpha-05);
 }
 
 .stat-label {
     display: block;
     font-size: 0.65rem;
-    color: #888;
+    color: var(--text-muted);
     text-transform: uppercase;
     margin-bottom: 5px;
     font-weight: 700;
@@ -195,22 +204,38 @@
     transition: 0.2s;
 }
 
-.btn-edit { background: var(--border); color: var(--white); }
-.btn-delete { background: rgba(255, 82, 82, 0.1); color: #ff5252; border: 1px solid #ff5252; }
+.btn-edit { 
+    background: var(--border); 
+    color: var(--white); 
+}
 
-.btn-edit:hover { background: #5a5a63; }
-.btn-delete:hover { background: #ff5252; color: white; }
+.btn-delete { 
+    background: var(--error-alpha-10); 
+    color: var(--error); 
+    border: 1px solid var(--error); 
+}
 
-/* --- ANIMACIÓN DEL FILTRO DE MENSAJES (ESTILO LOGIN) --- */
+.btn-edit:hover { 
+    background: var(--border-hover); 
+}
+
+.btn-delete:hover { 
+    background: var(--error); 
+    color: var(--white); 
+}
+
+/* ==========================================================================
+   FILTRO DE MENSAJES (SLIDER ANIMADO)
+   ========================================================================== */
 .filter-segmented-control {
     position: relative;
     display: flex;
-    background: #1a1c23; /* Un gris un poco más claro que el fondo para que resalte */
+    background: var(--bg-darker); 
     border-radius: 8px;
     border: 1px solid var(--border);
     padding: 4px;
-    width: 300px; /* Ancho fijo para calcular bien la mitad */
-    height: 44px; /* Un poco más alto, más cómodo para hacer clic */
+    width: 300px; 
+    height: 44px; 
 }
 
 .filter-segmented-control input[type="radio"] {
@@ -238,22 +263,19 @@
     top: 4px;
     left: 4px;
     height: calc(100% - 8px);
-    width: calc(50% - 4px); /* Exactamente la mitad del contenedor menos el padding interno */
+    width: calc(50% - 4px); 
     background: var(--accent-lavender);
     border-radius: 6px;
     z-index: 1;
-    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1); /* Curva más smooth */
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1); 
+    box-shadow: 0 2px 5px var(--black-alpha-20);
 }
 
 /* --- ESTADOS ACTIVOS --- */
-
-/* Si selecciono "Todas" (el primero), el slider va a la posición 0 */
 #filter-all:checked ~ .slider {
     transform: translateX(0);
 }
 
-/* Si selecciono "Pendientes" (el segundo), el slider se mueve a la derecha */
 #filter-unanswered:checked ~ .slider {
     transform: translateX(100%);
 }

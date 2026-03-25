@@ -1,9 +1,9 @@
 /* ==========================================================================
-   SmartAuto - Publish Page Styles (Versión Pro)
+   SmartAuto - Publish Page Styles (Versión Pro y Unificada)
    ========================================================================== */
 
 .publish-page {
-    background: radial-gradient(circle at top right, #35353d 0%, var(--bg-shark) 100%);
+    background: radial-gradient(circle at top right, var(--bg-elevated) 0%, var(--bg-shark) 100%);
     min-height: 100vh;
 }
 
@@ -22,7 +22,7 @@
     padding: 3rem;
     border-radius: 1.2rem;
     border: 1px solid var(--border);
-    box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+    box-shadow: 0 25px 50px var(--black-alpha-50);
 }
 
 .card-header {
@@ -81,7 +81,7 @@ input, select, textarea {
 input:focus, select:focus, textarea:focus {
     outline: none;
     border-color: var(--accent-lavender);
-    box-shadow: 0 0 0 4px rgba(110, 85, 107, 0.15);
+    box-shadow: 0 0 0 4px var(--accent-alpha-15);
 }
 
 textarea {
@@ -95,7 +95,7 @@ textarea {
     border-radius: 1rem;
     padding: 2.5rem 1rem;
     text-align: center;
-    background-color: rgba(0, 0, 0, 0.2);
+    background-color: var(--black-alpha-20);
     cursor: pointer;
     transition: all 0.3s;
     margin-top: 0.5rem;
@@ -103,7 +103,7 @@ textarea {
 
 .drop-zone:hover {
     border-color: var(--accent-lavender);
-    background-color: rgba(110, 85, 107, 0.05);
+    background-color: var(--accent-alpha-05);
 }
 
 .drop-text {
@@ -114,7 +114,7 @@ textarea {
 
 /* Caja de Info de IA (Efecto Glassmorphism) */
 .ai-info-box {
-    background: rgba(110, 85, 107, 0.1);
+    background: var(--accent-alpha-10);
     padding: 1.25rem;
     border-radius: 0.8rem;
     border: 1px solid var(--accent-lavender);
@@ -126,7 +126,7 @@ textarea {
     transition: all 0.5s ease;
 }
 
-/* --- BOTÓN DE PUBLICAR (CORREGIDO) --- */
+/* --- BOTÓN DE PUBLICAR --- */
 .btn-submit {
     width: 100%;
     padding: 1.2rem;
@@ -144,19 +144,19 @@ textarea {
     opacity: 0.5;
     
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    box-shadow: 0 10px 20px var(--black-alpha-20);
 }
 
 /* Efecto hover solo cuando está habilitado */
 .btn-submit:not(:disabled):hover {
     transform: translateY(-3px);
-    box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+    box-shadow: 0 15px 30px var(--black-alpha-40);
     filter: brightness(1.2);
 }
 
 /* Estado deshabilitado explícito */
 .btn-submit:disabled {
-    background-color: #4a4a52 !important;
+    background-color: var(--btn-disabled) !important;
     opacity: 0.5 !important;
     cursor: not-allowed !important;
 }

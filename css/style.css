@@ -1,34 +1,75 @@
 /* ==========================================================================
-   1. VARIABLES Y BASE (DESIGN TOKENS REFINADOS - PALETA ORIGINAL)
+   1. VARIABLES Y BASE (PALETA TOTALMENTE CENTRALIZADA)
    ========================================================================== */
 :root {
-    /* 1.1 Colores Base (Ajustados para neutralidad y profundidad) */
-    --bg-shark: #232329;        /* Un tono más profundo que el anterior para limpiar el rojizo */
-    --card-bg: #2c2c33;         /* Tu color shark original ahora como fondo de tarjeta */
-    --bg-darker: #1a1a1f;       /* Fondos de inputs e imágenes */
+    /* Fondos Sólidos */
+    --bg-shark: #0F172A;        
+    --card-bg: #1E293B;         
+    --bg-elevated: #273449;     
+    --bg-hover: #334155;        
+    --bg-darker: #020617;       
 
-    /* 1.2 Colores de Marca (Tus tonos berenjena/lavender originales) */
-    --accent-lavender: #7a6077; /* Un lavender más visible y menos marrón */
-    --accent-hover: #91768d;    /* Iluminación para interacción */
-    --dark-don-juan: #584556;   /* Tu lavender original ahora para estados secundarios */
+    /* Acentos y Marca */
+    --accent-lavender: #F97316; 
+    --accent-hover: #FB923C;    
+    --accent-hover-dark: #EA580C;
+    --dark-don-juan: #9A3412;   
 
-    /* 1.3 Textos y Bordes */
-    --text-slate: #c2bcbf;      /* Tu slate original */
-    --white: #ffffff;
-    --border: #3f3f46;          /* Borde más frío para contrastar el calor del lavender */
+    /* Textos */
+    --text-slate: #CBD5F5;      
+    --text-muted: #94A3B8;
+    --white: #F8FAFC;
 
-    /* 1.4 Colores Semánticos */
+    /* Bordes y Controles */
+    --border: #334155;          
+    --border-hover: #475569;
+    --btn-disabled: #3F3F46;
+
+    /* Semántica (Éxito, Error, Alertas) */
     --error: #ff5252;
     --error-dark: #b71c1c;      
     --success: #66bb6a;
     --success-dark: #1b5e20;    
 
-    /* 1.5 Capas y Transparencias */
-    --glass-light: rgba(255, 255, 255, 0.03);
-    --glass-medium: rgba(255, 255, 255, 0.08);
-    --overlay-dark: rgba(0, 0, 0, 0.92);
-    --overlay-light: rgba(35, 35, 41, 0.7);
+    /* Transparencias de Blanco (Brillos y Glassmorphism) */
+    --white-alpha-05: rgba(255, 255, 255, 0.04);
+    --white-alpha-10: rgba(255, 255, 255, 0.10);
+
+    /* Transparencias de Negro (Sombras y Overlays) */
+    --black-alpha-15: rgba(0, 0, 0, 0.2);
+    --black-alpha-20: rgba(0, 0, 0, 0.25);
+    --black-alpha-30: rgba(0, 0, 0, 0.35);
+    --black-alpha-40: rgba(0, 0, 0, 0.45);
+    --black-alpha-50: rgba(0, 0, 0, 0.55);
+    --black-alpha-60: rgba(0, 0, 0, 0.65);
+    --black-alpha-95: rgba(0, 0, 0, 0.95);
+
+    /* Transparencias de Acento (Para glows y selecciones) */
+    --accent-alpha-05: rgba(249, 115, 22, 0.05);
+    --accent-alpha-10: rgba(249, 115, 22, 0.1);
+    --accent-alpha-15: rgba(249, 115, 22, 0.15);
+    --accent-alpha-20: rgba(249, 115, 22, 0.2);
+    
+    /* Transparencias de Don Juan (Sombras secundarias) */
+    --don-juan-alpha-25: rgba(154, 52, 18, 0.25);
+    --don-juan-alpha-30: rgba(154, 52, 18, 0.3);
+    --don-juan-alpha-40: rgba(154, 52, 18, 0.4);
+    --don-juan-alpha-50: rgba(154, 52, 18, 0.5);
+
+    /* Transparencias de Card BG (Modales y fondos flotantes) */
+    --card-bg-alpha-40: rgba(30, 41, 59, 0.4);
+    --card-bg-alpha-60: rgba(30, 41, 59, 0.6);
+    --card-bg-alpha-80: rgba(30, 41, 59, 0.8);
+    --card-bg-alpha-90: rgba(30, 41, 59, 0.9);
+
+    /* Semántica Alpha */
+    --error-alpha-10: rgba(255, 82, 82, 0.1);
+
+    /* Específicos */
+    --hero-gradient-1: rgba(15, 23, 42, 0.85);
+    --hero-gradient-2: rgba(2, 6, 23, 0.95);
 }
+
 * {
     margin: 0;
     padding: 0;
@@ -57,7 +98,7 @@ html {
 }
 
 ::-webkit-scrollbar-track {
-    background: var(--overlay-light); 
+    background: var(--card-bg-alpha-80); 
     border-radius: 0.625rem;
 }
 
@@ -100,7 +141,9 @@ header {
     transition: opacity 0.2s ease;
 }
 
-.logo a:hover { opacity: 0.8; }
+.logo a:hover {
+    opacity: 0.8;
+}
 
 nav ul {
     display: flex;
@@ -133,22 +176,40 @@ nav ul li a.active-page {
     font-weight: 700;
 }
 
-.logout-link {
-    color: var(--error) !important;
-    opacity: 0.8;
+.logout-link { 
+    color: var(--white) !important; 
+    background: var(--black-alpha-15) !important; /* Oscurece sutilmente el naranja de fondo */
+    border: 1px solid var(--white-alpha-10) !important; /* Borde sutil para darle forma */
+    font-weight: 600 !important;
+    padding: 0.35rem 1.2rem !important; /* Padding equilibrado */
+    border-radius: 2rem !important; /* Forma de pastilla completamente redonda */
+    margin-left: 0.5rem;
+    opacity: 0.9 !important;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
 }
 
-.logout-link:hover {
-    color: var(--error) !important;
-    border-bottom: 2px solid var(--error) !important;
+.logout-link:hover { 
+    background: var(--error) !important; /* Se tiñe de rojo alerta solo si lo vas a clickear */
+    border-color: var(--error) !important;
+    color: var(--white) !important; 
     opacity: 1 !important;
-    background: transparent !important;
-    box-shadow: none !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--black-alpha-30);
 }
 
 @media (max-width: 37.5rem) {
-    header { flex-direction: column; gap: 0.625rem; padding: 1rem; }
-    nav ul { gap: 0.9375rem; flex-wrap: wrap; justify-content: center; }
+    header {
+        flex-direction: column;
+        gap: 0.625rem;
+        padding: 1rem;
+    }
+    nav ul {
+        gap: 0.9375rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
 }
 
 /* ==========================================================================
@@ -157,63 +218,139 @@ nav ul li a.active-page {
 .hero {
     padding: 4rem 5%;
     text-align: center;
-    background: linear-gradient(rgba(51, 44, 48, 0.85), rgba(51, 44, 48, 0.95)),
+    background: linear-gradient(var(--hero-gradient-1), var(--hero-gradient-2)),
                 url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&q=80&w=1500'); 
     background-size: cover;
     background-position: center;
     border-bottom: 0.125rem solid var(--dark-don-juan);
 }
 
-.hero h1 { color: var(--white); font-size: 2.5rem; font-weight: 800; letter-spacing: -0.0625rem; margin-bottom: 0.75rem; }
-.hero p { color: var(--text-slate); font-size: 1.1rem; margin-bottom: 2rem; }
+.hero h1 {
+    color: var(--white);
+    font-size: 2.5rem;
+    font-weight: 800;
+    letter-spacing: -0.0625rem;
+    margin-bottom: 0.75rem;
+}
 
-.search-container { max-width: 45rem; margin: 0 auto; display: flex; gap: 0.75rem; }
+.hero p {
+    color: var(--text-slate);
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+}
+
+.search-container {
+    max-width: 45rem;
+    margin: 0 auto;
+    display: flex;
+    gap: 0.75rem;
+}
+
 .search-container input {
-    flex: 1; padding: 0.85rem 1.25rem; background-color: var(--bg-shark);
-    border: 1px solid var(--dark-don-juan); border-radius: 0.5rem;
-    color: var(--white); font-size: 1rem; outline: none;
+    flex: 1;
+    padding: 0.85rem 1.25rem;
+    background-color: var(--bg-shark);
+    border: 1px solid var(--dark-don-juan);
+    border-radius: 0.5rem;
+    color: var(--white);
+    font-size: 1rem;
+    outline: none;
 }
 
 .btn-filter-toggle {
-    background-color: var(--dark-don-juan); color: var(--white);
-    border: none; padding: 0 1.5rem; border-radius: 0.5rem;
-    font-weight: 600; cursor: pointer; transition: 0.3s;
-    display: flex; align-items: center; gap: 0.5rem;
+    background-color: var(--dark-don-juan);
+    color: var(--white);
+    border: none;
+    padding: 0 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
-.btn-filter-toggle:hover { background-color: var(--accent-lavender); transform: translateY(-0.125rem); }
+.btn-filter-toggle:hover {
+    background-color: var(--accent-lavender);
+    transform: translateY(-0.125rem);
+}
 
 /* ==========================================================================
    4. FILTROS AVANZADOS
    ========================================================================== */
 .advanced-filters-panel {
-    max-height: 0; overflow: hidden; background-color: var(--card-bg);
-    border-radius: 0.75rem; margin: 0 auto 2rem auto; max-width: 90%;
-    opacity: 0; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    max-height: 0;
+    overflow: hidden;
+    background-color: var(--card-bg);
+    border-radius: 0.75rem;
+    margin: 0 auto 2rem auto;
+    max-width: 90%;
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .advanced-filters-panel.active {
-    max-height: 50rem; opacity: 1; padding: 2rem; margin-top: 2rem;
-    border: 1px solid var(--border); box-shadow: 0 0.9375rem 2.1875rem rgba(0,0,0,0.4);
+    max-height: 50rem;
+    opacity: 1;
+    padding: 2rem;
+    margin-top: 2rem;
+    border: 1px solid var(--border);
+    box-shadow: 0 0.9375rem 2.1875rem var(--black-alpha-40);
 }
 
-.filter-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; }
-
-.filter-item { display: flex; flex-direction: column; gap: 0.6rem; }
-.filter-item label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-slate); }
-.filter-item input, .filter-item select {
-    background-color: var(--bg-shark); border: 1px solid var(--border);
-    border-radius: 0.4rem; color: var(--white); padding: 0.7rem; outline: none;
+.filter-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.2rem;
 }
 
-.range-inputs { display: flex; gap: 0.5rem; }
-.range-inputs input { width: 50% !important; }
+.filter-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.filter-item label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-slate);
+}
+
+.filter-item input,
+.filter-item select {
+    background-color: var(--bg-shark);
+    border: 1px solid var(--border);
+    border-radius: 0.4rem;
+    color: var(--white);
+    padding: 0.7rem;
+    outline: none;
+}
+
+.range-inputs {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.range-inputs input {
+    width: 50% !important;
+}
 
 .btn-reset {
-    background: transparent; border: 1px solid var(--error); color: var(--error);
-    padding: 0.7rem; border-radius: 0.4rem; cursor: pointer; font-weight: 700;
+    background: transparent;
+    border: 1px solid var(--error);
+    color: var(--error);
+    padding: 0.7rem;
+    border-radius: 0.4rem;
+    cursor: pointer;
+    font-weight: 700;
 }
-.btn-reset:hover { background: var(--error); color: var(--white); }
+
+.btn-reset:hover {
+    background: var(--error);
+    color: var(--white);
+}
 
 /* ==========================================================================
    5. GRID DE AUTOS & CARDS
@@ -251,7 +388,7 @@ nav ul li a.active-page {
 .card-auto:hover {
     transform: translateY(-0.5rem);
     border-color: var(--accent-lavender);
-    box-shadow: 0 0.9375rem 1.875rem rgba(0,0,0,0.4);
+    box-shadow: 0 0.9375rem 1.875rem var(--black-alpha-40);
 }
 
 .img-container {
@@ -279,7 +416,7 @@ nav ul li a.active-page {
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.03125rem;
-    box-shadow: 0 0.25rem 0.625rem rgba(0,0,0,0.3);
+    box-shadow: 0 0.25rem 0.625rem var(--black-alpha-30);
 }
 
 .info-auto {
@@ -359,11 +496,11 @@ nav ul li a.active-page {
 .btn-compare-card:hover {
     border-color: var(--white);
     color: var(--white);
-    background: var(--glass-light);
+    background: var(--white-alpha-05);
 }
 
 .btn-compare-card.active {
-    background: rgba(162, 126, 222, 0.2);
+    background: var(--accent-alpha-20);
     border-color: var(--accent-lavender);
     color: var(--white);
 }
@@ -401,7 +538,7 @@ nav ul li a.active-page {
     justify-content: space-between;
     align-items: center;
     z-index: 900;
-    box-shadow: 0 -0.625rem 1.875rem rgba(0,0,0,0.5);
+    box-shadow: 0 -0.625rem 1.875rem var(--black-alpha-50);
     animation: slideUp 0.3s ease forwards;
 }
 
@@ -435,7 +572,7 @@ nav ul li a.active-page {
     max-width: 62.5rem;
     border-radius: 1rem;
     border: 1px solid var(--border);
-    box-shadow: 0 1.5625rem 3.125rem rgba(0,0,0,0.6);
+    box-shadow: 0 1.5625rem 3.125rem var(--black-alpha-60);
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -500,7 +637,7 @@ nav ul li a.active-page {
     z-index: 10000;
     top: 0; left: 0;
     width: 100%; height: 100%;
-    background: var(--overlay-dark);
+    background: var(--black-alpha-95);
     backdrop-filter: blur(0.625rem);
     justify-content: center;
     align-items: center;
@@ -523,10 +660,12 @@ nav ul li a.active-page {
     height: 0.5rem;
     width: 0.5rem;
 }
+
 .compare-modal-body::-webkit-scrollbar-track {
-    background: var(--glass-light);
+    background: var(--white-alpha-05);
     border-radius: 0.25rem;
 }
+
 .compare-modal-body::-webkit-scrollbar-thumb {
     background: var(--accent-lavender);
     border-radius: 0.25rem;
@@ -552,7 +691,7 @@ nav ul li a.active-page {
     color: var(--white);
     font-size: 0.95rem;
     font-weight: 600;
-    box-shadow: 0 0.625rem 1.875rem rgba(0, 0, 0, 0.4);
+    box-shadow: 0 0.625rem 1.875rem var(--black-alpha-40);
     display: flex;
     align-items: center;
     gap: 0.75rem;
@@ -592,10 +731,10 @@ nav ul li a.active-page {
     position: absolute;
     top: 1rem;
     left: 1rem;
-    background: rgba(44, 44, 51, 0.6);
+    background: var(--card-bg-alpha-60);
     backdrop-filter: blur(0.25rem);
     -webkit-backdrop-filter: blur(0.25rem);
-    border: 0.0625rem solid var(--glass-medium);
+    border: 0.0625rem solid var(--white-alpha-10);
     border-radius: 50%;
     width: 2.2rem;
     height: 2.2rem;
@@ -610,7 +749,7 @@ nav ul li a.active-page {
 
 .btn-favorite:hover {
     transform: scale(1.1);
-    background: rgba(44, 44, 51, 0.9);
+    background: var(--card-bg-alpha-90);
 }
 
 .btn-favorite svg {
@@ -657,21 +796,19 @@ nav ul li a.active-page {
     color: var(--white);
 }
 
-/* Estilo específico y jerarquía para el botón principal de la barra flotante */
 #btn-open-compare {
     background-color: var(--accent-lavender) !important;
     color: var(--bg-shark) !important;
     border-color: var(--accent-lavender) !important;
-    box-shadow: 0 0.25rem 0.625rem rgba(88, 69, 86, 0.3);
+    box-shadow: 0 0.25rem 0.625rem var(--don-juan-alpha-30);
 }
 
 #btn-open-compare:hover {
     background-color: var(--accent-hover) !important;
     transform: translateY(-0.125rem);
-    box-shadow: 0 0.5rem 1.25rem rgba(88, 69, 86, 0.5);
+    box-shadow: 0 0.5rem 1.25rem var(--don-juan-alpha-50);
 }
 
-/* Ajuste para el botón de limpiar en la barra flotante */
 #btn-clear-compare {
     padding: 0.8rem 1.2rem;
     font-size: 0.9rem;
