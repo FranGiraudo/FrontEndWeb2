@@ -19,14 +19,15 @@
 }
 
 .login-card {
-    background-color: var(--bg-elevated); /* Tono de las cards del home */
+    background-color: var(--bg-elevated); 
     width: 100%;
-    max-width: 400px;
+    max-width: 25rem; /* 400px */
     padding: 3rem;
     border-radius: 1rem;
-    border: 1px solid var(--border);
-    box-shadow: 0 20px 50px var(--black-alpha-50);
+    border: 0.0625rem solid var(--border);
+    box-shadow: 0 1.25rem 3.125rem var(--black-alpha-50);
     text-align: center;
+    animation: fadeIn 0.4s ease-out forwards;
 }
 
 .login-card h2 {
@@ -54,7 +55,7 @@
     display: block;
     font-size: 0.75rem;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.0625rem;
     color: var(--text-slate);
     margin-bottom: 0.6rem;
     font-weight: 700;
@@ -64,18 +65,20 @@
 .form-group select {
     width: 100%;
     background-color: var(--bg-shark);
-    border: 1px solid var(--border);
+    border: 0.0625rem solid var(--border);
     border-radius: 0.5rem;
     color: var(--white);
     padding: 0.8rem 1rem;
     font-size: 1rem;
-    transition: all 0.2s;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    appearance: none;
 }
 
-.form-group input:focus {
+.form-group input:focus,
+.form-group select:focus {
     outline: none;
     border-color: var(--accent-lavender);
-    box-shadow: 0 0 0 3px var(--accent-alpha-20);
+    box-shadow: 0 0 0 0.1875rem var(--accent-alpha-20);
 }
 
 .form-group input::placeholder {
@@ -92,12 +95,12 @@
 }
 
 .input-with-icon input {
-    padding-right: 45px;
+    padding-right: 2.8125rem; /* 45px */
 }
 
 .btn-toggle-pass {
     position: absolute;
-    right: 12px;
+    right: 0.75rem; /* 12px */
     background: none;
     border: none;
     color: var(--text-slate);
@@ -105,7 +108,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 5px;
+    padding: 0.3125rem; /* 5px */
     transition: color 0.2s ease;
 }
 
@@ -114,8 +117,8 @@
 }
 
 .btn-toggle-pass svg {
-    width: 20px;
-    height: 20px;
+    width: 1.25rem; /* 20px */
+    height: 1.25rem;
 }
 
 /* ==========================================================================
@@ -125,14 +128,14 @@
     display: flex;
     position: relative;
     width: 100%;
-    max-width: 320px;
-    height: 40px;
+    max-width: 20rem; /* 320px */
+    height: 2.5rem; /* 40px */
     margin: 0 auto 2rem;
     background-color: var(--card-bg); 
-    border: 1px solid var(--border);
-    border-radius: 20px;
+    border: 0.0625rem solid var(--border);
+    border-radius: 1.25rem; /* 20px */
     overflow: hidden; 
-    box-shadow: 0 4px 6px var(--black-alpha-30);
+    box-shadow: 0 0.25rem 0.375rem var(--black-alpha-30);
 }
 
 .segmented-control input[type="radio"] {
@@ -155,26 +158,26 @@
     transition: color 0.3s ease;
 }
 
-/* Segmento blanco animado */
+/* Segmento animado */
 .segmented-control__slider {
     position: absolute;
-    top: 2px;
-    left: 2px;
-    width: calc(50% - 2px); 
-    height: 36px;
+    top: 0.125rem; /* 2px */
+    left: 0.125rem;
+    width: calc(50% - 0.125rem); 
+    height: 2.25rem; /* 36px */
     background-color: var(--white); 
-    border-radius: 18px; 
-    transition: transform 0.3s ease;
+    border-radius: 1.125rem; /* 18px */
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 1; 
 }
 
 /* Estado activo: Mueve a Vendedor */
 input#login_role_vendedor:checked ~ .segmented-control__slider,
 input#reg_role_vendedor:checked ~ .segmented-control__slider {
-    transform: translateX(calc(100% + 2px)); 
+    transform: translateX(calc(100% + 0.125rem)); 
 }
 
-/* Cambia el color del texto para contrastar con el fondo blanco */
+/* Cambia el color del texto para contrastar con el fondo claro */
 input#login_role_comprador:checked ~ label.role-label-left,
 input#reg_role_comprador:checked ~ label.role-label-left,
 input#login_role_vendedor:checked ~ label.role-label-right,
@@ -187,11 +190,11 @@ input#reg_role_vendedor:checked ~ label.role-label-right {
    ========================================================================== */
 .login-submit-btn {
     width: 100%;
-    height: 55px; 
+    height: 3.4375rem; /* 55px */
     margin-top: 1.5rem;
     font-size: 1rem;
     font-weight: 800;
-    letter-spacing: 1.5px;
+    letter-spacing: 0.0938rem; /* 1.5px */
     text-transform: uppercase;
     cursor: pointer;
     
@@ -201,17 +204,17 @@ input#reg_role_vendedor:checked ~ label.role-label-right {
     border: none;
     border-radius: 0.75rem;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 8px 20px var(--black-alpha-30);
+    box-shadow: 0 0.5rem 1.25rem var(--black-alpha-30);
 }
 
 .login-submit-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 25px var(--don-juan-alpha-40);
+    transform: translateY(-0.1875rem);
+    box-shadow: 0 0.75rem 1.5625rem var(--don-juan-alpha-40);
     filter: brightness(1.1);
 }
 
 .login-submit-btn:active {
-    transform: translateY(-1px);
+    transform: translateY(-0.0625rem);
 }
 
 .footer-link {
@@ -224,6 +227,7 @@ input#reg_role_vendedor:checked ~ label.role-label-right {
     color: var(--white);
     font-weight: 700;
     text-decoration: none;
+    transition: color 0.2s ease;
 }
 
 .footer-link a:hover {
@@ -231,54 +235,24 @@ input#reg_role_vendedor:checked ~ label.role-label-right {
 }
 
 /* ==========================================================================
-   TOAST NOTIFICATIONS (Mismas variables semánticas)
+   DISEÑO RESPONSIVO
    ========================================================================== */
-.toast-container {
-    position: fixed;
-    bottom: 25px;
-    right: 25px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    z-index: 9999;
+@media (max-width: 30rem) {
+    .login-wrapper {
+        padding: 1rem;
+    }
+
+    .login-card {
+        padding: 2rem 1.5rem;
+        border-radius: 1.2rem;
+    }
+
+    .login-card h2 {
+        font-size: 1.7rem;
+    }
 }
 
-.toast {
-    min-width: 280px;
-    padding: 1rem 1.5rem;
-    border-radius: 10px;
-    color: var(--white);
-    font-size: 0.95rem;
-    font-weight: 600;
-    box-shadow: 0 10px 30px var(--black-alpha-40);
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    animation: slideInRight 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-}
-
-.toast svg {
-    width: 24px;
-    height: 24px;
-    flex-shrink: 0;
-}
-
-.toast.success {
-    background-color: var(--success-dark);
-    border-left: 5px solid var(--success);
-}
-
-.toast.error {
-    background-color: var(--error-dark);
-    border-left: 5px solid var(--error);
-}
-
-@keyframes slideInRight {
-    from { transform: translateX(100%); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
-}
-
-@keyframes fadeOut {
-    from { opacity: 1; }
-    to { opacity: 0; }
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(1rem); }
+    to { opacity: 1; transform: translateY(0); }
 }

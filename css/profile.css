@@ -24,10 +24,10 @@
 }
 
 .profile-container {
-    max-width: 75rem; /* 1200px */
+    max-width: 75rem; 
     margin: 2rem auto;
     display: grid;
-    grid-template-columns: 18.75rem 1fr; /* 300px */
+    grid-template-columns: 18.75rem 1fr; 
     gap: 2rem;
     padding: 0 5%;
     position: relative;
@@ -55,7 +55,7 @@
 }
 
 .avatar {
-    width: 5rem; /* 80px */
+    width: 5rem; 
     height: 5rem;
     background: linear-gradient(135deg, var(--accent-lavender), var(--accent-alpha-15));
     border-radius: 50%;
@@ -81,6 +81,15 @@
     text-transform: uppercase;
     margin-top: 0.3125rem;
     border: 0.0625rem solid var(--accent-alpha-15);
+}
+
+/* ==========================================================================
+   MENÚ DE NAVEGACIÓN Y COLAPSABLE
+   ========================================================================== */
+
+/* FIX: Ocultamos el botón en escritorio por defecto */
+.btn-toggle-menu {
+    display: none;
 }
 
 /* Navegación lateral */
@@ -138,8 +147,10 @@
 .mini-card {
     background: var(--card-bg-alpha-40);
     backdrop-filter: blur(0.5rem);
+    -webkit-backdrop-filter: blur(0.5rem);
     border-radius: 1.125rem;
     display: flex;
+    flex-direction: row;
     overflow: hidden;
     border: 0.0625rem solid var(--white-alpha-10);
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -153,7 +164,7 @@
 }
 
 .mini-card-img {
-    width: 17.5rem; /* 280px */
+    width: 17.5rem; 
     position: relative;
     border-right: 0.0625rem solid var(--white-alpha-05);
 }
@@ -286,20 +297,21 @@
     color: var(--white); 
     box-shadow: 0 0.3125rem 0.9375rem var(--error-alpha-20);
 }
+
 /* ==========================================================================
-   TOAST DE CONFIRMACIÓN - POSICIONAMIENTO CORREGIDO
+   TOAST DE CONFIRMACIÓN (Modal de Borrado)
    ========================================================================== */
 .toast-container {
     position: fixed;
     bottom: 2rem;
     left: 50%;
-    /* El transform es clave para que el 50% sea el centro real del div */
     transform: translateX(-50%) translateY(10rem); 
     z-index: 9999;
     opacity: 0;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     pointer-events: none;
-    width: max-content; /* Para que no ocupe todo el ancho */
+    width: max-content; 
+    max-width: 90vw;
 }
 
 .toast-container.show {
@@ -314,7 +326,7 @@
     -webkit-backdrop-filter: blur(1rem);
     padding: 1.5rem 2rem;
     border-radius: 1rem;
-    border: 1px solid var(--accent-lavender);
+    border: 0.0625rem solid var(--accent-lavender);
     box-shadow: 0 1rem 3rem var(--black-alpha-50);
     display: flex;
     align-items: center;
@@ -341,14 +353,16 @@
     cursor: pointer;
     transition: all 0.2s;
     border: none;
+    text-align: center;
 }
 
 .btn-toast-confirm { background: var(--error); color: var(--white); }
-.btn-toast-cancel { background: var(--white-alpha-10); color: var(--white); border: 1px solid var(--white-alpha-10); }
+.btn-toast-cancel { background: var(--white-alpha-10); color: var(--white); border: 0.0625rem solid var(--white-alpha-10); }
 
-.btn-toast:hover { transform: translateY(-2px); filter: brightness(1.1); }
+.btn-toast:hover { transform: translateY(-0.125rem); filter: brightness(1.1); }
+
 /* ==========================================================================
-   FILTRO DE MENSAJES (Modernizado)
+   FILTRO DE MENSAJES (Segmented Control)
    ========================================================================== */
 .filter-segmented-control {
     position: relative;
@@ -357,8 +371,10 @@
     border-radius: 0.625rem;
     border: 0.0625rem solid var(--white-alpha-10);
     padding: 0.25rem;
-    width: 18.75rem; /* 300px */
-    height: 2.75rem; /* 44px */
+    width: 100%;
+    max-width: 25rem;
+    height: 2.75rem; 
+    margin-bottom: 1.5rem;
 }
 
 .filter-segmented-control input[type="radio"] {
@@ -378,7 +394,6 @@
     transition: color 0.3s ease;
 }
 
-/* El fondo animado */
 .filter-segmented-control .slider {
     position: absolute;
     top: 0.25rem;
@@ -400,12 +415,115 @@
 #filter-all:checked ~ .slider { transform: translateX(0); }
 #filter-unanswered:checked ~ .slider { transform: translateX(100%); }
 
-/* --- RESPONSIVE --- */
+/* ==========================================================================
+   DISEÑO RESPONSIVO (MOBILE FIRST)
+   ========================================================================== */
+
+/* Tablets */
 @media (max-width: 64rem) {
-    .profile-container { grid-template-columns: 1fr; }
+    .profile-container { grid-template-columns: 1fr; gap: 1.5rem; }
     .profile-sidebar { position: static; }
+}
+
+/* Celulares */
+@media (max-width: 48rem) {
+    .profile-container { padding: 1.5rem 5%; }
+    
+    /* --- MENÚ COLAPSABLE SUTIL --- */
+    .btn-toggle-menu {
+        display: flex;
+        width: 100%;
+        justify-content: center;
+        gap: 0.5rem;
+        align-items: center;
+        /* Estilo sutil que no compite visualmente */
+        background: var(--black-alpha-20);
+        color: var(--text-slate);
+        border: 0.0625rem solid var(--white-alpha-10);
+        padding: 0.8rem 1.5rem;
+        border-radius: 6.25rem;
+        font-weight: 700;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.0625rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-toggle-menu:hover, .btn-toggle-menu.active {
+        background: var(--white-alpha-05);
+        color: var(--white);
+        border-color: var(--accent-alpha-20);
+    }
+
+    .btn-toggle-menu svg {
+        transition: transform 0.3s ease;
+        color: inherit;
+    }
+
+    .btn-toggle-menu.active svg {
+        transform: rotate(180deg);
+        color: var(--accent-lavender);
+    }
+
+    .sidebar-nav {
+        max-height: 0;
+        opacity: 0;
+        overflow: hidden;
+        margin-top: 0;
+        padding: 0 1rem;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        background: var(--black-alpha-20);
+        border-radius: 1rem;
+        border: 0.0625rem solid transparent;
+    }
+
+    .sidebar-nav.open {
+        max-height: 25rem;
+        opacity: 1;
+        margin-top: 1rem;
+        padding: 1rem;
+        border-color: var(--white-alpha-05);
+    }
+
+    /* --- TARJETAS DE AUTOS --- */
     .mini-card { flex-direction: column; }
-    .mini-card-img { width: 100%; height: 12rem; border-right: none; border-bottom: 0.0625rem solid var(--white-alpha-05); }
+    .mini-card-img { 
+        width: 100%; 
+        height: 14rem; 
+        border-right: none; 
+        border-bottom: 0.0625rem solid var(--white-alpha-05); 
+    }
+    
+    .action-bar { flex-wrap: wrap; }
+    .btn-action { flex: 1; min-width: 45%; }
+    
+    /* Modal de confirmación adaptado a pantallas táctiles */
+    .confirmation-toast { 
+        flex-direction: column; 
+        text-align: center; 
+        gap: 1.5rem; 
+        width: 100%; 
+        padding: 1.5rem; 
+    }
+    .toast-actions { 
+        width: 100%; 
+        flex-direction: column; 
+        gap: 0.8rem; 
+    }
+    .btn-toast { width: 100%; padding: 0.8rem; }
+}
+
+/* Celulares pequeños */
+@media (max-width: 30rem) {
+    .profile-content h1 { font-size: 1.8rem; }
+    
+    .analytics-container { gap: 0.5rem; }
+    .stat-box { padding: 0.8rem 0.5rem; }
+    .stat-label { font-size: 0.55rem; letter-spacing: 0; }
+    .stat-value { font-size: 1rem; }
+    
+    .filter-segmented-control { height: 3rem; }
 }
 
 @keyframes fadeIn {

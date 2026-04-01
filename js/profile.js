@@ -8,6 +8,17 @@ document.addEventListener('DOMContentLoaded', () => {
         return; 
     }
 
+    // --- LÓGICA DE MENÚ COLAPSABLE (MOBILE) ---
+    const btnToggleProfile = document.getElementById('btn-toggle-profile');
+    const profileNav = document.getElementById('profile-nav');
+
+    if (btnToggleProfile && profileNav) {
+        btnToggleProfile.addEventListener('click', () => {
+            profileNav.classList.toggle('open');
+            btnToggleProfile.classList.toggle('active');
+        });
+    }
+
     // --- INTEGRACIÓN DE BOTONES DEL TOAST ---
     const btnConfirmDelete = document.getElementById('confirm-delete');
     const btnCancelDelete = document.getElementById('cancel-delete');
@@ -93,6 +104,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('subtitulo-mensajes').textContent = "Seguimiento de los vehículos que te interesaron.";
                 renderizarBandejaMensajes(session.email, 'comprador');
             }
+        }
+        
+        // Al cambiar de pestaña en móvil, cerramos el menú para que el usuario vea el contenido nuevo
+        if (window.innerWidth <= 768 && profileNav && profileNav.classList.contains('open')) {
+            profileNav.classList.remove('open');
+            if (btnToggleProfile) btnToggleProfile.classList.remove('active');
         }
     }
 

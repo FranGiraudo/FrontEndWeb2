@@ -111,9 +111,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="sidebar-header">
                     <p class="subtitle" style="text-transform: uppercase; letter-spacing: 1px; color: var(--accent-lavender); margin-bottom: 5px;">${car.brand}</p>
                     <h1>${car.model}</h1>
-                    <p class="subtitle" style="margin-top: 10px; font-size: 0.8rem;">
-                        <span style="background: rgba(255,255,255,0.05); padding: 4px 10px; border-radius: 6px;">ID Publicación: #${car.id}</span>
-                    </p>
                 </div>
                 
                 <div class="price-box">

@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SmartAuto | Mi Perfil</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/profile.css">
@@ -29,7 +30,15 @@
                 <p id="display-email" style="font-size: 0.8rem; opacity: 0.7; margin-bottom: 5px;"></p>
                 <span class="badge-role" id="display-role">Rol</span>
             </div>
-            <nav class="sidebar-nav">
+            
+            <button class="btn-toggle-menu" id="btn-toggle-profile">
+                Opciones de Perfil
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+            </button>
+
+            <nav class="sidebar-nav" id="profile-nav">
                 <a href="#" id="nav-panel-general" class="active">Panel General</a>
                 <a href="#" id="nav-consultas">Consultas</a>
                 <a href="index.html">Explorar Marketplace</a>

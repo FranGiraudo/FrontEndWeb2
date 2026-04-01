@@ -9,20 +9,20 @@
     min-height: 100vh;
 }
 
-/* Orbes de luz dinámicos (Sin colores fijos) */
+/* Orbes de luz dinámicos */
 .publish-page::before,
 .publish-page::after {
     content: '';
     position: absolute;
     border-radius: 50%;
-    filter: blur(6.25rem); /* 100px */
+    filter: blur(6.25rem); 
     z-index: 0;
     pointer-events: none;
     opacity: 0.5;
 }
 
 .publish-page::before {
-    width: 25rem; /* 400px */
+    width: 25rem; 
     height: 25rem;
     background: var(--accent-alpha-15);
     top: -6.25rem;
@@ -30,7 +30,7 @@
 }
 
 .publish-page::after {
-    width: 18.75rem; /* 300px */
+    width: 18.75rem; 
     height: 18.75rem;
     background: var(--white-alpha-05);
     bottom: 5%;
@@ -42,7 +42,7 @@
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    min-height: calc(100vh - 4.375rem); /* 70px */
+    min-height: calc(100vh - 4.375rem); 
     position: relative;
     z-index: 1;
 }
@@ -53,7 +53,7 @@
     backdrop-filter: blur(1rem);
     -webkit-backdrop-filter: blur(1rem);
     width: 100%;
-    max-width: 53.125rem; /* 850px */
+    max-width: 53.125rem; 
     padding: 3rem;
     border-radius: 1.5rem;
     border: 0.0625rem solid var(--white-alpha-10);
@@ -72,7 +72,7 @@
     color: var(--white);
     font-size: 2.4rem;
     font-weight: 800;
-    letter-spacing: -0.0938rem; /* -1.5px */
+    letter-spacing: -0.0938rem; 
     background: linear-gradient(135deg, var(--white) 0%, var(--accent-lavender) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -100,7 +100,7 @@
     font-size: 0.7rem;
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.075rem; /* 1.2px */
+    letter-spacing: 0.075rem; 
     color: var(--text-muted);
     margin-bottom: 0.6rem;
 }
@@ -116,6 +116,21 @@ input, select, textarea {
     font-size: 1rem;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     outline: none;
+    appearance: none; /* Limpia estilos nativos en iOS/Android */
+}
+
+/* Recreando la flecha del select de forma custom */
+select {
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1em;
+    padding-right: 2.5rem;
+}
+
+select option {
+    background-color: var(--bg-elevated);
+    color: var(--white);
 }
 
 input:focus, select:focus, textarea:focus {
@@ -126,10 +141,23 @@ input:focus, select:focus, textarea:focus {
 
 textarea {
     resize: vertical;
-    min-height: 8.75rem; /* 140px */
+    min-height: 8.75rem; 
 }
 
 /* Zona de Carga de Imágenes */
+.upload-area {
+    margin-top: 1.5rem;
+}
+
+.upload-area label {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.075rem; 
+    color: var(--text-muted);
+}
+
 .drop-zone {
     border: 0.125rem dashed var(--border);
     border-radius: 1.2rem;
@@ -138,7 +166,7 @@ textarea {
     background-color: var(--black-alpha-15);
     cursor: pointer;
     transition: all 0.3s ease;
-    margin-top: 1rem;
+    margin-top: 0.6rem;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -157,7 +185,7 @@ textarea {
     font-size: 0.95rem;
 }
 
-/* Caja de Info de IA (Efecto HUD) */
+/* Caja de Info de IA */
 .ai-info-box {
     background: var(--accent-alpha-10);
     padding: 1.5rem;
@@ -198,7 +226,7 @@ textarea {
     font-weight: 800;
     font-size: 1.1rem;
     text-transform: uppercase;
-    letter-spacing: 0.0938rem; /* 1.5px */
+    letter-spacing: 0.0938rem; 
     cursor: pointer;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 0.5rem 1.25rem var(--black-alpha-30);
@@ -221,13 +249,13 @@ textarea {
 .gallery-preview-container {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.75rem; /* 12px */
+    gap: 0.75rem; 
     margin-bottom: 1.5rem;
     justify-content: center;
 }
 
 .thumb-preview {
-    width: 5.625rem; /* 90px */
+    width: 5.625rem; 
     height: 5.625rem;
     object-fit: cover;
     border-radius: 0.625rem;
@@ -246,10 +274,49 @@ textarea {
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* --- RESPONSIVE OPTIMIZADO --- */
-@media (max-width: 40.625rem) { /* 650px */
+/* ==========================================================================
+   DISEÑO RESPONSIVO UNIFICADO
+   ========================================================================== */
+
+/* Tablets y pantallas medianas */
+@media (max-width: 48rem) {
+    .main-container { padding: 2rem 5%; }
+    .publish-card { padding: 2.5rem 2rem; }
+    .form-grid { gap: 1.25rem; }
+}
+
+/* Celulares */
+@media (max-width: 30rem) { 
+    .main-container { 
+        padding: 1.5rem 5%; 
+    }
+    
+    .publish-card { 
+        padding: 2rem 1.25rem; 
+        border-radius: 1.2rem;
+    }
+    
+    .card-header { margin-bottom: 1.5rem; }
+    .card-header h1 { font-size: 1.8rem; }
+    
+    /* Pasa todo a 1 columna */
     .form-grid { grid-template-columns: 1fr; }
     .full-width { grid-column: span 1; }
-    .publish-card { padding: 2rem 1.5rem; }
-    .card-header h1 { font-size: 1.8rem; }
+    
+    /* Ajustes táctiles */
+    .drop-zone { 
+        padding: 2rem 1rem; /* Más compacto en vertical para el celu */
+    }
+    
+    .ai-info-box { 
+        padding: 1.2rem; 
+        margin: 2rem 0; 
+        flex-direction: column; /* Apila el texto y el selector en móviles */
+        text-align: center;
+    }
+    
+    .thumb-preview {
+        width: 4.5rem;
+        height: 4.5rem;
+    }
 }
