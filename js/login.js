@@ -129,7 +129,9 @@ document.addEventListener('DOMContentLoaded', () => {
             };
             
             localStorage.setItem('user_session', JSON.stringify(sessionData));
-            window.location.href = "index.html";
+            
+            // FIX: Redirección dinámica según la nueva estructura de carpetas
+            window.location.href = "../index.html";
         } else {
             showToast(response.error, "error");
         }

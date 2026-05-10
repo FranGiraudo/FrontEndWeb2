@@ -360,37 +360,33 @@ nav ul li a:hover::after, nav ul li a.active-page::after {
     transform: translateY(-0.125rem);
 }
 
-/* FIX: MODAL GLOBAL 100% BLINDADO Y SIN FRANJAS */
+/* FIX: Modal global usando IDs para ganar especificidad sin bloquear el JS */
+#delete-toast,
+#custom-logout-modal,
 .confirmation-overlay,
-[id*="logout-modal"],
-[id*="delete-toast"],
 .toast-container.center-modal {
     position: fixed !important;
     top: 0 !important;
-    bottom: 0 !important;
     left: 0 !important;
-    right: 0 !important;
     width: 100% !important;
     height: 100% !important;
-    max-width: 100% !important;  /* <--- EL FIX CLAVE PARA LA FRANJA DERECHA */
-    max-height: 100% !important; /* <--- EL FIX CLAVE PARA LA FRANJA SUPERIOR */
     margin: 0 !important;
-    border-radius: 0 !important;
     background: var(--black-alpha-60) !important;
     backdrop-filter: blur(8px) !important;
     -webkit-backdrop-filter: blur(8px) !important;
+    
+    /* Sin !important aquí para que el .style.display = 'flex' del JS funcione */
     display: none; 
+    
     justify-content: center !important;
     align-items: center !important;
     z-index: 999999 !important; 
-    padding: 1rem;
-    transform: none !important;
     pointer-events: auto !important;
 }
 
+/* Para los modales que se activan mediante clases (como el de borrar) */
+#delete-toast.show,
 .confirmation-overlay.show,
-[id*="logout-modal"].show,
-[id*="delete-toast"].show,
 .toast-container.center-modal.show {
     display: flex !important;
 }

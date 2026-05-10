@@ -234,32 +234,25 @@
     text-align: center;
 }
 
-.btn-reset {
+/* Modificador del botón de reset solo para los filtros avanzados */
+.advanced-filters-panel .btn-reset {
     grid-column: 1 / -1; 
     justify-self: center; 
     margin-top: 1rem;
-    background: transparent;
-    border: 1px solid var(--error-alpha-10);
+    border-color: var(--error-alpha-10);
     color: var(--error);
-    padding: 0.7rem 2rem;
     border-radius: 6.25rem;
-    cursor: pointer;
-    font-weight: 700;
-    font-size: 0.85rem;
-    text-transform: uppercase;
-    letter-spacing: 0.0625rem;
-    transition: all 0.3s ease;
 }
 
-.btn-reset:hover {
+.advanced-filters-panel .btn-reset:hover {
     background: var(--error-alpha-10);
     border-color: var(--error);
     box-shadow: 0 0.3125rem 0.9375rem rgba(255, 82, 82, 0.2);
-    transform: translateY(-0.125rem);
+    color: var(--error);
 }
 
 /* ==========================================================================
-   3. GRID DE AUTOS & CARDS
+   3. ESTILOS ESPECÍFICOS DE LAS CARDS EN HOME
    ========================================================================== */
 .content {
     padding: 3rem 5%;
@@ -269,59 +262,7 @@
     z-index: 2; 
 }
 
-.grid-autos {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(18.75rem, 1fr));
-    gap: 2.5rem;
-}
-
-.card-auto {
-    background: var(--card-bg-alpha-60);
-    backdrop-filter: blur(0.75rem);
-    -webkit-backdrop-filter: blur(0.75rem);
-    border: 1px solid var(--white-alpha-05);
-    border-radius: 1.2rem;
-    overflow: hidden;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 100%;
-    animation: fadeIn 0.5s ease forwards;
-    box-shadow: 0 0.625rem 1.5625rem var(--black-alpha-30);
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(0.9375rem); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.card-auto:hover {
-    transform: translateY(-0.5rem);
-    border-color: var(--accent-lavender);
-    background: var(--card-bg-alpha-80);
-    box-shadow: 0 1.25rem 2.5rem var(--black-alpha-50), 0 0 1.25rem var(--accent-alpha-10);
-}
-
-.img-container {
-    position: relative;
-    width: 100%;
-    height: 14rem; 
-    background-color: var(--bg-darker);
-    overflow: hidden;
-}
-
-.img-container img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.5s ease;
-}
-
-.card-auto:hover .img-container img {
-    transform: scale(1.05); 
-}
-
+/* Gradiente sutil para las imágenes de las tarjetas en Home */
 .img-container::after {
     content: '';
     position: absolute;
@@ -331,43 +272,6 @@
     height: 40%;
     background: linear-gradient(to top, var(--bg-shark) 0%, transparent 100%);
     opacity: 0.8;
-}
-
-.badge-ia {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    background: var(--accent-alpha-20);
-    backdrop-filter: blur(0.5rem);
-    -webkit-backdrop-filter: blur(0.5rem);
-    color: var(--accent-lavender);
-    border: 1px solid var(--accent-lavender);
-    padding: 0.3rem 0.8rem;
-    border-radius: 2rem;
-    font-size: 0.65rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.0625rem;
-    box-shadow: 0 0 0.625rem var(--accent-alpha-20);
-    z-index: 2;
-}
-
-.info-auto {
-    padding: 1.5rem;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    position: relative;
-    z-index: 2;
-}
-
-.info-auto h3 {
-    color: var(--white);
-    font-size: 1.3rem;
-    font-weight: 800;
-    margin-bottom: 0.5rem;
-    letter-spacing: -0.03125rem;
 }
 
 .car-meta {
@@ -385,55 +289,20 @@
     gap: 0.3rem;
 }
 
-.car-footer {
-    display: flex;
-    flex-direction: column; 
-    gap: 1.2rem; 
-    margin-top: auto; 
-    padding-top: 1.2rem;
-    border-top: 1px solid var(--white-alpha-10); 
-}
-
-.car-footer .price {
-    font-size: 1.6rem;
-    font-weight: 900;
-    color: var(--accent-lavender);
-    margin: 0;
-    text-align: left;
-    display: block;
-    width: 100%;
-    letter-spacing: -0.03125rem;
-}
-
-.car-footer > div[style*="display: flex;"] {
-    display: flex !important;
-    gap: 0.8rem !important;
-    width: 100%;
-    justify-content: space-between;
-}
-
-.car-footer .btn-compare-card,
-.car-footer .btn-detail {
-    display: flex !important; 
+/* Botón de comparación dentro de la tarjeta */
+.btn-compare-card {
+    display: flex; 
     align-items: center;
     justify-content: center;
     min-height: 2.5rem; 
     flex: 1; 
-    white-space: nowrap; 
-    overflow: hidden; 
-    text-overflow: ellipsis; 
     padding: 0.8rem 0.5rem; 
-    text-align: center;
     border-radius: 0.6rem;
     font-weight: 700;
     cursor: pointer;
     font-size: 0.85rem;
     text-transform: uppercase;
-    letter-spacing: 0.03125rem;
     transition: all 0.3s ease;
-}
-
-.btn-compare-card {
     background: var(--black-alpha-20);
     border: 1px solid var(--border);
     color: var(--text-slate);
@@ -452,20 +321,6 @@
     box-shadow: inset 0 0 0.625rem var(--accent-alpha-10);
 }
 
-.btn-detail {
-    background-color: var(--white-alpha-05);
-    border: 1px solid var(--accent-lavender);
-    color: var(--accent-lavender);
-    text-decoration: none;
-}
-
-.btn-detail:hover {
-    background-color: var(--accent-lavender);
-    color: var(--bg-darker); 
-    box-shadow: 0 0.25rem 0.9375rem var(--accent-alpha-20);
-    transform: translateY(-0.125rem);
-}
-
 /* ==========================================================================
    4. BOTÓN FAVORITOS (EN TARJETA)
    ========================================================================== */
@@ -480,7 +335,7 @@
     border-radius: 50%;
     width: 2.2rem;
     height: 2.2rem;
-    display: flex !important; 
+    display: flex; 
     justify-content: center;
     align-items: center;
     cursor: pointer;
@@ -563,12 +418,7 @@
     color: var(--bg-shark) !important;
     border-color: var(--accent-lavender) !important;
     box-shadow: 0 0.25rem 0.625rem var(--don-juan-alpha-30);
-    position: relative;
-    cursor: pointer;
-    overflow: hidden;
-    padding: 0.8rem 1.2rem;
     border-radius: 6.25rem;
-    font-weight: 700;
 }
 
 #btn-open-compare:hover {
@@ -578,15 +428,7 @@
 }
 
 #btn-clear-compare {
-    padding: 0.8rem 1.2rem;
-    font-size: 0.9rem;
-    display: flex;
-    align-items: center;
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--text-slate);
     border-radius: 6.25rem;
-    cursor: pointer;
 }
 
 .compare-modal-content {
@@ -651,19 +493,6 @@
     border-radius: 0.5rem;
     object-fit: cover;
     height: 7.5rem;
-}
-
-/* Lightbox global (puede quedar en home o pasar a style.css, por ahora está bien acá) */
-.lightbox-overlay {
-    display: none;
-    position: fixed;
-    z-index: 10000;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: var(--black-alpha-95);
-    backdrop-filter: blur(0.625rem);
-    justify-content: center;
-    align-items: center;
 }
 
 .close-lightbox {

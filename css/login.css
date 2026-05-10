@@ -1,12 +1,11 @@
 /* ==========================================================================
-   ESTILOS DE LOGIN Y REGISTRO (Utilizando variables de style.css)
+   ESTILOS DE LOGIN Y REGISTRO
    ========================================================================== */
 
 .login-page {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    /* Fondo con un degradado sutil para que no sea un plano negro */
     background: radial-gradient(circle at center, var(--bg-elevated) 0%, var(--bg-shark) 100%);
 }
 
@@ -21,7 +20,7 @@
 .login-card {
     background-color: var(--bg-elevated); 
     width: 100%;
-    max-width: 25rem; /* 400px */
+    max-width: 25rem; 
     padding: 3rem;
     border-radius: 1rem;
     border: 0.0625rem solid var(--border);
@@ -43,50 +42,6 @@
     margin-bottom: 2.5rem;
 }
 
-/* ==========================================================================
-   ESTILO DE LOS INPUTS
-   ========================================================================== */
-.form-group {
-    text-align: left;
-    margin-bottom: 1rem;
-}
-
-.form-group label {
-    display: block;
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.0625rem;
-    color: var(--text-slate);
-    margin-bottom: 0.6rem;
-    font-weight: 700;
-}
-
-.form-group input, 
-.form-group select {
-    width: 100%;
-    background-color: var(--bg-shark);
-    border: 0.0625rem solid var(--border);
-    border-radius: 0.5rem;
-    color: var(--white);
-    padding: 0.8rem 1rem;
-    font-size: 1rem;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    appearance: none;
-}
-
-.form-group input:focus,
-.form-group select:focus {
-    outline: none;
-    border-color: var(--accent-lavender);
-    box-shadow: 0 0 0 0.1875rem var(--accent-alpha-20);
-}
-
-.form-group input::placeholder {
-    color: var(--text-slate);
-    opacity: 0.6; 
-    font-weight: 500;
-}
-
 /* --- BOTÓN MOSTRAR/OCULTAR CONTRASEÑA --- */
 .input-with-icon {
     position: relative;
@@ -95,12 +50,12 @@
 }
 
 .input-with-icon input {
-    padding-right: 2.8125rem; /* 45px */
+    padding-right: 2.8125rem; 
 }
 
 .btn-toggle-pass {
     position: absolute;
-    right: 0.75rem; /* 12px */
+    right: 0.75rem; 
     background: none;
     border: none;
     color: var(--text-slate);
@@ -108,7 +63,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0.3125rem; /* 5px */
+    padding: 0.3125rem; 
     transition: color 0.2s ease;
 }
 
@@ -117,7 +72,7 @@
 }
 
 .btn-toggle-pass svg {
-    width: 1.25rem; /* 20px */
+    width: 1.25rem; 
     height: 1.25rem;
 }
 
@@ -128,12 +83,12 @@
     display: flex;
     position: relative;
     width: 100%;
-    max-width: 20rem; /* 320px */
-    height: 2.5rem; /* 40px */
+    max-width: 20rem; 
+    height: 2.5rem; 
     margin: 0 auto 2rem;
     background-color: var(--card-bg); 
     border: 0.0625rem solid var(--border);
-    border-radius: 1.25rem; /* 20px */
+    border-radius: 1.25rem; 
     overflow: hidden; 
     box-shadow: 0 0.25rem 0.375rem var(--black-alpha-30);
 }
@@ -161,12 +116,12 @@
 /* Segmento animado */
 .segmented-control__slider {
     position: absolute;
-    top: 0.125rem; /* 2px */
+    top: 0.125rem; 
     left: 0.125rem;
     width: calc(50% - 0.125rem); 
-    height: 2.25rem; /* 36px */
+    height: 2.25rem; 
     background-color: var(--white); 
-    border-radius: 1.125rem; /* 18px */
+    border-radius: 1.125rem; 
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 1; 
 }
@@ -190,17 +145,15 @@ input#reg_role_vendedor:checked ~ label.role-label-right {
    ========================================================================== */
 .login-submit-btn {
     width: 100%;
-    height: 3.4375rem; /* 55px */
+    height: 3.4375rem; 
     margin-top: 1.5rem;
     font-size: 1rem;
     font-weight: 800;
-    letter-spacing: 0.0938rem; /* 1.5px */
+    letter-spacing: 0.0938rem; 
     text-transform: uppercase;
     cursor: pointer;
-    
     background: linear-gradient(135deg, var(--dark-don-juan) 0%, var(--accent-lavender) 100%);
     color: var(--white);
-    
     border: none;
     border-radius: 0.75rem;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);

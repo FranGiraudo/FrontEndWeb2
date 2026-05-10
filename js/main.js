@@ -45,7 +45,9 @@ window.confirmarCierreSesion = function() {
         btnCancel.addEventListener('click', () => modal.style.display = 'none');
         btnConfirm.addEventListener('click', () => {
             localStorage.removeItem('user_session');
-            window.location.href = "index.html";
+            // FIX 1: Redirección al salir dependiendo de dónde estamos
+            const isInsidePages = window.location.pathname.includes('/pages/');
+            window.location.href = isInsidePages ? "../index.html" : "index.html";
         });
     }
     modal.style.display = 'flex';
@@ -65,6 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const navUl = document.querySelector('nav ul');
     const profileLink = document.getElementById('nav-profile-link');
+    const isInsidePages = window.location.pathname.includes('/pages/'); // Validamos ruta
 
     // --- LÓGICA DE VISIBILIDAD DE "PUBLICAR" ---
     const navLinksList = document.querySelectorAll('nav ul li');
@@ -82,7 +85,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (session) {
         if (profileLink) {
-            profileLink.href = "profile.html";
+            // FIX 2: Rutas dinámicas para el perfil
+            profileLink.href = isInsidePages ? "profile.html" : "pages/profile.html";
             profileLink.textContent = "Mi Perfil";
         }
         if (navUl && !document.getElementById('logout-btn')) {
@@ -95,7 +99,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     } else {
         if (profileLink) {
-            profileLink.href = "login.html";
+            // FIX 3: Rutas dinámicas para el login
+            profileLink.href = isInsidePages ? "login.html" : "pages/login.html";
             profileLink.textContent = "Iniciar Sesión";
         }
     }
@@ -331,7 +336,9 @@ document.addEventListener('DOMContentLoaded', () => {
     renderCars(allCars);
 });
 
+// FIX 4: Navegación dinámica inteligente al detalle
 function navigateToDetail(id) {
     localStorage.setItem('car_id_view', id);
-    window.location.href = "detail.html";
+    const isInsidePages = window.location.pathname.includes('/pages/');
+    window.location.href = isInsidePages ? "detail.html" : "pages/detail.html";
 }

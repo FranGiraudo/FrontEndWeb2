@@ -214,7 +214,7 @@
     background: transparent;
     padding: 0;
     border: none;
-    text-align: left; /* Alineado a la izquierda para mejor lectura */
+    text-align: left;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -223,10 +223,10 @@
 .price-box p { 
     display: inline-block;
     align-self: flex-start;
-    background: var(--accent-alpha-15); /* Fondo naranja translúcido */
+    background: var(--accent-alpha-15); 
     color: var(--accent-lavender) !important; 
     padding: 0.25rem 0.75rem;
-    border-radius: 2rem; /* Forma de pastilla */
+    border-radius: 2rem; 
     font-size: 0.65rem;
     font-weight: 800;
     letter-spacing: 0.0625rem; 
@@ -234,11 +234,11 @@
 }
 
 .price-value { 
-    font-size: 2.4rem; /* Un poco más grande */
+    font-size: 2.4rem; 
     font-weight: 900; 
     color: var(--white); 
     line-height: 1;
-    letter-spacing: -0.0625rem; /* Acerca los números para un look moderno */
+    letter-spacing: -0.0625rem; 
 }
 
 .contact-form-container {
@@ -252,24 +252,14 @@
     margin-bottom: 0.8rem !important; 
 }
 
+/* Overrides para el textarea local */
 #form-contactar-vendedor textarea {
-    width: 100%;
-    padding: 0.8rem;
-    border-radius: 0.625rem;
-    background: var(--bg-shark);
-    border: 0.0625rem solid var(--border);
-    color: var(--white);
-    font-family: inherit;
-    font-size: 0.9rem;
     margin-bottom: 0.8rem;
     resize: none;
     min-height: 4.5rem;
-    transition: all 0.3s ease;
 }
 
 #form-contactar-vendedor textarea:focus {
-    outline: none;
-    border-color: var(--accent-lavender);
     box-shadow: 0 0 0 0.25rem var(--don-juan-alpha-25);
 }
 
@@ -293,18 +283,10 @@
     box-shadow: 0 0.5rem 1.25rem var(--don-juan-alpha-50);
 }
 
-/* --- LIGHTBOX (Pantalla completa y Zoom Libre con clics) --- */
+/* --- LIGHTBOX (Pantalla completa y Zoom Libre) --- */
 .lightbox-overlay {
-    display: none;
-    position: fixed;
-    z-index: 100000;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: var(--black-alpha-95);
-    backdrop-filter: blur(0.625rem);
+    z-index: 100000; /* Override sobre components.css */
     -webkit-backdrop-filter: blur(0.625rem);
-    justify-content: center;
-    align-items: center;
 }
 
 .lightbox-image-container {
@@ -365,43 +347,38 @@
 @media (max-width: 64rem) {
     .product-container { 
         display: grid; 
-        grid-template-columns: 1fr auto; /* Columna 1 expansible, Columna 2 ajustada al contenido */
-        gap: 1.5rem 1rem; /* Espaciado vertical de 1.5rem, horizontal de 1rem */
-        align-items: center; /* Centra verticalmente el título con el precio */
+        grid-template-columns: 1fr auto; 
+        gap: 1.5rem 1rem; 
+        align-items: center; 
     }
     
     .action-sidebar { 
-        display: contents; /* Desarmamos la caja del sidebar */
+        display: contents; 
     }
     
-    /* 1. Título a la izquierda (Fila 1, Columna 1) */
     .sidebar-header { 
         grid-column: 1 / 2;
         grid-row: 1 / 2;
         margin: 0;
     }
     
-    /* 2. Precio a la derecha (Fila 1, Columna 2) */
     .price-box { 
         grid-column: 2 / 3;
         grid-row: 1 / 2;
         margin: 0;
-        padding: 0.75rem 1rem; /* Un poco más compacto para que entre bien */
+        padding: 0.75rem 1rem; 
     }
 
-    /* Reducimos sutilmente las fuentes para que convivan en la misma línea */
     .sidebar-header h1 { font-size: 1.4rem; }
     .price-value { font-size: 1.5rem; }
     .price-box p { font-size: 0.65rem; }
     
-    /* 3. Galería abajo ocupando todo el ancho (Fila 2, Columnas 1 a 3) */
     .gallery-column { 
         grid-column: 1 / 3;
         grid-row: 2 / 3;
         width: 100%;
     }
     
-    /* 4. Formulario de contacto al final (Fila 3, Columnas 1 a 3) */
     .contact-form-container {
         grid-column: 1 / 3;
         grid-row: 3 / 4;
@@ -434,7 +411,6 @@
     
     .thumb-img { width: 4rem; height: 4rem; }
 
-    /* Ajuste extra para celulares muy estrechos */
     .sidebar-header h1 { font-size: 1.25rem; }
     .price-value { font-size: 1.3rem; }
     .price-box { padding: 0.6rem 0.8rem; }

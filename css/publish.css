@@ -95,50 +95,7 @@
     grid-column: span 2;
 }
 
-.input-group label {
-    display: block;
-    font-size: 0.7rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.075rem; 
-    color: var(--text-muted);
-    margin-bottom: 0.6rem;
-}
-
-/* Inputs Estilizados */
-input, select, textarea {
-    width: 100%;
-    padding: 1rem;
-    background-color: var(--black-alpha-20);
-    border: 0.0625rem solid var(--border);
-    border-radius: 0.75rem;
-    color: var(--white);
-    font-size: 1rem;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    outline: none;
-    appearance: none; /* Limpia estilos nativos en iOS/Android */
-}
-
-/* Recreando la flecha del select de forma custom */
-select {
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-    background-repeat: no-repeat;
-    background-position: right 1rem center;
-    background-size: 1em;
-    padding-right: 2.5rem;
-}
-
-select option {
-    background-color: var(--bg-elevated);
-    color: var(--white);
-}
-
-input:focus, select:focus, textarea:focus {
-    border-color: var(--accent-lavender);
-    background-color: var(--bg-darker);
-    box-shadow: 0 0 0 0.25rem var(--accent-alpha-15), inset 0 0.125rem 0.25rem var(--black-alpha-30);
-}
-
+/* Override específico para el textarea de publicación */
 textarea {
     resize: vertical;
     min-height: 8.75rem; 
@@ -215,20 +172,14 @@ textarea {
     100% { left: 200%; }
 }
 
-/* --- BOTÓN DE PUBLICAR --- */
+/* --- BOTÓN DE PUBLICAR (Overrides locales) --- */
 .btn-submit {
     width: 100%;
     padding: 1.2rem;
+    font-size: 1.1rem;
     background-color: var(--accent-lavender);
     color: var(--bg-darker);
-    border: none;
-    border-radius: 1rem;
-    font-weight: 800;
-    font-size: 1.1rem;
-    text-transform: uppercase;
     letter-spacing: 0.0938rem; 
-    cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 0.5rem 1.25rem var(--black-alpha-30);
 }
 
@@ -243,6 +194,7 @@ textarea {
     opacity: 0.4 !important;
     cursor: not-allowed !important;
     transform: none !important;
+    box-shadow: none;
 }
 
 /* Previsualización de Galería */
@@ -275,7 +227,7 @@ textarea {
 }
 
 /* ==========================================================================
-   DISEÑO RESPONSIVO UNIFICADO
+   DISEÑO RESPONSIVO
    ========================================================================== */
 
 /* Tablets y pantallas medianas */
@@ -305,13 +257,13 @@ textarea {
     
     /* Ajustes táctiles */
     .drop-zone { 
-        padding: 2rem 1rem; /* Más compacto en vertical para el celu */
+        padding: 2rem 1rem; 
     }
     
     .ai-info-box { 
         padding: 1.2rem; 
         margin: 2rem 0; 
-        flex-direction: column; /* Apila el texto y el selector en móviles */
+        flex-direction: column; 
         text-align: center;
     }
     
