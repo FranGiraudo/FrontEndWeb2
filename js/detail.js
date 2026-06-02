@@ -6,14 +6,14 @@
 document.addEventListener('DOMContentLoaded', async () => {
     const container = document.getElementById('car-detail-content');
     
-    // Obtener sesión
-    let sessionData = null;
-    try { sessionData = JSON.parse(localStorage.getItem('user_session')); } catch(e){}
+    // Obtener sesión (getSession() viene de database.js y valida expiración del JWT)
+    const sessionData = (typeof getSession === 'function') ? getSession() : null;
     const isComprador = sessionData && sessionData.role === 'comprador';
-    const userIdentifier = sessionData ? sessionData.email : null; 
+    const userIdentifier = sessionData ? sessionData.email : null;
 
-    // Obtener ID del auto
+    // Leer y limpiar el ID del auto — evita que un bookmark a detail.html muestre el último auto visitado
     const carIdStr = localStorage.getItem('car_id_view') || new URLSearchParams(window.location.search).get('id');
+    localStorage.removeItem('car_id_view');
     const carId = isNaN(carIdStr) ? carIdStr : Number(carIdStr);
     
     let currentIndex = 0;
