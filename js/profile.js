@@ -1,12 +1,35 @@
 // js/profile.js
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     const session = JSON.parse(localStorage.getItem('user_session'));
     
     if (!session) { 
         window.location.href = "login.html"; 
         return; 
     }
+
+    // --- OBTENER PERFIL DESDE EL BACKEND ---
+    let userId = null;
+    let userDetails = null;
+
+    async function getProfileInfo() {
+        try {
+            const res = await fetch('http://localhost:3000/api/auth/me', {
+                headers: getAuthHeaders()
+            });
+            if (res.ok) {
+                const profile = await res.json();
+                userId = profile.id;
+                userDetails = profile;
+                return profile;
+            }
+        } catch (e) {
+            console.error("Error al obtener perfil del servidor:", e);
+        }
+        return null;
+    }
+
+    await getProfileInfo();
 
     // --- LÓGICA DE MENÚ COLAPSABLE (MOBILE) ---
     const btnToggleProfile = document.getElementById('btn-toggle-profile');
@@ -19,17 +42,17 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- INTEGRACIÓN DE BOTONES DEL TOAST ---
+    // --- INTEGRACIÓN DE BOTONES DEL TOAST DE ELIMINACIÓN ---
     const btnConfirmDelete = document.getElementById('confirm-delete');
     const btnCancelDelete = document.getElementById('cancel-delete');
 
     if (btnConfirmDelete) {
-        btnConfirmDelete.addEventListener('click', () => {
+        btnConfirmDelete.addEventListener('click', async () => {
             if (window.carIdToDelete !== null) {
-                ejecutarEliminacionReal(window.carIdToDelete);
+                await ejecutarEliminacionReal(window.carIdToDelete);
                 window.hideDeleteToast();
             } else if (window.chatIdToDelete !== null) {
-                ejecutarEliminacionChat(window.chatIdToDelete);
+                await ejecutarEliminacionChat(window.chatIdToDelete);
                 window.hideDeleteToast();
             }
         });
@@ -62,13 +85,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const vendedorView = document.getElementById('vendedor-view');
         if (vendedorView) {
             vendedorView.style.display = 'block';
-            renderizarPanelVendedor();
+            await renderizarPanelVendedor(userId);
         }
     } else {
         const compradorView = document.getElementById('comprador-view');
         if (compradorView) {
             compradorView.style.display = 'block';
-            renderizarPanelComprador(session.email);
+            await renderizarPanelComprador(session.email);
         }
     }
 
@@ -78,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const viewComprador = document.getElementById('comprador-view');
     const viewMensajes = document.getElementById('mensajes-view');
 
-    function switchTab(tabName) {
+    async function switchTab(tabName) {
         if (navPanel) navPanel.classList.remove('active');
         if (navConsultas) navConsultas.classList.remove('active');
         
@@ -88,8 +111,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (tabName === 'panel') {
             if (navPanel) navPanel.classList.add('active');
-            if (session.role === 'vendedor' && viewVendedor) viewVendedor.style.display = 'block';
-            if (session.role === 'comprador' && viewComprador) viewComprador.style.display = 'block';
+            if (session.role === 'vendedor' && viewVendedor) {
+                viewVendedor.style.display = 'block';
+                await renderizarPanelVendedor(userId);
+            }
+            if (session.role === 'comprador' && viewComprador) {
+                viewComprador.style.display = 'block';
+                await renderizarPanelComprador(session.email);
+            }
         } 
         else if (tabName === 'mensajes') {
             if (navConsultas) navConsultas.classList.add('active');
@@ -98,15 +127,15 @@ document.addEventListener('DOMContentLoaded', () => {
             if (session.role === 'vendedor') {
                 document.getElementById('titulo-mensajes').textContent = "Consultas Recibidas";
                 document.getElementById('subtitulo-mensajes').textContent = "Mensajes de compradores interesados en tus vehículos.";
-                renderizarBandejaMensajes(session.email, 'vendedor');
+                await renderizarBandejaMensajes(session.email, 'vendedor');
             } else {
                 document.getElementById('titulo-mensajes').textContent = "Consultas Realizadas";
                 document.getElementById('subtitulo-mensajes').textContent = "Seguimiento de los vehículos que te interesaron.";
-                renderizarBandejaMensajes(session.email, 'comprador');
+                await renderizarBandejaMensajes(session.email, 'comprador');
             }
         }
         
-        // Al cambiar de pestaña en móvil, cerramos el menú para que el usuario vea el contenido nuevo
+        // Al cambiar de pestaña en móvil, cerramos el menú
         if (window.innerWidth <= 768 && profileNav && profileNav.classList.contains('open')) {
             profileNav.classList.remove('open');
             if (btnToggleProfile) btnToggleProfile.classList.remove('active');
@@ -169,47 +198,69 @@ window.confirmarEliminarChat = function(id) {
     window.showDeleteToast(id, 'chat');
 }
 
-function ejecutarEliminacionReal(id) {
-    let publicaciones = JSON.parse(localStorage.getItem('misAutosPublicados')) || [];
-    publicaciones = publicaciones.filter(auto => auto.id !== id);
-    localStorage.setItem('misAutosPublicados', JSON.stringify(publicaciones));
-    
-    let analytics = JSON.parse(localStorage.getItem('smartauto_analytics')) || {};
-    delete analytics[id];
-    localStorage.setItem('smartauto_analytics', JSON.stringify(analytics));
-
-    location.reload();
+async function ejecutarEliminacionReal(id) {
+    try {
+        const res = await fetch(`http://localhost:3000/api/cars/${id}`, {
+            method: 'DELETE',
+            headers: getAuthHeaders()
+        });
+        const data = await res.json();
+        
+        if (res.ok) {
+            if(typeof showToast === 'function') showToast("Publicación eliminada correctamente.", "success");
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
+        } else {
+            if(typeof showToast === 'function') showToast(data.message || "Error al eliminar.", "error");
+        }
+    } catch (e) {
+        console.error(e);
+        if(typeof showToast === 'function') showToast("Error de conexión al servidor.", "error");
+    }
 }
 
-function ejecutarEliminacionChat(id) {
-    let allMessages = JSON.parse(localStorage.getItem('smartauto_messages')) || [];
-    allMessages = allMessages.filter(msg => msg.id !== id);
-    localStorage.setItem('smartauto_messages', JSON.stringify(allMessages));
-    
-    const session = JSON.parse(localStorage.getItem('user_session'));
-    renderizarBandejaMensajes(session.email, session.role);
-    if(typeof showToast === 'function') showToast("Conversación eliminada.", "success");
+async function ejecutarEliminacionChat(id) {
+    if (typeof removeInquiryFromDB === 'function') {
+        const response = await removeInquiryFromDB(id);
+        if (response.success) {
+            const session = JSON.parse(localStorage.getItem('user_session'));
+            await renderizarBandejaMensajes(session.email, session.role);
+            if(typeof showToast === 'function') showToast("Conversación eliminada.", "success");
+        } else {
+            if(typeof showToast === 'function') showToast(response.error || "Error al eliminar conversación.", "error");
+        }
+    }
 }
 
 /* ==========================================================================
    PANEL DEL COMPRADOR (FAVORITOS)
    ========================================================================== */
-function renderizarPanelComprador(userEmail) {
+async function renderizarPanelComprador(userEmail) {
     const viewComprador = document.getElementById('comprador-view');
     if (!viewComprador) return;
-
-    const favIds = typeof getUserFavorites === 'function' ? getUserFavorites(userEmail) : [];
-    const allCars = typeof getAllCars === 'function' ? getAllCars() : [];
-    const favCars = allCars.filter(car => favIds.includes(car.id));
 
     viewComprador.innerHTML = `
         <h2 style="color: var(--white); font-size: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 2rem;">
             Mis Vehículos Guardados
         </h2>
-        <div id="profile-favorites-grid" class="grid-autos"></div>
+        <div id="profile-favorites-grid" class="grid-autos">Cargando favoritos...</div>
     `;
 
+    let favCars = [];
+    try {
+        const res = await fetch('http://localhost:3000/api/favorites', {
+            headers: getAuthHeaders()
+        });
+        if (res.ok) {
+            favCars = await res.json();
+        }
+    } catch (e) {
+        console.error("Error al obtener vehículos favoritos:", e);
+    }
+
     const favGrid = document.getElementById('profile-favorites-grid');
+    favGrid.innerHTML = "";
 
     if (favCars.length === 0) {
         favGrid.innerHTML = `<p class="no-results" style="grid-column: 1/-1;">Aún no tenés vehículos guardados. ¡Explorá el marketplace!</p>`;
@@ -245,12 +296,16 @@ function renderizarPanelComprador(userEmail) {
     });
 
     favGrid.querySelectorAll('.btn-favorite').forEach(btn => {
-        btn.addEventListener('click', (e) => {
+        btn.addEventListener('click', async (e) => {
             const idStr = e.currentTarget.getAttribute('data-fav-id');
             const id = isNaN(idStr) ? idStr : Number(idStr);
-            toggleFavoriteStatus(userEmail, id);
+            
+            e.currentTarget.disabled = true;
+            await toggleFavoriteStatus(userEmail, id);
+            e.currentTarget.disabled = false;
+
             if(typeof showToast === 'function') showToast("Vehículo eliminado de la lista.", "success");
-            renderizarPanelComprador(userEmail);
+            await renderizarPanelComprador(userEmail);
         });
     });
 }
@@ -258,11 +313,20 @@ function renderizarPanelComprador(userEmail) {
 /* ==========================================================================
    PANEL DEL VENDEDOR
    ========================================================================== */
-function renderizarPanelVendedor() {
+async function renderizarPanelVendedor(userId) {
     const grid = document.getElementById('my-cars-grid');
     if (!grid) return;
-    const misPublicaciones = JSON.parse(localStorage.getItem('misAutosPublicados')) || [];
-    const analytics = JSON.parse(localStorage.getItem('smartauto_analytics')) || {};
+    grid.innerHTML = "<p style='color: var(--text-slate);'>Cargando tus publicaciones...</p>";
+
+    let misPublicaciones = [];
+    try {
+        const res = await fetch(`http://localhost:3000/api/cars?sellerId=${userId}`);
+        if (res.ok) {
+            misPublicaciones = await res.json();
+        }
+    } catch (e) {
+        console.error("Error al obtener publicaciones de vendedor:", e);
+    }
 
     if (misPublicaciones.length === 0) {
         grid.innerHTML = `<div class="empty-state" style="text-align: center; padding: 3rem; background: var(--bg-shark); border-radius: 12px; border: 1px dashed var(--border);"><p style="margin-bottom: 1rem; color: var(--text-slate);">Todavía no tenés vehículos publicados.</p><button class="btn-detail" onclick="location.href='publish.html'">Publicar mi primer auto</button></div>`;
@@ -271,21 +335,20 @@ function renderizarPanelVendedor() {
 
     grid.innerHTML = "";
     misPublicaciones.forEach(auto => {
-        const stats = analytics[auto.id] || { visitas: 0, contactos: 0 };
         const card = document.createElement('div');
         card.className = 'mini-card';
         card.style.marginBottom = "1.5rem";
         card.innerHTML = `
             <div class="mini-card-img">
-                <img src="${auto.fotoPrincipal}" alt="${auto.modelo}">
+                <img src="${auto.image}" alt="${auto.model}">
                 <span class="status-tag">ACTIVO</span>
             </div>
             <div class="mini-card-details">
-                <div class="mini-card-header"><h4>${auto.marca} ${auto.modelo}</h4><span class="mini-price">u$s ${Number(auto.precio).toLocaleString()}</span></div>
-                <p class="meta-text">${auto.anio} • ${auto.combustible} • ${auto.carroceriaIA || 'Sedán'}</p>
+                <div class="mini-card-header"><h4>${auto.brand} ${auto.model}</h4><span class="mini-price">u$s ${Number(auto.price).toLocaleString()}</span></div>
+                <p class="meta-text">${auto.year} • ${auto.fuel} • ${auto.bodyType || 'Sedán'}</p>
                 <div class="analytics-container">
-                    <div class="stat-box"><span class="stat-label">Visitas</span><span class="stat-value">${stats.visitas}</span></div>
-                    <div class="stat-box"><span class="stat-label">Contactos</span><span class="stat-value">${stats.contactos}</span></div>
+                    <div class="stat-box"><span class="stat-label">Visitas</span><span class="stat-value">${auto.views}</span></div>
+                    <div class="stat-box"><span class="stat-label">Contactos</span><span class="stat-value">${auto.contacts}</span></div>
                     <div class="stat-box"><span class="stat-label">IA Score</span><span class="stat-value" style="color: #4caf50;">98%</span></div>
                 </div>
                 <div class="action-bar">
@@ -300,12 +363,22 @@ function renderizarPanelVendedor() {
 // --- SISTEMA DE MENSAJERÍA ---
 window.filtroMensajesActual = 'all';
 
-function renderizarBandejaMensajes(userEmail, userRole) {
+async function renderizarBandejaMensajes(userEmail, userRole) {
     const gridMensajes = document.getElementById('grid-mensajes');
     if (!gridMensajes) return;
     gridMensajes.style.gridTemplateColumns = "1fr";
+    gridMensajes.innerHTML = "<p style='color: var(--text-slate); padding: 1.5rem;'>Cargando conversaciones...</p>";
 
-    let messages = (userRole === 'vendedor') ? (typeof getMessagesForSeller === 'function' ? getMessagesForSeller(userEmail) : []) : (typeof getMessagesForBuyer === 'function' ? getMessagesForBuyer(userEmail) : []);
+    let messages = [];
+    if (userRole === 'vendedor') {
+        if (typeof getMessagesForSeller === 'function') {
+            messages = await getMessagesForSeller(userEmail);
+        }
+    } else {
+        if (typeof getMessagesForBuyer === 'function') {
+            messages = await getMessagesForBuyer(userEmail);
+        }
+    }
 
     const estaSinResponder = (msg) => {
         if (msg.markedAsReadBy === userRole) return false;
@@ -317,7 +390,7 @@ function renderizarBandejaMensajes(userEmail, userRole) {
     const cantidadSinResponder = messages.filter(estaSinResponder).length;
     let mensajesFiltrados = (window.filtroMensajesActual === 'unanswered') ? messages.filter(estaSinResponder) : messages;
 
-    let htmlContent = `<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; background: var(--bg-shark); padding: 1rem 1.5rem; border-radius: 8px; border: 1px solid var(--border); flex-wrap: wrap; gap: 1rem;"><span style="color: white; font-weight: 600;"><span style="color: ${cantidadSinResponder > 0 ? '#ff5252' : '#4caf50'}; font-size: 1.2rem; margin-right: 5px;">•</span>${cantidadSinResponder} consulta(s) esperando respuesta</span><div class="filter-segmented-control"><input type="radio" name="msg_filter" id="filter-all" value="all" ${window.filtroMensajesActual === 'all' ? 'checked' : ''} onchange="window.cambiarFiltroMensajes('all', '${userEmail}', '${userRole}')"><label for="filter-all">Todas</label><input type="radio" name="msg_filter" id="filter-unanswered" value="unanswered" ${window.filtroMensajesActual === 'unanswered' ? 'checked' : ''} onchange="window.cambiarFiltroMensajes('unanswered', '${userEmail}', '${userRole}')"><label for="filter-unanswered">Pendientes</label><div class="slider"></div></div></div>`;
+    let htmlContent = `<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; background: var(--bg-shark); padding: 1rem 1.5rem; border-radius: 8px; border: 1px solid var(--border); flex-wrap: wrap; gap: 1rem;"><span style="color: white; font-weight: 600;"><span style="color: ${cantidadSinResponder > 0 ? '#ff5252' : '#4caf50'}; font-size: 1.2rem; margin-right: 5px;">•</span>${cantidadSinResponder} consulta(s) esperando respuesta</span><div class="filter-segmented-control"><input type radio name="msg_filter" id="filter-all" value="all" ${window.filtroMensajesActual === 'all' ? 'checked' : ''} onchange="window.cambiarFiltroMensajes('all', '${userEmail}', '${userRole}')"><label for="filter-all">Todas</label><input type="radio" name="msg_filter" id="filter-unanswered" value="unanswered" ${window.filtroMensajesActual === 'unanswered' ? 'checked' : ''} onchange="window.cambiarFiltroMensajes('unanswered', '${userEmail}', '${userRole}')"><label for="filter-unanswered">Pendientes</label><div class="slider"></div></div></div>`;
 
     if (mensajesFiltrados.length === 0) {
         htmlContent += `<div style="background: var(--bg-shark); padding: 3rem; border-radius: 12px; border: 1px dashed var(--border); text-align: center;"><p style="color: var(--text-slate); font-size: 1rem;">No hay mensajes para mostrar en esta vista.</p></div>`;
@@ -375,7 +448,11 @@ function renderizarBandejaMensajes(userEmail, userRole) {
     gridMensajes.innerHTML = htmlContent + mensajesHtml;
 }
 
-window.cambiarFiltroMensajes = (f, e, r) => { window.filtroMensajesActual = f; renderizarBandejaMensajes(e, r); };
+window.cambiarFiltroMensajes = async (f, e, r) => { 
+    window.filtroMensajesActual = f; 
+    await renderizarBandejaMensajes(e, r); 
+};
+
 window.toggleChat = function(msgId) {
     const wrapper = document.getElementById(`chat-wrapper-${msgId}`);
     const chevron = document.getElementById(`chevron-${msgId}`);
@@ -407,12 +484,12 @@ window.mantenerChatAbierto = function(msgId) {
     }
 };
 
-window.marcarComoLeido = function(msgId, userRole) {
+window.marcarComoLeido = async function(msgId, userRole) {
     if (typeof markMessageAsReadInDB === 'function') {
-        const response = markMessageAsReadInDB(msgId, userRole);
+        const response = await markMessageAsReadInDB(msgId, userRole);
         if (response.success) {
             const session = JSON.parse(localStorage.getItem('user_session'));
-            renderizarBandejaMensajes(session.email, userRole);
+            await renderizarBandejaMensajes(session.email, userRole);
             setTimeout(() => window.mantenerChatAbierto(msgId), 50);
         } else {
             if(typeof showToast === 'function') showToast(response.error, "error");
@@ -420,7 +497,7 @@ window.marcarComoLeido = function(msgId, userRole) {
     }
 };
 
-window.enviarRespuesta = function(msgId, userRole) {
+window.enviarRespuesta = async function(msgId, userRole) {
     const input = document.getElementById(`reply-input-${msgId}`);
     const text = input.value.trim();
     if (!text) {
@@ -430,10 +507,12 @@ window.enviarRespuesta = function(msgId, userRole) {
     const session = JSON.parse(localStorage.getItem('user_session'));
     const senderName = session.nombre || session.email;
     if (typeof addReplyToMessage === 'function') {
-        const response = addReplyToMessage(msgId, text, senderName, userRole);
+        const response = await addReplyToMessage(msgId, text, senderName, userRole);
         if (response.success) {
-            renderizarBandejaMensajes(session.email, userRole);
+            await renderizarBandejaMensajes(session.email, userRole);
             setTimeout(() => window.mantenerChatAbierto(msgId), 50);
+        } else {
+            if(typeof showToast === 'function') showToast(response.error || "Error al responder.", "error");
         }
     }
 };

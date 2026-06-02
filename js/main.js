@@ -45,7 +45,6 @@ window.confirmarCierreSesion = function() {
         btnCancel.addEventListener('click', () => modal.style.display = 'none');
         btnConfirm.addEventListener('click', () => {
             localStorage.removeItem('user_session');
-            // FIX 1: Redirección al salir dependiendo de dónde estamos
             const isInsidePages = window.location.pathname.includes('/pages/');
             window.location.href = isInsidePages ? "../index.html" : "index.html";
         });
@@ -67,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const navUl = document.querySelector('nav ul');
     const profileLink = document.getElementById('nav-profile-link');
-    const isInsidePages = window.location.pathname.includes('/pages/'); // Validamos ruta
+    const isInsidePages = window.location.pathname.includes('/pages/'); 
 
     // --- LÓGICA DE VISIBILIDAD DE "PUBLICAR" ---
     const navLinksList = document.querySelectorAll('nav ul li');
@@ -85,7 +84,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (session) {
         if (profileLink) {
-            // FIX 2: Rutas dinámicas para el perfil
             profileLink.href = isInsidePages ? "profile.html" : "pages/profile.html";
             profileLink.textContent = "Mi Perfil";
         }
@@ -99,7 +97,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     } else {
         if (profileLink) {
-            // FIX 3: Rutas dinámicas para el login
             profileLink.href = isInsidePages ? "login.html" : "pages/login.html";
             profileLink.textContent = "Iniciar Sesión";
         }
@@ -130,13 +127,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     actualizarNavegacion();
 
-    // --- RESTAURACIÓN DE LÓGICA DE FILTROS ---
+    // --- CARGA ASÍNCRONA DE VEHÍCULOS ---
     const carContainer = document.getElementById('container-autos');
     const btnToggle = document.getElementById('btn-toggle-filters');
     const panelFilters = document.getElementById('advanced-filters');
     const btnReset = document.getElementById('btn-reset');
     const searchInput = document.getElementById('busqueda');
-    const allCars = typeof getAllCars === 'function' ? getAllCars() : [];
+    
+    let allCars = [];
 
     const normalizar = (texto) => texto ? texto.toString().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim() : "";
 
@@ -196,7 +194,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderCars(filtered);
     }
 
-    function renderCars(list) {
+    async function renderCars(list) {
         if(!carContainer) return;
         carContainer.innerHTML = "";
         if (list.length === 0) {
@@ -206,9 +204,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const isComprador = session && session.role === 'comprador';
         const userIdentifier = session ? session.email : null; 
         
+        // Obtener favoritos de forma asíncrona una sola vez para esta renderización
+        const favsList = (isComprador && userIdentifier) ? await getUserFavorites(userIdentifier) : [];
+
         list.forEach(car => {
             const isSelected = window.vehiculosAComparar.includes(car.id);
-            const isFav = (isComprador && userIdentifier) ? isCarFavorite(userIdentifier, car.id) : false;
+            const isFav = favsList.includes(car.id);
             const card = document.createElement('div');
             card.className = 'card-auto';
             let htmlBotones = `<button class="btn-detail" onclick="navigateToDetail('${car.id}')">Detalles</button>`;
@@ -229,11 +230,16 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         document.querySelectorAll('.btn-favorite').forEach(btn => {
-            btn.addEventListener('click', (e) => {
+            btn.addEventListener('click', async (e) => {
                 e.stopPropagation();
                 const idStr = e.currentTarget.getAttribute('data-fav-id');
                 const id = isNaN(idStr) ? idStr : Number(idStr);
-                if (toggleFavoriteStatus(userIdentifier, id)) {
+                
+                e.currentTarget.disabled = true; // Evitar spam clicks
+                const isAdded = await toggleFavoriteStatus(userIdentifier, id);
+                e.currentTarget.disabled = false;
+
+                if (isAdded) {
                     e.currentTarget.classList.add('active');
                     showToast("Guardado en favoritos.");
                 } else {
@@ -310,8 +316,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function generarTablaComparacion() {
         const tbody = document.getElementById('compare-table');
         if (!tbody) return;
-        const listaAutos = typeof getAllCars === 'function' ? getAllCars() : [];
-        const autosSeleccionados = window.vehiculosAComparar.map(id => listaAutos.find(c => c.id === id)).filter(Boolean);
+        const autosSeleccionados = window.vehiculosAComparar.map(id => allCars.find(c => c.id === id)).filter(Boolean);
         let htmlHeaders = `<th>Especificación</th>`;
         let htmlImg = `<td>Visualización</td>`;
         let htmlPrecio = `<td>Precio Estimado</td>`;
@@ -333,7 +338,12 @@ document.addEventListener('DOMContentLoaded', () => {
         tbody.innerHTML = `<thead><tr>${htmlHeaders}</tr></thead><tbody><tr>${htmlImg}</tr><tr>${htmlPrecio}</tr><tr>${htmlAnio}</tr><tr>${htmlKm}</tr><tr>${htmlCombustible}</tr><tr>${htmlTransmision}</tr><tr>${htmlCarroceria}</tr></tbody>`;
     }
 
-    renderCars(allCars);
+    // Inicializar cargando vehículos de la API
+    async function init() {
+        allCars = await getAllCars();
+        await renderCars(allCars);
+    }
+    init();
 });
 
 // FIX 4: Navegación dinámica inteligente al detalle

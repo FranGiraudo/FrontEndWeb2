@@ -1,6 +1,6 @@
 // js/publish.js
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     // --- 0. CONTROL DE SEGURIDAD Y ACCESO (Route Guard) ---
     let session = null;
     try {
@@ -10,13 +10,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (!session) {
-        window.location.href = "login.html"; // Ambas están en /pages
+        window.location.href = "login.html"; 
         return;
     }
 
     if (session.role !== 'vendedor') {
         if(typeof showToast === 'function') showToast("Acceso denegado: Se requiere rol Vendedor.", "error");
-        // FIX DE RUTA: Sube un nivel para ir al index desde /pages/publish.html
         window.location.href = "../index.html";
         return; 
     }
@@ -35,58 +34,76 @@ document.addEventListener('DOMContentLoaded', () => {
     let fotoValidadaIA = false;
     let carroceriaDetectada = "Sedán";
     
-    // Variables para cumplir con Req 4.5
     let estadoGeneralIA = "Buen estado";
     let danosVisiblesIA = "Ninguno detectado";
     let rangoPrecioIA = { min: 0, max: 0 };
     
     let editModeId = null;
 
-    // --- 1. LÓGICA DE MODO EDICIÓN ---
+    // --- 1. LÓGICA DE MODO EDICIÓN (Asíncrona con el backend) ---
     const urlParams = new URLSearchParams(window.location.search);
     const editId = urlParams.get('edit');
 
     if (editId) {
         editModeId = Number(editId);
-        const publicaciones = JSON.parse(localStorage.getItem('misAutosPublicados')) || [];
-        const autoAEditar = publicaciones.find(a => a.id === editModeId);
+        btnSubmit.textContent = "CARGANDO DATOS...";
+        btnSubmit.disabled = true;
 
-        if (autoAEditar) {
-            document.getElementById('input-marca').value = autoAEditar.marca;
-            document.getElementById('input-modelo').value = autoAEditar.modelo;
-            document.getElementById('input-anio').value = autoAEditar.anio;
-            document.getElementById('input-precio').value = autoAEditar.precio;
-            document.getElementById('input-km').value = autoAEditar.kilometraje;
-            document.getElementById('input-fuel').value = autoAEditar.combustible;
-            document.getElementById('input-trans').value = autoAEditar.transmision;
-            document.getElementById('input-ubicacion').value = autoAEditar.ubicacion;
-            document.getElementById('input-descripcion').value = autoAEditar.descripcion;
+        if (typeof getCarById === 'function') {
+            const autoAEditar = await getCarById(editModeId);
 
-            fotosCargadas = autoAEditar.fotos || [];
-            if (fotosCargadas.length > 0) {
-                if (dropText) dropText.style.display = 'none';
-                fotosCargadas.forEach(fotoUrl => {
-                    const imgThumb = document.createElement('img');
-                    imgThumb.src = fotoUrl;
-                    imgThumb.classList.add('thumb-preview');
-                    galleryPreview.appendChild(imgThumb);
-                });
+            if (autoAEditar) {
+                document.getElementById('input-marca').value = autoAEditar.brand;
+                document.getElementById('input-modelo').value = autoAEditar.model;
+                document.getElementById('input-anio').value = autoAEditar.year;
+                document.getElementById('input-precio').value = autoAEditar.price;
+                document.getElementById('input-km').value = autoAEditar.km;
+                document.getElementById('input-fuel').value = autoAEditar.fuel;
+                document.getElementById('input-trans').value = autoAEditar.transmission;
+                document.getElementById('input-ubicacion').value = autoAEditar.location;
+                document.getElementById('input-descripcion').value = autoAEditar.description || '';
+
+                fotosCargadas = autoAEditar.images || [];
+                if (fotosCargadas.length > 0) {
+                    if (dropText) dropText.style.display = 'none';
+                    galleryPreview.innerHTML = "";
+                    fotosCargadas.forEach(fotoUrl => {
+                        const imgThumb = document.createElement('img');
+                        imgThumb.src = fotoUrl;
+                        imgThumb.classList.add('thumb-preview');
+                        galleryPreview.appendChild(imgThumb);
+                    });
+                }
+
+                fotoValidadaIA = true;
+                carroceriaDetectada = autoAEditar.bodyType || "Sedán";
+                estadoGeneralIA = autoAEditar.aiStatus || "Excelente estado";
+                danosVisiblesIA = autoAEditar.aiDamages || "Ninguno visible";
+                rangoPrecioIA = {
+                    min: autoAEditar.aiPriceMin || Math.round(autoAEditar.price * 0.85),
+                    max: autoAEditar.aiPriceMax || Math.round(autoAEditar.price * 1.15)
+                };
+                
+                btnSubmit.disabled = false;
+                btnSubmit.style.opacity = "1";
+                btnSubmit.style.cursor = "pointer";
+                btnSubmit.textContent = "GUARDAR CAMBIOS";
+
+                aiBox.innerHTML = `
+                    <b>Carrocería:</b> ${carroceriaDetectada} <br>
+                    <b>Estado IA:</b> <span style="color:var(--accent-lavender);">${estadoGeneralIA}</span> <br>
+                    <b>Daños:</b> ${danosVisiblesIA} <br>
+                    <b>Precio Sugerido:</b> u$s ${rangoPrecioIA.min.toLocaleString()} - u$s ${rangoPrecioIA.max.toLocaleString()}
+                `;
+                aiContainer.style.backgroundColor = "var(--accent-alpha-15)"; 
+                aiContainer.style.borderLeft = "4px solid var(--accent-lavender)";
+
+                inyectarSelectorManual();
+                document.getElementById('select-manual-body').value = carroceriaDetectada;
+            } else {
+                if(typeof showToast === 'function') showToast("No se pudo cargar la publicación a editar.", "error");
+                btnSubmit.textContent = "PUBLICAR VEHÍCULO";
             }
-
-            fotoValidadaIA = true;
-            carroceriaDetectada = autoAEditar.carroceriaIA || "Sedán";
-            
-            btnSubmit.disabled = false;
-            btnSubmit.style.opacity = "1";
-            btnSubmit.style.cursor = "pointer";
-            btnSubmit.textContent = "GUARDAR CAMBIOS";
-
-            aiBox.innerHTML = `Categoría actual: <b>${carroceriaDetectada}</b>.`;
-            aiContainer.style.backgroundColor = "var(--accent-alpha-15)"; 
-            aiContainer.style.borderLeft = "4px solid var(--accent-lavender)";
-
-            inyectarSelectorManual();
-            document.getElementById('select-manual-body').value = carroceriaDetectada;
         }
     }
 
@@ -106,112 +123,97 @@ document.addEventListener('DOMContentLoaded', () => {
             
             document.getElementById('select-manual-body').addEventListener('change', (e) => {
                 carroceriaDetectada = e.target.value;
-                // Actualizar info visual, manteniendo la validación de la IA
                 aiBox.innerHTML = `
                     <b>Carrocería (Manual):</b> ${carroceriaDetectada}<br>
                     <b>Estado IA:</b> ${estadoGeneralIA} <br>
-                    <b>Precio Sugerido:</b> u$s ${rangoPrecioIA.min} - u$s ${rangoPrecioIA.max}
+                    <b>Daños:</b> ${danosVisiblesIA} <br>
+                    <b>Precio Sugerido:</b> u$s ${rangoPrecioIA.min.toLocaleString()} - u$s ${rangoPrecioIA.max.toLocaleString()}
                 `;
             });
         }
     }
 
-    // --- 2. LÓGICA DE SELECCIÓN Y PROCESAMIENTO DE IMÁGENES ---
+    // --- 2. LÓGICA DE SUBIDA E INTERCEPTADO CON EL BACKEND ---
     dropZone.addEventListener('click', (e) => {
         if (e.target !== fileInput) fileInput.click();
     });
 
-    fileInput.addEventListener('change', function() {
+    fileInput.addEventListener('change', async function() {
         if (this.files && this.files.length > 0) {
             galleryPreview.innerHTML = ""; 
             fotosCargadas = [];
             if(dropText) dropText.style.display = 'none';
 
+            // 1. Mostrar previsualizaciones locales temporalmente
             Array.from(this.files).forEach((file) => {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const img = new Image();
-                    img.src = e.target.result;
-                    img.onload = function() {
-                        const canvas = document.createElement('canvas');
-                        const ctx = canvas.getContext('2d');
-                        
-                        const maxResolution = 1920;
-                        let width = img.width;
-                        let height = img.height;
-
-                        if (width > maxResolution || height > maxResolution) {
-                            if (width > height) {
-                                height *= maxResolution / width;
-                                width = maxResolution;
-                            } else {
-                                width *= maxResolution / height;
-                                height = maxResolution;
-                            }
-                        }
-
-                        canvas.width = width;
-                        canvas.height = height;
-                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                        
-                        const optimizedUrl = canvas.toDataURL('image/webp', 0.8); 
-                        fotosCargadas.push(optimizedUrl);
-                        
-                        const imgThumb = document.createElement('img');
-                        imgThumb.src = optimizedUrl;
-                        imgThumb.classList.add('thumb-preview');
-                        galleryPreview.appendChild(imgThumb);
-                    };
-                };
-                reader.readAsDataURL(file);
+                const imgThumb = document.createElement('img');
+                imgThumb.src = URL.createObjectURL(file);
+                imgThumb.classList.add('thumb-preview', 'loading-thumb');
+                galleryPreview.appendChild(imgThumb);
             });
 
             fotoValidadaIA = false;
             btnSubmit.disabled = true;
-            aiBox.innerHTML = "Analizando daños y estado general con IA...";
+            aiBox.innerHTML = "Subiendo imágenes y analizando daños con IA en servidor...";
             aiContainer.style.backgroundColor = "var(--white-alpha-05)";
-            
-            // Simulación de respuesta IA requerida en doc 4.5
-            setTimeout(() => {
-                const marcaVal = document.getElementById('input-marca').value.trim().toLowerCase();
-                const modeloVal = document.getElementById('input-modelo').value.trim().toLowerCase();
-                const precioUsuario = Number(document.getElementById('input-precio').value) || 10000;
-                const textoBusqueda = `${marcaVal} ${modeloVal}`;
+            aiContainer.style.borderLeft = "4px solid #555";
 
-                const diccionarios = {
-                    "Hatchback": ["golf", "208", "308", "onix", "sandero", "etios", "fiesta", "focus", "argo", "mobi", "kwid", "up"],
-                    "SUV / Crossover": ["sw4", "crv", "tracker", "renegade", "duster", "kicks", "t-cross", "nivus", "compass", "hrv", "ecosport", "taos", "corolla cross"],
-                    "Pickup": ["hilux", "amarok", "ranger", "frontier", "toro", "oroch", "s10", "f150", "ram", "saveiro", "strada"],
-                    "Sedán": ["corolla", "cruze", "cronos", "virtus", "yaris", "civic", "sentra", "logan", "prisma"]
-                };
+            // 2. Construir FormData
+            const formData = new FormData();
+            Array.from(this.files).forEach((file) => {
+                formData.append('images', file);
+            });
 
-                carroceriaDetectada = "Sedán"; 
-                for (const [categoria, palabras] of Object.entries(diccionarios)) {
-                    if (palabras.some(p => textoBusqueda.includes(p))) {
-                        carroceriaDetectada = categoria;
-                        break;
-                    }
+            const marcaVal = document.getElementById('input-marca').value.trim();
+            const modeloVal = document.getElementById('input-modelo').value.trim();
+            const precioVal = document.getElementById('input-precio').value.trim();
+
+            if (!marcaVal || !modeloVal) {
+                if(typeof showToast === 'function') showToast("Por favor, escribí marca y modelo antes de subir imágenes para optimizar el análisis.", "error");
+            }
+
+            try {
+                const queryParams = new URLSearchParams({
+                    brand: marcaVal,
+                    model: modeloVal,
+                    price: precioVal || '10000'
+                });
+
+                // 3. Subir imágenes
+                const res = await fetch(`${API_BASE_URL}/cars/upload-images?${queryParams.toString()}`, {
+                    method: 'POST',
+                    headers: getAuthHeaders(null), // Importante: sin Content-Type JSON para multipart
+                    body: formData
+                });
+                const data = await res.json();
+
+                if (!res.ok) {
+                    throw new Error(data.message || "Error al subir las imágenes.");
                 }
 
-                // Generación de estado pseudo-aleatorio para mock
-                const estadosPosibles = ["Excelente estado", "Buen estado", "Estado regular", "Requiere reparación"];
-                const rnd = Math.random();
-                if(rnd > 0.8) estadoGeneralIA = estadosPosibles[0];
-                else if (rnd > 0.3) estadoGeneralIA = estadosPosibles[1];
-                else if (rnd > 0.1) estadoGeneralIA = estadosPosibles[2];
-                else estadoGeneralIA = estadosPosibles[3];
-
-                danosVisiblesIA = estadoGeneralIA === "Excelente estado" ? "Ninguno detectado" : "Leves rayones en paragolpes";
+                // 4. Guardar las URLs oficiales del servidor
+                fotosCargadas = data.images;
                 
-                // Rango de precio sugerido
-                rangoPrecioIA.min = Math.round(precioUsuario * 0.85);
-                rangoPrecioIA.max = Math.round(precioUsuario * 1.15);
+                // Limpiar previsualizaciones temporales e inyectar las del servidor
+                galleryPreview.innerHTML = "";
+                fotosCargadas.forEach(url => {
+                    const imgThumb = document.createElement('img');
+                    imgThumb.src = url;
+                    imgThumb.classList.add('thumb-preview');
+                    galleryPreview.appendChild(imgThumb);
+                });
+
+                // Cargar análisis del backend
+                carroceriaDetectada = data.aiAnalysis.bodyType;
+                estadoGeneralIA = data.aiAnalysis.aiStatus;
+                danosVisiblesIA = data.aiAnalysis.aiDamages;
+                rangoPrecioIA = data.aiAnalysis.priceRange;
 
                 aiBox.innerHTML = `
                     <b>Carrocería:</b> ${carroceriaDetectada} <br>
                     <b>Estado IA:</b> <span style="color:var(--accent-lavender);">${estadoGeneralIA}</span> <br>
                     <b>Daños:</b> ${danosVisiblesIA} <br>
-                    <b>Precio Sugerido:</b> u$s ${rangoPrecioIA.min} - u$s ${rangoPrecioIA.max}
+                    <b>Precio Sugerido:</b> u$s ${rangoPrecioIA.min.toLocaleString()} - u$s ${rangoPrecioIA.max.toLocaleString()}
                 `;
                 
                 aiContainer.style.backgroundColor = "var(--accent-alpha-15)"; 
@@ -224,65 +226,83 @@ document.addEventListener('DOMContentLoaded', () => {
                 btnSubmit.disabled = false; 
                 btnSubmit.style.opacity = "1";
                 btnSubmit.style.cursor = "pointer";
-            }, 2500);
+
+                if(typeof showToast === 'function') showToast("Imágenes subidas y procesadas con éxito por la IA.", "success");
+
+            } catch (error) {
+                console.error("Error en upload-images:", error);
+                if(typeof showToast === 'function') showToast(error.message || "Error de conexión con el servidor de imágenes.", "error");
+                aiBox.innerHTML = "No se pudo completar el análisis de imágenes.";
+                btnSubmit.disabled = true;
+            }
         }
     });
 
-    // --- 3. ENVÍO DEL FORMULARIO ---
-    publishForm.addEventListener('submit', (e) => {
+    // --- 3. ENVÍO DEL FORMULARIO AL BACKEND ---
+    publishForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
         if (!fotoValidadaIA || fotosCargadas.length === 0) {
-            if(typeof showToast === 'function') showToast("Esperá la validación de la IA o cargá imágenes.", "error");
-            else alert("Por favor, esperá la validación de la IA o cargá imágenes.");
+            if(typeof showToast === 'function') showToast("Esperá a cargar imágenes y a que se complete el análisis IA.", "error");
             return;
         }
 
+        btnSubmit.innerHTML = "GUARDANDO...";
+        btnSubmit.disabled = true;
+
+        const datosAuto = {
+            brand: document.getElementById('input-marca').value.trim(),
+            model: document.getElementById('input-modelo').value.trim(),
+            year: Number(document.getElementById('input-anio').value),
+            price: parseFloat(document.getElementById('input-precio').value),
+            km: Number(document.getElementById('input-km').value),
+            fuel: document.getElementById('input-fuel').value,
+            transmission: document.getElementById('input-trans').value,
+            location: document.getElementById('input-ubicacion').value.trim(),
+            description: document.getElementById('input-descripcion').value.trim(),
+            bodyType: carroceriaDetectada,
+            aiStatus: estadoGeneralIA,
+            aiDamages: danosVisiblesIA,
+            aiPriceMin: Number(rangoPrecioIA.min),
+            aiPriceMax: Number(rangoPrecioIA.max),
+            images: fotosCargadas
+        };
+
         try {
-            let publicaciones = JSON.parse(localStorage.getItem('misAutosPublicados')) || [];
-
-            const datosAuto = {
-                marca: document.getElementById('input-marca').value,
-                modelo: document.getElementById('input-modelo').value,
-                anio: document.getElementById('input-anio').value,
-                precio: document.getElementById('input-precio').value,
-                kilometraje: document.getElementById('input-km').value,
-                combustible: document.getElementById('input-fuel').value,
-                transmision: document.getElementById('input-trans').value,
-                ubicacion: document.getElementById('input-ubicacion').value,
-                descripcion: document.getElementById('input-descripcion').value,
-                // Guardamos los datos de la IA para usarlos en el detalle
-                carroceriaIA: carroceriaDetectada,
-                estadoIA: estadoGeneralIA,
-                danosIA: danosVisiblesIA,
-                precioSugerido: rangoPrecioIA,
-                fotos: fotosCargadas,
-                fotoPrincipal: fotosCargadas[0]
-            };
-
+            let res;
             if (editModeId) {
-                const index = publicaciones.findIndex(a => a.id === editModeId);
-                if (index !== -1) {
-                    publicaciones[index] = { ...publicaciones[index], ...datosAuto };
-                }
+                // Editar existente (PUT /cars/:id)
+                res = await fetch(`${API_BASE_URL}/cars/${editModeId}`, {
+                    method: 'PUT',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(datosAuto)
+                });
             } else {
-                publicaciones.push({ id: Date.now(), ...datosAuto });
+                // Publicar nuevo (POST /cars)
+                res = await fetch(`${API_BASE_URL}/cars`, {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(datosAuto)
+                });
             }
 
-            localStorage.setItem('misAutosPublicados', JSON.stringify(publicaciones));
+            const data = await res.json();
 
-            btnSubmit.innerHTML = "GUARDANDO...";
-            btnSubmit.disabled = true;
+            if (!res.ok) {
+                throw new Error(data.message || "Error al registrar la publicación.");
+            }
 
+            if(typeof showToast === 'function') showToast(editModeId ? "Publicación actualizada con éxito." : "Vehículo publicado con éxito.", "success");
+            
             setTimeout(() => {
-                if(typeof showToast === 'function') showToast(editModeId ? "Publicación actualizada" : "Vehículo publicado", "success");
-                else alert(editModeId ? "Publicación actualizada con éxito." : "Vehículo publicado con éxito.");
-                window.location.href = "profile.html"; // Mismo directorio
+                window.location.href = "profile.html"; 
             }, 1000);
 
         } catch (error) {
-            if(typeof showToast === 'function') showToast("Error: Memoria del navegador llena. Borrá publicaciones antiguas.", "error");
+            console.error("Error al publicar:", error);
+            if(typeof showToast === 'function') showToast(error.message || "Ocurrió un error al guardar en la base de datos.", "error");
             btnSubmit.disabled = false;
+            btnSubmit.innerHTML = editModeId ? "GUARDAR CAMBIOS" : "PUBLICAR VEHÍCULO";
         }
     });
 });

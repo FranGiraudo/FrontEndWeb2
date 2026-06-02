@@ -1,0 +1,8 @@
+{
+  "name": "smartauto-frontend",
+  "version": "1.0.0",
+  "description": "Frontend Vanilla JS",
+  "scripts": {
+    "build": "node build-env.js"
+  }
+}

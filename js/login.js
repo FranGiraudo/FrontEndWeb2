@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // --- LÓGICA DE REGISTRO ---
-    registerForm.addEventListener('submit', (e) => {
+    registerForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
         const password = document.getElementById('reg-pass').value;
@@ -92,11 +92,11 @@ document.addEventListener('DOMContentLoaded', () => {
             telefono: document.getElementById('reg-tel').value,
             direccion: document.getElementById('reg-dir').value,
             email: document.getElementById('reg-email').value,
-            password: password, // Se ofusca adentro de registerUserInDB
+            password: password, 
             rol: isVendedorChecked ? 'vendedor' : 'comprador'
         };
 
-        const response = registerUserInDB(newUser);
+        const response = await registerUserInDB(newUser);
 
         if (!response.success) {
             showToast(response.error, "error");
@@ -112,25 +112,26 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // --- LÓGICA DE LOGIN ---
-    loginForm.addEventListener('submit', (e) => {
+    loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
         const email = document.getElementById('login-email').value;
         const password = document.getElementById('login-password').value;
 
-        const response = authenticateUserInDB(email, password);
+        const response = await authenticateUserInDB(email, password);
 
         if (response.success) {
             const sessionData = {
                 email: response.user.email,
-                role: response.user.rol,
+                role: response.user.role || response.user.rol,
                 nombre: response.user.nombre,
-                loggedAt: new Date().getTime()
+                token: response.access_token,
+                loggedAt: response.user.loggedAt || new Date().getTime()
             };
             
             localStorage.setItem('user_session', JSON.stringify(sessionData));
             
-            // FIX: Redirección dinámica según la nueva estructura de carpetas
+            // Redirección al index
             window.location.href = "../index.html";
         } else {
             showToast(response.error, "error");

@@ -3,7 +3,7 @@
  * Controlador de la VISTA.
  */
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     const container = document.getElementById('car-detail-content');
     
     // Obtener sesión
@@ -30,26 +30,30 @@ document.addEventListener('DOMContentLoaded', () => {
         carroceria: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M14 5a1 1 0 0 1 .694 .28l.087 .095l3.699 4.625h.52a3 3 0 0 1 2.995 2.824l.005 .176v4a1 1 0 0 1 -1 1h-1.171a3.001 3.001 0 0 1 -5.658 0h-4.342a3.001 3.001 0 0 1 -5.658 0h-1.171a1 1 0 0 1 -1 -1v-6l.007 -.117l.008 -.056l.017 -.078l.012 -.036l.014 -.05l2.014 -5.034a1 1 0 0 1 .928 -.629zm-7 11a1 1 0 1 0 0 2a1 1 0 0 0 0 -2m10 0a1 1 0 1 0 0 2a1 1 0 0 0 0 -2m-6 -9h-5.324l-1.2 3h6.524zm2.52 0h-.52v3h2.92z" /></svg>`
     };
 
-    // --- 1. Obtener auto ---
-    const allCars = typeof getAllCars === 'function' ? getAllCars() : [];
-    const car = allCars.find(c => c.id === carId);
+    // --- 1. Obtener auto de la API ---
+    if (typeof getCarById !== 'function') {
+        console.error('getCarById no está definido en database.js');
+        return;
+    }
+    
+    const car = await getCarById(carId);
 
     if (!car) {
         if(container) container.innerHTML = `<div class="error-msg" style="text-align:center; padding: 4rem;"><h2>Vehículo no encontrado</h2><a href="index.html" class="btn-detail">Volver</a></div>`;
         return;
     }
 
-    // --- 2. Registro de Visita ---
+    // --- 2. Registro de Visita (El backend registra la visita automáticamente al obtener por ID) ---
     const sessionKey = `viewed_${car.id}`;
     if (!sessionStorage.getItem(sessionKey)) {
         if (typeof trackMetric === 'function') trackMetric(car.id, 'visitas');
         sessionStorage.setItem(sessionKey, 'true');
     }
 
-    carImages = car.images;
+    carImages = car.images && car.images.length > 0 ? car.images : [car.image];
 
-    // --- 3. Generar Botón Favoritos ---
-    const isFav = (isComprador && userIdentifier) ? isCarFavorite(userIdentifier, car.id) : false;
+    // --- 3. Generar Botón Favoritos (Asíncrono) ---
+    const isFav = (isComprador && userIdentifier) ? await isCarFavorite(userIdentifier, car.id) : false;
     let htmlFavorito = '';
     if (isComprador) {
         htmlFavorito = `
@@ -61,6 +65,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- 4. Inyectar Contenido ---
     if(container) {
+        // En caso de que no tenga IA de precio sugerido, estimamos
+        const sugMin = car.aiPriceMin || Math.round(car.price * 0.85);
+        const sugMax = car.aiPriceMax || Math.round(car.price * 1.15);
+
+        // Caja de Análisis IA
+        const hasAiData = car.aiStatus || car.aiDamages;
+        const aiInfoHtml = hasAiData ? `
+            <div class="ai-info-box" style="margin-top: 1.5rem; background: var(--accent-alpha-15); border-left: 4px solid var(--accent-lavender); padding: 1rem; border-radius: 0.5rem; font-size: 0.85rem; line-height: 1.5;">
+                <h4 style="color: var(--accent-lavender); font-weight: 700; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 6px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>
+                    Análisis Inteligente SmartAuto
+                </h4>
+                <p style="margin: 0; color: #eee;">
+                    <b>Estado Detectado:</b> <span style="color: var(--accent-lavender); font-weight: 600;">${car.aiStatus || 'Excelente estado'}</span><br>
+                    <b>Daños en Chapa/Pintura:</b> ${car.aiDamages || 'Ninguno detectado'}<br>
+                    <b>Valoración Sugerida:</b> u$s ${sugMin.toLocaleString()} - u$s ${sugMax.toLocaleString()}
+                </p>
+            </div>
+        ` : '';
+
         container.innerHTML = `
             <div class="gallery-column">
                 <div class="main-photo-wrapper" id="main-photo-container">
@@ -71,6 +95,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="thumbnail-carousel">
                     ${carImages.map((img, i) => `<img src="${img}" class="thumb-img ${i===0?'active':''}" data-index="${i}">`).join('')}
                 </div>
+
+                ${aiInfoHtml}
 
                 <div class="details-section">
                     <h3>Especificaciones Técnicas</h3>
@@ -114,7 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 
                 <div class="price-box">
-                    <p style="font-size: 0.7rem; text-transform: uppercase;">Valor Sugerido IA</p>
+                    <p style="font-size: 0.7rem; text-transform: uppercase;">Precio Publicado</p>
                     <h2 class="price-value">u$s ${Number(car.price).toLocaleString()}</h2>
                 </div>
                 
@@ -137,11 +163,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // A) Favoritos
     const btnDetailFav = document.getElementById('btn-detail-favorite');
     if (btnDetailFav) {
-        btnDetailFav.addEventListener('click', (e) => {
+        btnDetailFav.addEventListener('click', async (e) => {
             e.preventDefault();
             e.stopPropagation();
             
-            const isAdded = toggleFavoriteStatus(userIdentifier, car.id);
+            btnDetailFav.disabled = true;
+            const isAdded = await toggleFavoriteStatus(userIdentifier, car.id);
+            btnDetailFav.disabled = false;
+
             if (isAdded) {
                 btnDetailFav.classList.add('active');
                 btnDetailFav.title = 'Quitar de favoritos';
@@ -208,18 +237,15 @@ document.addEventListener('DOMContentLoaded', () => {
             e.stopPropagation();
             
             if (!isLightboxZoomed) {
-                // Calculamos en qué porcentaje de la imagen hizo clic el usuario
                 const rect = lightboxImg.getBoundingClientRect();
                 const x = ((e.clientX - rect.left) / rect.width) * 100;
                 const y = ((e.clientY - rect.top) / rect.height) * 100;
                 
-                // Centramos el origen de la transformación justo donde hizo clic
                 lightboxImg.style.transformOrigin = `${x}% ${y}%`;
                 lightboxImg.style.transform = 'scale(2.5)'; // Aumento
                 lightboxImg.style.cursor = 'zoom-out';
                 isLightboxZoomed = true;
             } else {
-                // Si ya está con zoom, lo alejamos
                 resetLightboxZoom();
             }
         });
@@ -265,15 +291,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // D) Formulario de Contacto
+    // D) Formulario de Contacto (Mensajería Asíncrona)
     const contactForm = document.getElementById('form-contactar-vendedor');
     if (contactForm) {
-        contactForm.addEventListener('submit', (event) => {
+        contactForm.addEventListener('submit', async (event) => {
             event.preventDefault();
 
             if (!sessionData) {
                 if(typeof showToast === 'function') showToast("Debes iniciar sesión para consultar.", "error");
-                window.location.href = "login.html";
+                setTimeout(() => {
+                    window.location.href = "login.html";
+                }, 1000);
                 return;
             }
 
@@ -289,8 +317,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
+            const btnSubmit = contactForm.querySelector('button[type="submit"]');
+            btnSubmit.disabled = true;
+
             if (typeof sendInquiryToSeller === 'function') {
-                const response = sendInquiryToSeller(car.id, sessionData.email, sessionData.nombre, messageText);
+                const response = await sendInquiryToSeller(car.id, sessionData.email, sessionData.nombre, messageText);
+                btnSubmit.disabled = false;
 
                 if (response.success) {
                     if(typeof showToast === 'function') showToast("Consulta enviada con éxito.", "success");
