@@ -16,8 +16,8 @@
     <main class="profile-container">
         <aside class="profile-sidebar">
             <div class="user-info">
-                <div class="avatar" id="user-avatar">U</div>
-                <h2 id="display-name">Cargando...</h2>
+                <div class="avatar" id="user-avatar" style="position: relative; overflow: hidden; background-size: cover; background-position: center;">U</div>
+                <h2 id="display-name" style="margin-top: 10px;">Cargando...</h2>
                 <p id="display-email" style="font-size: 0.8rem; opacity: 0.7; margin-bottom: 5px;"></p>
                 <span class="badge-role" id="display-role">Rol</span>
             </div>
@@ -32,6 +32,7 @@
             <nav class="sidebar-nav" id="profile-nav">
                 <a href="#" id="nav-panel-general" class="active">Panel General</a>
                 <a href="#" id="nav-consultas">Consultas</a>
+                <a href="#" id="nav-edit-profile">Configurar Perfil</a>
                 <a href="../index.html">Explorar Marketplace</a>
                 <a href="#" class="logout-danger" id="btn-logout-sidebar">Cerrar Sesión</a>
             </nav>
@@ -67,12 +68,51 @@
         </section>
     </main>
 
-    <div id="delete-toast" class="toast-container">
-        <div class="confirmation-toast">
-            <span class="toast-message">¿Estás seguro de que querés eliminar esta publicación?</span>
-            <div class="toast-actions">
-                <button id="cancel-delete" class="btn-toast btn-toast-cancel">Cancelar</button>
-                <button id="confirm-delete" class="btn-toast btn-toast-confirm">Eliminar</button>
+    <div id="delete-toast" class="toast-container center-modal">
+        <div class="confirmation-toast" style="background: var(--bg-elevated); padding: 20px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center;">
+            <span class="toast-message" style="display: block; margin-bottom: 15px; color: var(--text-main);">¿Estás seguro de que querés eliminar esta publicación?</span>
+            <div class="toast-actions" style="display: flex; gap: 10px; justify-content: center;">
+                <button id="cancel-delete" class="btn-reset" style="padding: 10px 20px;">Cancelar</button>
+                <button id="confirm-delete" class="btn-submit" style="background: var(--error); padding: 10px 20px;">Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Editar Perfil -->
+    <div id="edit-profile-modal" class="modal-overlay" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 10000; align-items: center; justify-content: center;">
+        <div class="modal-content" style="background: var(--bg-shark); padding: 30px; border-radius: 16px; border: 1px solid var(--border); width: 90%; max-width: 400px; max-height: 90vh; overflow-y: auto;">
+            <h2 style="color: var(--text-main); margin-bottom: 20px; text-align: center;">Editar Perfil</h2>
+            <div style="display: flex; flex-direction: column; align-items: center; margin-bottom: 20px;">
+                <div id="modal-avatar-preview" style="width: 100px; height: 100px; border-radius: 50%; background: var(--bg-elevated); background-size: cover; background-position: center; margin-bottom: 10px; border: 2px solid var(--accent-lavender); display: flex; align-items: center; justify-content: center; font-size: 2rem; color: var(--text-main);">U</div>
+                <button id="btn-change-modal-avatar" class="btn-detail" style="font-size: 0.8rem; padding: 6px 12px;">Cambiar Foto</button>
+                <input type="file" id="modal-input-avatar" style="display: none;" accept="image/jpeg, image/png, image/webp">
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; color: var(--text-slate); margin-bottom: 5px; font-size: 0.85rem;">Nombre</label>
+                <input type="text" id="modal-input-nombre" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-elevated); color: var(--text-main);">
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; color: var(--text-slate); margin-bottom: 5px; font-size: 0.85rem;">Apellido</label>
+                <input type="text" id="modal-input-apellido" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-elevated); color: var(--text-main);">
+            </div>
+            <div style="margin-bottom: 25px;">
+                <label style="display: block; color: var(--text-slate); margin-bottom: 5px; font-size: 0.85rem;">Descripción (Público)</label>
+                <textarea id="modal-input-desc" rows="3" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-elevated); color: var(--text-main); resize: none;" placeholder="Ej. Concesionario Oficial Honda..."></textarea>
+            </div>
+            <div style="margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; background: var(--bg-elevated); padding: 10px 15px; border-radius: 8px; border: 1px solid var(--border);">
+                <label style="color: var(--text-slate); font-size: 0.85rem; margin: 0; font-weight: 600;">Tema Visual</label>
+                <select id="modal-theme-select" style="background: var(--bg-shark); color: var(--text-main); border: 1px solid var(--border); border-radius: 6px; padding: 5px 10px; font-size: 0.85rem; cursor: pointer; outline: none;">
+                    <option value="default">Naranja y Azul (Oscuro)</option>
+                    <option value="theme-violeta">Violeta</option>
+                    <option value="theme-azul">Azul</option>
+                    <option value="theme-azul-celeste">Azul y Celeste</option>
+                    <option value="theme-amarillo">Amarillo</option>
+                    <option value="theme-rojo">Rojo</option>
+                </select>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button id="btn-cancel-profile" class="btn-reset" style="flex: 1; padding: 10px;">Cancelar</button>
+                <button id="btn-save-profile" class="btn-submit" style="flex: 1; padding: 10px;">Guardar</button>
             </div>
         </div>
     </div>

@@ -64,10 +64,10 @@ function applySessionToNav(inPages) {
         // Agregar botón Salir si aún no existe
         if (navList && !document.getElementById('logout-btn')) {
             const li = document.createElement('li');
+            li.className = 'logout-item';
             const a = document.createElement('a');
             a.href = '#';
             a.id = 'logout-btn';
-            a.className = 'logout-link';
             a.textContent = 'Salir';
             a.addEventListener('click', (e) => {
                 e.preventDefault();

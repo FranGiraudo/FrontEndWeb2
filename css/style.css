@@ -15,6 +15,7 @@
 
     --text-slate: #CBD5F5;      
     --text-muted: #94A3B8;
+    --text-main: #F8FAFC;
     --white: #F8FAFC;
 
     --border: #334155;          
@@ -73,6 +74,145 @@ body {
     color: var(--text-slate);
     line-height: 1.6;
     overflow-x: hidden;
+    --glass-bg: rgba(30, 41, 59, 0.4);
+    --glass-border: rgba(255, 255, 255, 0.08);
+}
+
+
+
+.theme-violeta {
+    --bg-shark: #15151D;
+    --card-bg: #1F1F2A;
+    --bg-elevated: #2A2A35;
+    --bg-hover: #333344;
+    --bg-darker: #0E0E14;
+
+    --accent-lavender: #6D28D9;
+    --accent-hover: #A78BFA;
+    --accent-hover-dark: #5B21B6;
+    --dark-don-juan: #3B1A5A;
+
+    --text-slate: #B5B5C3;
+    --text-muted: #9CA3AF;
+    --text-main: #F8FAFC;
+    --white: #F3F4F6;
+    
+    --border: #2A2A35;
+    --border-hover: #3F3F5A;
+    --btn-disabled: #2A2A35;
+
+    --accent-alpha-05: rgba(109, 40, 217, 0.05);
+    --accent-alpha-10: rgba(109, 40, 217, 0.1);
+    --accent-alpha-15: rgba(109, 40, 217, 0.15);
+    --accent-alpha-20: rgba(109, 40, 217, 0.2);
+}
+
+.theme-azul {
+    --bg-shark: #0A0F1A;
+    --card-bg: #121826;
+    --bg-elevated: #1A2235;
+    --bg-hover: #252F48;
+    --bg-darker: #05080F;
+
+    --accent-lavender: #3B82F6;
+    --accent-hover: #60A5FA;
+    --accent-hover-dark: #2563EB;
+    --dark-don-juan: #1E3A8A;
+
+    --text-slate: #9CA3AF;
+    --text-muted: #6B7280;
+    --text-main: #F8FAFC;
+    --white: #E5E7EB;
+    
+    --border: #1F2937;
+    --border-hover: #374151;
+    --btn-disabled: #1F2937;
+
+    --accent-alpha-05: rgba(59, 130, 246, 0.05);
+    --accent-alpha-10: rgba(59, 130, 246, 0.1);
+    --accent-alpha-15: rgba(59, 130, 246, 0.15);
+    --accent-alpha-20: rgba(59, 130, 246, 0.2);
+}
+
+.theme-azul-celeste {
+    --bg-shark: #020617;        
+    --card-bg: #0F172A;         
+    --bg-elevated: #1E293B;     
+    --bg-hover: #334155;        
+    --bg-darker: #020617;       
+
+    --accent-lavender: #2563EB; 
+    --accent-hover: #38BDF8;    
+    --accent-hover-dark: #1D4ED8;
+    --dark-don-juan: #1E40AF;   
+
+    --text-slate: #94A3B8;      
+    --text-muted: #64748B;
+    --text-main: #F8FAFC;
+    --white: #F1F5F9;
+
+    --border: #1E293B;          
+    --border-hover: #334155;
+    --btn-disabled: #374151;
+
+    --accent-alpha-05: rgba(37, 99, 235, 0.05);
+    --accent-alpha-10: rgba(37, 99, 235, 0.1);
+    --accent-alpha-15: rgba(37, 99, 235, 0.15);
+    --accent-alpha-20: rgba(37, 99, 235, 0.2);
+}
+
+.theme-amarillo {
+    --bg-shark: #1A1A1A;        
+    --card-bg: #242424;         
+    --bg-elevated: #2E2E2E;     
+    --bg-hover: #3D3D3D;        
+    --bg-darker: #121212;       
+
+    --accent-lavender: #EAB308; 
+    --accent-hover: #FDE047;    
+    --accent-hover-dark: #CA8A04;
+    --dark-don-juan: #854D0E;   
+
+    --text-slate: #D4D4D8;      
+    --text-muted: #A1A1AA;
+    --text-main: #F8FAFC;
+    --white: #FAFAFA;
+
+    --border: #3F3F46;          
+    --border-hover: #52525B;
+    --btn-disabled: #3F3F46;
+
+    --accent-alpha-05: rgba(234, 179, 8, 0.05);
+    --accent-alpha-10: rgba(234, 179, 8, 0.1);
+    --accent-alpha-15: rgba(234, 179, 8, 0.15);
+    --accent-alpha-20: rgba(234, 179, 8, 0.2);
+}
+
+.theme-rojo {
+    --bg-shark: #1A0F0F;        
+    --card-bg: #261616;         
+    --bg-elevated: #361F1F;     
+    --bg-hover: #4A2929;        
+    --bg-darker: #0F0808;       
+
+    --accent-lavender: #EF4444; 
+    --accent-hover: #F87171;    
+    --accent-hover-dark: #DC2626;
+    --dark-don-juan: #991B1B;   
+
+    --text-slate: #FECACA;      
+    --text-muted: #FCA5A5;
+    --text-main: #F8FAFC;
+    --white: #FEF2F2;
+
+    --border: #451A1A;          
+    --border-hover: #7F1D1D;
+    --btn-disabled: #451A1A;
+
+    --accent-alpha-05: rgba(239, 68, 68, 0.05);
+    --accent-alpha-10: rgba(239, 68, 68, 0.1);
+    --accent-alpha-15: rgba(239, 68, 68, 0.15);
+    --accent-alpha-20: rgba(239, 68, 68, 0.2);
 }
 
 /* ==========================================================================
@@ -192,36 +332,7 @@ nav ul li a:hover::after, nav ul li a.active-page::after {
     width: 100%;
 }
 
-.logout-link { 
-    color: var(--white) !important; 
-    background: var(--black-alpha-15) !important; 
-    border: 0.0625rem solid var(--white-alpha-10) !important; 
-    font-weight: 700 !important;
-    padding: 0.4rem 1.2rem !important; 
-    border-radius: 2rem !important; 
-    opacity: 0.9 !important;
-    transition: all 0.3s ease;
-    display: inline-flex !important; 
-    align-items: center;
-    justify-content: center;
-    white-space: nowrap !important; 
-    flex-shrink: 0 !important; 
-    text-decoration: none !important;
-    margin-left: 0.5rem;
-}
 
-.logout-link::after {
-    display: none !important;
-}
-
-.logout-link:hover { 
-    background: var(--error) !important; 
-    border-color: var(--error) !important;
-    color: var(--white) !important; 
-    opacity: 1 !important;
-    transform: translateY(-0.125rem);
-    box-shadow: 0 0.25rem 0.75rem var(--black-alpha-30);
-}
 
 /* FIX: NAVBAR MOBILE CENTRADA */
 @media (max-width: 48rem) {
@@ -258,7 +369,7 @@ nav ul li a:hover::after, nav ul li a.active-page::after {
         margin-left: 0 !important;
     }
     
-    #logout-btn {
+    .logout-item {
         display: none !important;
     }
 }
@@ -298,6 +409,14 @@ nav ul li a:hover::after, nav ul li a.active-page::after {
     width: 1.5rem;
     height: 1.5rem;
     flex-shrink: 0;
+}
+
+/* THEME TOGGLE SLIDER */
+#modal-theme-toggle:checked ~ .slider {
+    background-color: var(--accent-lavender) !important;
+}
+#modal-theme-toggle:checked ~ .slider .slider-circle {
+    transform: translateX(20px);
 }
 
 .toast.success {
@@ -372,8 +491,11 @@ nav ul li a:hover::after, nav ul li a.active-page::after {
     position: fixed !important;
     top: 0 !important;
     left: 0 !important;
-    width: 100% !important;
-    height: 100% !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: none !important;
     margin: 0 !important;
     background: var(--black-alpha-60) !important;
     backdrop-filter: blur(8px) !important;

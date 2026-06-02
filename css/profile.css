@@ -133,7 +133,7 @@
     font-size: 2.2rem;
     font-weight: 800;
     letter-spacing: -0.0625rem;
-    color: var(--white);
+    color: var(--text-main);
     margin-bottom: 0.5rem;
 }
 
@@ -207,7 +207,7 @@
 .mini-card-header h4 {
     font-size: 1.3rem;
     font-weight: 700;
-    color: var(--white);
+    color: var(--text-main);
 }
 
 .mini-price {
@@ -254,7 +254,7 @@
 .stat-value {
     font-size: 1.2rem;
     font-weight: 800;
-    color: var(--white);
+    color: var(--text-main);
 }
 
 /* Acciones */

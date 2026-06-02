@@ -74,10 +74,170 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (displayName) displayName.textContent = nombreUsuario;
     if (displayEmail) displayEmail.textContent = session.email;
     if (displayRole) displayRole.textContent = session.role;
-    if (userAvatar) userAvatar.textContent = nombreUsuario.charAt(0).toUpperCase();
+    if (userAvatar) {
+        if (session.avatarUrl) {
+            userAvatar.style.backgroundImage = `url(${session.avatarUrl})`;
+            userAvatar.textContent = '';
+        } else {
+            userAvatar.textContent = nombreUsuario.charAt(0).toUpperCase();
+        }
+    }
 
     if (navConsultas) {
         navConsultas.textContent = session.role === 'vendedor' ? 'Consultas Recibidas' : 'Consultas Realizadas';
+    }
+
+    // --- NUEVA LÓGICA DE EDICIÓN DE PERFIL (MODAL) ---
+    const navEditProfile = document.getElementById('nav-edit-profile');
+    const modalEditProfile = document.getElementById('edit-profile-modal');
+    const btnCancelProfile = document.getElementById('btn-cancel-profile');
+    const btnSaveProfile = document.getElementById('btn-save-profile');
+    const btnChangeModalAvatar = document.getElementById('btn-change-modal-avatar');
+    const modalInputAvatar = document.getElementById('modal-input-avatar');
+    const modalAvatarPreview = document.getElementById('modal-avatar-preview');
+    
+    let tempAvatarFile = null;
+    let tempAvatarUrl = session.avatarUrl;
+
+    if (navEditProfile && modalEditProfile) {
+        navEditProfile.addEventListener('click', async (e) => {
+            e.preventDefault();
+            
+            // Pre-llenar datos
+            const res = await fetch(`${API_BASE_URL}/auth/me`, { headers: getAuthHeaders() });
+            if (res.ok) {
+                const userData = await res.json();
+                document.getElementById('modal-input-nombre').value = userData.nombre || '';
+                document.getElementById('modal-input-apellido').value = userData.apellido || '';
+                document.getElementById('modal-input-desc').value = userData.descripcion || '';
+                
+                tempAvatarUrl = userData.avatarUrl;
+                if (tempAvatarUrl) {
+                    modalAvatarPreview.style.backgroundImage = `url(${tempAvatarUrl})`;
+                    modalAvatarPreview.textContent = '';
+                } else {
+                    modalAvatarPreview.textContent = (userData.nombre || session.nombre).charAt(0).toUpperCase();
+                }
+            }
+            
+            // Set initial theme switch state
+            const modalThemeSelect = document.getElementById('modal-theme-select');
+            if (modalThemeSelect) {
+                const currentTheme = localStorage.getItem('theme') || 'default';
+                modalThemeSelect.value = currentTheme;
+            }
+            
+            modalEditProfile.style.display = 'flex';
+            document.querySelectorAll('#profile-nav a').forEach(a => a.classList.remove('active'));
+            navEditProfile.classList.add('active');
+        });
+
+        btnCancelProfile.addEventListener('click', () => {
+            modalEditProfile.style.display = 'none';
+            tempAvatarFile = null;
+        });
+
+        btnChangeModalAvatar.addEventListener('click', () => {
+            modalInputAvatar.click();
+        });
+
+        modalInputAvatar.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                tempAvatarFile = file;
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    modalAvatarPreview.style.backgroundImage = `url(${ev.target.result})`;
+                    modalAvatarPreview.textContent = '';
+                };
+                reader.readAsDataURL(file);
+            }
+            // Limpiar el input para que detecte si se vuelve a elegir la misma imagen u otra
+            e.target.value = '';
+        });
+
+        const modalThemeSelect = document.getElementById('modal-theme-select');
+        if (modalThemeSelect) {
+            modalThemeSelect.addEventListener('change', (e) => {
+                // Quitar todos los temas posibles
+                document.documentElement.classList.remove(
+                    'light-theme', 
+                    'theme-violeta', 
+                    'theme-azul', 
+                    'theme-azul-celeste', 
+                    'theme-amarillo', 
+                    'theme-rojo'
+                );
+                
+                const newTheme = e.target.value;
+                if (newTheme !== 'default') {
+                    document.documentElement.classList.add(newTheme);
+                }
+                
+                localStorage.setItem('theme', newTheme);
+            });
+        }
+
+        btnSaveProfile.addEventListener('click', async () => {
+            const btnOriginalText = btnSaveProfile.textContent;
+            btnSaveProfile.textContent = "Guardando...";
+            btnSaveProfile.disabled = true;
+
+            try {
+                // Si hay nueva foto, subirla primero
+                let finalAvatarUrl = tempAvatarUrl;
+                if (tempAvatarFile) {
+                    const formData = new FormData();
+                    formData.append('avatar', tempAvatarFile);
+                    const uploadRes = await fetch(`${API_BASE_URL}/auth/upload-avatar`, {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${session.token}` },
+                        body: formData
+                    });
+                    if (uploadRes.ok) {
+                        const data = await uploadRes.json();
+                        finalAvatarUrl = data.url;
+                    } else {
+                        throw new Error('Falló subida de imagen');
+                    }
+                }
+
+                // Guardar perfil completo
+                const payload = {
+                    nombre: document.getElementById('modal-input-nombre').value,
+                    apellido: document.getElementById('modal-input-apellido').value,
+                    descripcion: document.getElementById('modal-input-desc').value,
+                    avatarUrl: finalAvatarUrl
+                };
+
+                const updateRes = await fetch(`${API_BASE_URL}/auth/me`, {
+                    method: 'PUT',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(payload)
+                });
+
+                if (updateRes.ok) {
+                    const updateData = await updateRes.json();
+                    
+                    // Actualizar sesión local
+                    const s = JSON.parse(localStorage.getItem('user_session'));
+                    s.nombre = updateData.user.nombre;
+                    s.avatarUrl = updateData.user.avatarUrl;
+                    localStorage.setItem('user_session', JSON.stringify(s));
+
+                    if(typeof showToast === 'function') showToast("Perfil actualizado con éxito.", "success");
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    if(typeof showToast === 'function') showToast("Error al actualizar perfil.", "error");
+                }
+            } catch (err) {
+                console.error(err);
+                if(typeof showToast === 'function') showToast("Error de conexión.", "error");
+            } finally {
+                btnSaveProfile.textContent = btnOriginalText;
+                btnSaveProfile.disabled = false;
+            }
+        });
     }
 
     // Mostrar el panel correspondiente antes de hacer fetch (evita el flash de contenido vacío)
@@ -182,12 +342,18 @@ window.showDeleteToast = function(id, type = 'car') {
         message.textContent = "¿Estás seguro de que querés eliminar esta conversación?";
     }
     
-    if (toast) toast.classList.add('show');
+    if (toast) {
+        toast.style.display = 'block';
+        toast.classList.add('show');
+    }
 }
 
 window.hideDeleteToast = function() {
     const toast = document.getElementById('delete-toast');
-    if (toast) toast.classList.remove('show');
+    if (toast) {
+        toast.style.display = 'none';
+        toast.classList.remove('show');
+    }
     window.carIdToDelete = null;
     window.chatIdToDelete = null;
 }
@@ -409,10 +575,10 @@ async function renderizarBandejaMensajes(userEmail, userRole) {
         const isUnanswered = estaSinResponder(msg);
         const replies = msg.replies || [];
 
-        let chatHistoryHTML = `<div style="display: flex; flex-direction: column; gap: 8px; margin-top: 10px;"><div style="align-self: ${userRole === 'comprador' ? 'flex-end' : 'flex-start'}; background: ${userRole === 'comprador' ? 'var(--accent-lavender)' : 'rgba(255,255,255,0.05)'}; color: ${userRole === 'comprador' ? 'var(--bg-shark)' : 'white'}; padding: 10px 14px; border-radius: 12px; max-width: 85%; font-size: 0.9rem; border: 1px solid rgba(255,255,255,0.1);"><strong style="font-size: 0.75rem; display: block; margin-bottom: 4px; opacity: 0.8;">${msg.senderName}</strong>${msg.text}</div>`;
+        let chatHistoryHTML = `<div style="display: flex; flex-direction: column; gap: 12px; margin-top: 10px; padding: 10px 0;"><div style="align-self: ${userRole === 'comprador' ? 'flex-end' : 'flex-start'}; background: ${userRole === 'comprador' ? 'linear-gradient(135deg, var(--accent-lavender), var(--accent-hover-dark))' : 'var(--bg-elevated)'}; color: ${userRole === 'comprador' ? 'var(--white)' : 'var(--white)'}; padding: 12px 16px; border-radius: ${userRole === 'comprador' ? '18px 18px 0px 18px' : '18px 18px 18px 0px'}; max-width: 85%; font-size: 0.95rem; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 4px 6px rgba(0,0,0,0.1);"><strong style="font-size: 0.75rem; display: block; margin-bottom: 6px; opacity: 0.7; text-transform: uppercase;">${msg.senderName}</strong>${msg.text}</div>`;
         replies.forEach(r => {
             const isMe = r.senderRole === userRole;
-            chatHistoryHTML += `<div style="align-self: ${isMe ? 'flex-end' : 'flex-start'}; background: ${isMe ? 'var(--accent-lavender)' : 'rgba(255,255,255,0.05)'}; color: ${isMe ? 'var(--bg-shark)' : 'white'}; padding: 10px 14px; border-radius: 12px; max-width: 85%; font-size: 0.9rem; border: 1px solid rgba(255,255,255,0.1);"><strong style="font-size: 0.75rem; display: block; margin-bottom: 4px; opacity: 0.8;">${r.senderName}</strong>${r.text}</div>`;
+            chatHistoryHTML += `<div style="align-self: ${isMe ? 'flex-end' : 'flex-start'}; background: ${isMe ? 'linear-gradient(135deg, var(--accent-lavender), var(--accent-hover-dark))' : 'var(--bg-elevated)'}; color: ${isMe ? 'var(--white)' : 'var(--white)'}; padding: 12px 16px; border-radius: ${isMe ? '18px 18px 0px 18px' : '18px 18px 18px 0px'}; max-width: 85%; font-size: 0.95rem; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 4px 6px rgba(0,0,0,0.1);"><strong style="font-size: 0.75rem; display: block; margin-bottom: 6px; opacity: 0.7; text-transform: uppercase;">${r.senderName}</strong>${r.text}</div>`;
         });
         chatHistoryHTML += `</div>`;
 

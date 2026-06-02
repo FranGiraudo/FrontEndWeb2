@@ -1,4 +1,14 @@
-// js/utils.js — Utilidades compartidas entre todas las páginas
+// js/utils.js — Funciones de utilidad y formato para SmartAuto
+
+// --- APLICACIÓN INICIAL DE TEMA ---
+(function() {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme && savedTheme !== 'default' && savedTheme !== 'dark') {
+        document.documentElement.classList.add(savedTheme);
+    }
+})();
+
+// --- FORMATEO ---
 
 function showToast(message, type = 'success') {
     let container = document.querySelector('.toast-container');
