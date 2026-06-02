@@ -2,15 +2,11 @@
 
 document.addEventListener('DOMContentLoaded', async () => {
     // --- 0. CONTROL DE SEGURIDAD Y ACCESO (Route Guard) ---
-    let session = null;
-    try {
-        session = JSON.parse(localStorage.getItem('user_session'));
-    } catch (e) {
-        console.error("Error leyendo la sesión", e);
-    }
+    // getSession() viene de database.js y valida expiración del JWT
+    const session = (typeof getSession === 'function') ? getSession() : null;
 
     if (!session) {
-        window.location.href = "login.html"; 
+        window.location.href = "login.html";
         return;
     }
 
