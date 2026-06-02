@@ -135,6 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.getElementById('busqueda');
     
     let allCars = [];
+    let cachedFavsList = null;
 
     const normalizar = (texto) => texto ? texto.toString().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim() : "";
 
@@ -204,8 +205,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const isComprador = session && session.role === 'comprador';
         const userIdentifier = session ? session.email : null; 
         
-        // Obtener favoritos de forma asíncrona una sola vez para esta renderización
-        const favsList = (isComprador && userIdentifier) ? await getUserFavorites(userIdentifier) : [];
+        // Obtener favoritos una sola vez y cachearlos para evitar un fetch por cada filtro
+        if (isComprador && userIdentifier && cachedFavsList === null) {
+            cachedFavsList = await getUserFavorites(userIdentifier);
+        }
+        const favsList = cachedFavsList || [];
 
         list.forEach(car => {
             const isSelected = window.vehiculosAComparar.includes(car.id);
@@ -235,8 +239,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 const idStr = e.currentTarget.getAttribute('data-fav-id');
                 const id = isNaN(idStr) ? idStr : Number(idStr);
                 
-                e.currentTarget.disabled = true; // Evitar spam clicks
+                e.currentTarget.disabled = true;
                 const isAdded = await toggleFavoriteStatus(userIdentifier, id);
+                cachedFavsList = null; // invalidar caché para reflejar el cambio en el próximo render
                 e.currentTarget.disabled = false;
 
                 if (isAdded) {

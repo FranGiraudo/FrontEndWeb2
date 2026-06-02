@@ -1,7 +1,8 @@
 // js/login.js
 
-if (localStorage.getItem('user_session')) {
-    window.location.href = "profile.html"; 
+// getSession() viene de database.js (cargado antes) — valida expiración del token
+if (typeof getSession === 'function' ? getSession() : localStorage.getItem('user_session')) {
+    window.location.href = "profile.html";
 }
 
 // --- FUNCIÓN GLOBAL DE NOTIFICACIONES TOAST ---
