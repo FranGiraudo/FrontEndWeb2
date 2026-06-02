@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     async function getProfileInfo() {
         try {
-            const res = await fetch('http://localhost:3000/api/auth/me', {
+            const res = await fetch(`${API_BASE_URL}/auth/me`, {
                 headers: getAuthHeaders()
             });
             if (res.ok) {
@@ -200,7 +200,7 @@ window.confirmarEliminarChat = function(id) {
 
 async function ejecutarEliminacionReal(id) {
     try {
-        const res = await fetch(`http://localhost:3000/api/cars/${id}`, {
+        const res = await fetch(`${API_BASE_URL}/cars/${id}`, {
             method: 'DELETE',
             headers: getAuthHeaders()
         });
@@ -222,7 +222,7 @@ async function ejecutarEliminacionReal(id) {
 
 async function ejecutarEliminacionChat(id) {
     if (typeof removeInquiryFromDB === 'function') {
-        const response = await removeInquiryFromDB(id);
+        const response = await removeInquiryFromDB(Number(id));
         if (response.success) {
             const session = JSON.parse(localStorage.getItem('user_session'));
             await renderizarBandejaMensajes(session.email, session.role);
@@ -249,7 +249,7 @@ async function renderizarPanelComprador(userEmail) {
 
     let favCars = [];
     try {
-        const res = await fetch('http://localhost:3000/api/favorites', {
+        const res = await fetch(`${API_BASE_URL}/favorites`, {
             headers: getAuthHeaders()
         });
         if (res.ok) {
@@ -320,7 +320,9 @@ async function renderizarPanelVendedor(userId) {
 
     let misPublicaciones = [];
     try {
-        const res = await fetch(`http://localhost:3000/api/cars?sellerId=${userId}`);
+        const res = await fetch(`${API_BASE_URL}/cars/me`, {
+            headers: getAuthHeaders()
+        });
         if (res.ok) {
             misPublicaciones = await res.json();
         }

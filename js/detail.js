@@ -321,7 +321,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             btnSubmit.disabled = true;
 
             if (typeof sendInquiryToSeller === 'function') {
-                const response = await sendInquiryToSeller(car.id, sessionData.email, sessionData.nombre, messageText);
+                const response = await sendInquiryToSeller(Number(car.id), sessionData.email, sessionData.nombre, messageText);
                 btnSubmit.disabled = false;
 
                 if (response.success) {
