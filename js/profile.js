@@ -1,11 +1,13 @@
 // js/profile.js
 
 document.addEventListener('DOMContentLoaded', async () => {
-    const session = JSON.parse(localStorage.getItem('user_session'));
-    
-    if (!session) { 
-        window.location.href = "login.html"; 
-        return; 
+    const session = (typeof getSession === 'function') ? getSession() : (() => {
+        try { return JSON.parse(localStorage.getItem('user_session')); } catch(e) { return null; }
+    })();
+
+    if (!session) {
+        window.location.href = "login.html";
+        return;
     }
 
     // --- OBTENER PERFIL DESDE EL BACKEND ---
@@ -28,8 +30,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
         return null;
     }
-
-    await getProfileInfo();
 
     // --- LÓGICA DE MENÚ COLAPSABLE (MOBILE) ---
     const btnToggleProfile = document.getElementById('btn-toggle-profile');
@@ -80,20 +80,22 @@ document.addEventListener('DOMContentLoaded', async () => {
         navConsultas.textContent = session.role === 'vendedor' ? 'Consultas Recibidas' : 'Consultas Realizadas';
     }
 
-    // Inicialización de la vista según el rol
+    // Mostrar el panel correspondiente antes de hacer fetch (evita el flash de contenido vacío)
     if (session.role === 'vendedor') {
         const vendedorView = document.getElementById('vendedor-view');
-        if (vendedorView) {
-            vendedorView.style.display = 'block';
-            await renderizarPanelVendedor(userId);
-        }
+        if (vendedorView) vendedorView.style.display = 'block';
     } else {
         const compradorView = document.getElementById('comprador-view');
-        if (compradorView) {
-            compradorView.style.display = 'block';
-            await renderizarPanelComprador(session.email);
-        }
+        if (compradorView) compradorView.style.display = 'block';
     }
+
+    // Lanzar perfil y panel en paralelo — son independientes entre sí
+    await Promise.all([
+        getProfileInfo(),
+        session.role === 'vendedor'
+            ? renderizarPanelVendedor(null)
+            : renderizarPanelComprador(session.email)
+    ]);
 
     // --- SISTEMA DE PESTAÑAS (TABS) ---
     const navPanel = document.getElementById('nav-panel-general');
@@ -393,7 +395,7 @@ async function renderizarBandejaMensajes(userEmail, userRole) {
     const cantidadSinResponder = messages.filter(estaSinResponder).length;
     let mensajesFiltrados = (window.filtroMensajesActual === 'unanswered') ? messages.filter(estaSinResponder) : messages;
 
-    let htmlContent = `<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; background: var(--bg-shark); padding: 1rem 1.5rem; border-radius: 8px; border: 1px solid var(--border); flex-wrap: wrap; gap: 1rem;"><span style="color: white; font-weight: 600;"><span style="color: ${cantidadSinResponder > 0 ? '#ff5252' : '#4caf50'}; font-size: 1.2rem; margin-right: 5px;">•</span>${cantidadSinResponder} consulta(s) esperando respuesta</span><div class="filter-segmented-control"><input type radio name="msg_filter" id="filter-all" value="all" ${window.filtroMensajesActual === 'all' ? 'checked' : ''} onchange="window.cambiarFiltroMensajes('all', '${userEmail}', '${userRole}')"><label for="filter-all">Todas</label><input type="radio" name="msg_filter" id="filter-unanswered" value="unanswered" ${window.filtroMensajesActual === 'unanswered' ? 'checked' : ''} onchange="window.cambiarFiltroMensajes('unanswered', '${userEmail}', '${userRole}')"><label for="filter-unanswered">Pendientes</label><div class="slider"></div></div></div>`;
+    let htmlContent = `<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; background: var(--bg-shark); padding: 1rem 1.5rem; border-radius: 8px; border: 1px solid var(--border); flex-wrap: wrap; gap: 1rem;"><span style="color: white; font-weight: 600;"><span style="color: ${cantidadSinResponder > 0 ? '#ff5252' : '#4caf50'}; font-size: 1.2rem; margin-right: 5px;">•</span>${cantidadSinResponder} consulta(s) esperando respuesta</span><div class="filter-segmented-control"><input type="radio" name="msg_filter" id="filter-all" value="all" ${window.filtroMensajesActual === 'all' ? 'checked' : ''} onchange="window.cambiarFiltroMensajes('all', '${userEmail}', '${userRole}')"><label for="filter-all">Todas</label><input type="radio" name="msg_filter" id="filter-unanswered" value="unanswered" ${window.filtroMensajesActual === 'unanswered' ? 'checked' : ''} onchange="window.cambiarFiltroMensajes('unanswered', '${userEmail}', '${userRole}')"><label for="filter-unanswered">Pendientes</label><div class="slider"></div></div></div>`;
 
     if (mensajesFiltrados.length === 0) {
         htmlContent += `<div style="background: var(--bg-shark); padding: 3rem; border-radius: 12px; border: 1px dashed var(--border); text-align: center;"><p style="color: var(--text-slate); font-size: 1rem;">No hay mensajes para mostrar en esta vista.</p></div>`;
