@@ -257,6 +257,10 @@ nav ul li a:hover::after, nav ul li a.active-page::after {
     .logout-link {
         margin-left: 0 !important;
     }
+    
+    #logout-btn {
+        display: none !important;
+    }
 }
 
 /* ==========================================================================

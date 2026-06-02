@@ -85,10 +85,43 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (dropText) dropText.style.display = 'none';
                 galleryPreview.innerHTML = '';
                 fotosCargadas.forEach(url => {
+                    const div = document.createElement('div');
+                    div.style.position = 'relative';
+                    div.style.display = 'inline-block';
+                    
                     const img = document.createElement('img');
                     img.src = url;
                     img.className = 'thumb-preview';
-                    galleryPreview.appendChild(img);
+                    
+                    const btnDelete = document.createElement('button');
+                    btnDelete.innerHTML = 'X';
+                    btnDelete.style.position = 'absolute';
+                    btnDelete.style.top = '5px';
+                    btnDelete.style.right = '5px';
+                    btnDelete.style.background = 'rgba(255,0,0,0.8)';
+                    btnDelete.style.color = 'white';
+                    btnDelete.style.border = 'none';
+                    btnDelete.style.borderRadius = '50%';
+                    btnDelete.style.width = '20px';
+                    btnDelete.style.height = '20px';
+                    btnDelete.style.cursor = 'pointer';
+                    btnDelete.style.fontSize = '12px';
+                    btnDelete.style.fontWeight = 'bold';
+                    btnDelete.onclick = (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const idx = fotosCargadas.indexOf(url);
+                        if (idx > -1) fotosCargadas.splice(idx, 1);
+                        div.remove();
+                        if (fotosCargadas.length === 0) {
+                            if (dropText) dropText.style.display = 'block';
+                            fotoValidadaIA = false;
+                        }
+                    };
+                    
+                    div.appendChild(img);
+                    div.appendChild(btnDelete);
+                    galleryPreview.appendChild(div);
                 });
             }
 
@@ -166,10 +199,43 @@ document.addEventListener('DOMContentLoaded', async () => {
             fotosCargadas = data.images;
             galleryPreview.innerHTML = '';
             fotosCargadas.forEach(url => {
+                const div = document.createElement('div');
+                div.style.position = 'relative';
+                div.style.display = 'inline-block';
+                
                 const img = document.createElement('img');
                 img.src = url;
                 img.className = 'thumb-preview';
-                galleryPreview.appendChild(img);
+                
+                const btnDelete = document.createElement('button');
+                btnDelete.innerHTML = 'X';
+                btnDelete.style.position = 'absolute';
+                btnDelete.style.top = '5px';
+                btnDelete.style.right = '5px';
+                btnDelete.style.background = 'rgba(255,0,0,0.8)';
+                btnDelete.style.color = 'white';
+                btnDelete.style.border = 'none';
+                btnDelete.style.borderRadius = '50%';
+                btnDelete.style.width = '20px';
+                btnDelete.style.height = '20px';
+                btnDelete.style.cursor = 'pointer';
+                btnDelete.style.fontSize = '12px';
+                btnDelete.style.fontWeight = 'bold';
+                btnDelete.onclick = (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const idx = fotosCargadas.indexOf(url);
+                    if (idx > -1) fotosCargadas.splice(idx, 1);
+                    div.remove();
+                    if (fotosCargadas.length === 0) {
+                        if (dropText) dropText.style.display = 'block';
+                        fotoValidadaIA = false;
+                    }
+                };
+                
+                div.appendChild(img);
+                div.appendChild(btnDelete);
+                galleryPreview.appendChild(div);
             });
 
             carroceriaDetectada = data.aiAnalysis.bodyType;

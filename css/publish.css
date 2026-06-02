@@ -95,10 +95,22 @@
     grid-column: span 2;
 }
 
-/* Override específico para el textarea de publicación */
+/* Override específico para el textarea y los inputs de publicación */
 textarea {
     resize: vertical;
     min-height: 8.75rem; 
+}
+
+.publish-card input, .publish-card select, .publish-card textarea {
+    background-color: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.publish-card input:focus, .publish-card select:focus, .publish-card textarea:focus {
+    background-color: rgba(15, 23, 42, 0.9);
+    border-color: var(--accent-lavender);
+    box-shadow: 0 0 15px rgba(249, 115, 22, 0.15);
 }
 
 /* Zona de Carga de Imágenes */
@@ -175,18 +187,27 @@ textarea {
 /* --- BOTÓN DE PUBLICAR (Overrides locales) --- */
 .btn-submit {
     width: 100%;
-    padding: 1.2rem;
-    font-size: 1.1rem;
-    background-color: var(--accent-lavender);
-    color: var(--bg-darker);
-    letter-spacing: 0.0938rem; 
-    box-shadow: 0 0.5rem 1.25rem var(--black-alpha-30);
+    padding: 1.25rem;
+    font-size: 1.15rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    background: linear-gradient(135deg, var(--accent-lavender) 0%, var(--accent-hover-dark) 100%);
+    color: var(--white);
+    border: none;
+    border-radius: 0.75rem;
+    letter-spacing: 0.1rem; 
+    box-shadow: 0 0.5rem 1.25rem var(--black-alpha-30), inset 0 1px 1px rgba(255,255,255,0.2);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .btn-submit:not(:disabled):hover {
-    transform: translateY(-0.25rem) scale(1.01);
-    background-color: var(--accent-hover);
-    box-shadow: 0 0.9375rem 1.875rem var(--accent-alpha-20);
+    transform: translateY(-0.25rem);
+    box-shadow: 0 1rem 2rem rgba(249, 115, 22, 0.4), inset 0 1px 1px rgba(255,255,255,0.3);
+}
+
+.btn-submit:not(:disabled):active {
+    transform: translateY(0.1rem);
+    box-shadow: 0 0.25rem 0.75rem rgba(249, 115, 22, 0.4);
 }
 
 .btn-submit:disabled {
