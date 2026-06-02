@@ -16,8 +16,8 @@
     <main class="main-container">
         <section class="publish-card">
             <div class="card-header">
-                <h1>Publicar Vehículo</h1>
-                <p>Completá los datos para que nuestra IA analice tu auto.</p>
+                <h1 id="publish-title">Publicar Vehículo</h1>
+                <p id="publish-subtitle">Completá los datos para que nuestra IA analice tu auto.</p>
             </div>
 
             <form id="form-publicar">
@@ -43,10 +43,12 @@
                     <div class="input-group">
                         <label>Combustible</label>
                         <select id="input-fuel" required>
+                            <option value="" disabled selected>Seleccionar...</option>
                             <option value="Nafta">Nafta</option>
                             <option value="Diesel">Diesel</option>
                             <option value="GNC">GNC</option>
-                            <option value="Híbrido">Híbrido</option>
+                            <option value="Hibrido">Híbrido</option>
+                            <option value="Electrico">Eléctrico</option>
                         </select>
                     </div>
                     <div class="input-group">
@@ -54,7 +56,7 @@
                         <select id="input-trans" required>
                             <option value="" disabled selected>Seleccionar...</option>
                             <option value="Manual">Manual</option>
-                            <option value="Automática">Automática</option>
+                            <option value="Automatica">Automática</option>
                         </select>
                     </div>
 
@@ -89,10 +91,13 @@
                         <div id="correction-ui" style="display: none; margin-top: 10px;">
                             <label style="font-size: 0.7rem; opacity: 0.8;">¿La IA se equivocó? Corregí la categoría:</label>
                             <select id="select-carroceria-manual" style="padding: 5px; margin-top: 5px; background: #2a2a32; color: white; border: 1px solid var(--accent-lavender); border-radius: 5px; width: 100%;">
-                                <option value="Sedán">Sedán</option>
+                                <option value="Sedan">Sedán</option>
                                 <option value="Hatchback">Hatchback</option>
-                                <option value="SUV / Crossover">SUV / Crossover</option>
+                                <option value="SUV_Crossover">SUV / Crossover</option>
                                 <option value="Pickup">Pickup</option>
+                                <option value="Coupe">Coupe</option>
+                                <option value="Convertible">Convertible</option>
+                                <option value="Wagon">Wagon</option>
                             </select>
                         </div>
                     </div>

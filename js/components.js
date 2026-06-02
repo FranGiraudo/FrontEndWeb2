@@ -31,6 +31,16 @@ function setupNavLinks(inPages) {
     if (navHome) navHome.href = `${root}index.html`;
     if (navPublish) navPublish.href = `${prefix}publish.html`;
     if (navProfile) navProfile.href = `${prefix}login.html`;
+
+    // Highlight the current page
+    const currentPath = window.location.pathname;
+    if (currentPath.endsWith('/') || currentPath.endsWith('index.html')) {
+        if (navHome) navHome.classList.add('active-page');
+    } else if (currentPath.endsWith('publish.html')) {
+        if (navPublish) navPublish.classList.add('active-page');
+    } else if (currentPath.endsWith('profile.html') || currentPath.endsWith('login.html')) {
+        if (navProfile) navProfile.classList.add('active-page');
+    }
 }
 
 // Aplica el estado de sesión al nav una vez que el header está en el DOM.
