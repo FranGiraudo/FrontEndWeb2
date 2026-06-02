@@ -39,7 +39,7 @@ async function getAllCars(filters = {}) {
         });
 
         const url = `${API_BASE_URL}/cars${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
-        const res = await fetch(url);
+        const res = await fetch(url, { cache: 'no-store' });
         if (!res.ok) {
             throw new Error('Error al obtener la lista de vehículos.');
         }
@@ -55,7 +55,7 @@ async function getAllCars(filters = {}) {
  */
 async function getCarById(id) {
     try {
-        const res = await fetch(`${API_BASE_URL}/cars/${id}`);
+        const res = await fetch(`${API_BASE_URL}/cars/${id}`, { cache: 'no-store' });
         if (!res.ok) {
             throw new Error('Vehículo no encontrado.');
         }

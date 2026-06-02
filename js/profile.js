@@ -321,7 +321,8 @@ async function renderizarPanelVendedor(userId) {
     let misPublicaciones = [];
     try {
         const res = await fetch(`${API_BASE_URL}/cars/me`, {
-            headers: getAuthHeaders()
+            headers: getAuthHeaders(),
+            cache: 'no-store'
         });
         if (res.ok) {
             misPublicaciones = await res.json();
