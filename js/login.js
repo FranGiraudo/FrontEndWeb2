@@ -1,33 +1,10 @@
 // js/login.js
 
-// getSession() viene de database.js (cargado antes) — valida expiración del token
+// getSession() viene de database.js — valida expiración del JWT antes de redirigir
 if (typeof getSession === 'function' ? getSession() : localStorage.getItem('user_session')) {
     window.location.href = "profile.html";
 }
-
-// --- FUNCIÓN GLOBAL DE NOTIFICACIONES TOAST ---
-function showToast(message, type = 'success') {
-    let container = document.querySelector('.toast-container');
-    if (!container) {
-        container = document.createElement('div');
-        container.className = 'toast-container';
-        document.body.appendChild(container);
-    }
-
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    
-    const iconSuccess = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`;
-    const iconError = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>`;
-    
-    toast.innerHTML = `${type === 'success' ? iconSuccess : iconError} <span>${message}</span>`;
-    container.appendChild(toast);
-
-    setTimeout(() => {
-        toast.style.animation = 'fadeOut 0.3s ease forwards';
-        setTimeout(() => toast.remove(), 300);
-    }, 3500); // El cartel desaparece a los 3.5 segundos
-}
+// showToast viene de utils.js
 
 document.addEventListener('DOMContentLoaded', () => {
     const cardLogin = document.getElementById('card-login');
