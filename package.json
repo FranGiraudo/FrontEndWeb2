@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "description": "Frontend Vanilla JS",
   "scripts": {
-    "build": "node build-env.js"
+    "build": "node build-env.js",
+    "start": "serve ."
+  },
+  "dependencies": {
+    "serve": "^14.2.4"
   }
 }
