@@ -33,12 +33,12 @@ function setupNavLinks(inPages) {
     if (navProfile) navProfile.href = `${prefix}login.html`;
 
     // Highlight the current page
-    const currentPath = window.location.pathname;
-    if (currentPath.endsWith('/') || currentPath.endsWith('index.html')) {
+    const currentPath = window.location.pathname.replace(/\.html$/, '');
+    if (currentPath.endsWith('/') || currentPath.endsWith('/index')) {
         if (navHome) navHome.classList.add('active-page');
-    } else if (currentPath.endsWith('publish.html')) {
+    } else if (currentPath.endsWith('/publish')) {
         if (navPublish) navPublish.classList.add('active-page');
-    } else if (currentPath.endsWith('profile.html') || currentPath.endsWith('login.html')) {
+    } else if (currentPath.endsWith('/profile') || currentPath.endsWith('/login') || currentPath.endsWith('/register')) {
         if (navProfile) navProfile.classList.add('active-page');
     }
 }
