@@ -41,7 +41,13 @@
         <section class="profile-content">
             <div id="vendedor-view" style="display: none;">
                 <h1>Panel de Vendedor</h1>
-                <p>Métricas de rendimiento de tus publicaciones.</p>
+                <p style="color: var(--text-slate); margin-bottom: 2rem;">Métricas de rendimiento de tus publicaciones.</p>
+                
+                <div id="dashboard-global-stats" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
+                    <!-- Stats injected here via JS -->
+                </div>
+
+                <h2 style="margin-bottom: 1.5rem;">Mis Publicaciones</h2>
                 <div id="my-cars-grid"></div>
             </div>
 

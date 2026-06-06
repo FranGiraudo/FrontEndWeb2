@@ -499,9 +499,34 @@ async function renderizarPanelVendedor(userId) {
         console.error("Error al obtener publicaciones de vendedor:", e);
     }
 
+    const globalStats = document.getElementById('dashboard-global-stats');
+
     if (misPublicaciones.length === 0) {
+        if (globalStats) globalStats.innerHTML = '';
         grid.innerHTML = `<div class="empty-state" style="text-align: center; padding: 3rem; background: var(--bg-shark); border-radius: 12px; border: 1px dashed var(--border);"><p style="margin-bottom: 1rem; color: var(--text-slate);">Todavía no tenés vehículos publicados.</p><button class="btn-detail" onclick="location.href='publish.html'">Publicar mi primer auto</button></div>`;
         return;
+    }
+
+    if (globalStats) {
+        const totalVisitas = misPublicaciones.reduce((sum, car) => sum + (car.views || 0), 0);
+        const totalConsultas = misPublicaciones.reduce((sum, car) => sum + (car.contacts || 0), 0);
+        const autoMasVisto = [...misPublicaciones].sort((a, b) => (b.views || 0) - (a.views || 0))[0];
+
+        globalStats.innerHTML = `
+            <div class="stat-card" style="background: var(--bg-shark); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border); text-align: center;">
+                <h3 style="color: var(--text-slate); font-size: 0.9rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px;">Visitas Totales</h3>
+                <span style="font-size: 2.5rem; font-weight: 800; color: var(--accent-lavender);">${totalVisitas}</span>
+            </div>
+            <div class="stat-card" style="background: var(--bg-shark); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border); text-align: center;">
+                <h3 style="color: var(--text-slate); font-size: 0.9rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px;">Consultas Recibidas</h3>
+                <span style="font-size: 2.5rem; font-weight: 800; color: var(--accent-lavender);">${totalConsultas}</span>
+            </div>
+            <div class="stat-card" style="background: var(--bg-shark); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--accent-purple); text-align: center; box-shadow: 0 4px 15px rgba(183, 153, 255, 0.1);">
+                <h3 style="color: var(--text-slate); font-size: 0.9rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px;">Auto Más Visto</h3>
+                <span style="font-size: 1.1rem; font-weight: 800; color: var(--white); display: block; margin-bottom: 0.2rem;">${autoMasVisto ? autoMasVisto.brand + ' ' + autoMasVisto.model : '-'}</span>
+                <span style="font-size: 0.9rem; color: var(--accent-lavender);">${autoMasVisto ? (autoMasVisto.views || 0) + ' vistas' : ''}</span>
+            </div>
+        `;
     }
 
     grid.innerHTML = "";
