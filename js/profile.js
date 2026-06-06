@@ -319,7 +319,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                 window.location.href = "index.html";
             }
         });
-    }window.cambiarEstadoAuto = async function(carId, nuevoEstado) {
+    }
+});
+
+window.cambiarEstadoAuto = async function(carId, nuevoEstado) {
     try {
         const res = await authFetch(`${API_BASE_URL}/cars/${carId}/status`, {
             method: 'POST',
