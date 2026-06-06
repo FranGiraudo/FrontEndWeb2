@@ -33,14 +33,22 @@ function setupNavLinks(inPages) {
     if (navPublish) navPublish.href = `${prefix}publish.html`;
     if (navProfile) navProfile.href = `${prefix}login.html`;
 
-    // Highlight the current page
+    // Highlight the current page with brute force to bypass CSS caching/matching issues
     const currentPath = window.location.pathname.toLowerCase();
+    
+    function forceActive(element) {
+        if (!element) return;
+        element.classList.add('active-page');
+        element.style.color = 'var(--accent-lavender)';
+        element.style.fontWeight = '800';
+    }
+
     if (currentPath === '/' || currentPath.includes('/index') || currentPath.endsWith('frontendweb2/') || currentPath.endsWith('frontendweb2')) {
-        if (navHome) navHome.classList.add('active-page');
+        forceActive(navHome);
     } else if (currentPath.includes('/publish')) {
-        if (navPublish) navPublish.classList.add('active-page');
+        forceActive(navPublish);
     } else if (currentPath.includes('/profile') || currentPath.includes('/login') || currentPath.includes('/register')) {
-        if (navProfile) navProfile.classList.add('active-page');
+        forceActive(navProfile);
     }
 }
 

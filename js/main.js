@@ -231,6 +231,54 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         tbody.innerHTML = `<thead><tr>${hHeaders}</tr></thead><tbody><tr>${hImg}</tr><tr>${hPrecio}</tr><tr>${hAnio}</tr><tr>${hKm}</tr><tr>${hCombustible}</tr><tr>${hTrans}</tr><tr>${hBody}</tr></tbody>`;
+        
+        // Reset AI section
+        const aiResult = document.getElementById('ai-verdict-result');
+        const btnAi = document.getElementById('btn-ai-verdict');
+        if (aiResult) {
+            aiResult.style.display = 'none';
+            aiResult.innerHTML = '';
+        }
+        if (btnAi) {
+            btnAi.disabled = false;
+            btnAi.innerHTML = '<i class="fas fa-robot"></i> Pedir Veredicto a IA';
+        }
+    }
+
+    const btnAiVerdict = document.getElementById('btn-ai-verdict');
+    if (btnAiVerdict) {
+        btnAiVerdict.addEventListener('click', async () => {
+            const btnAi = document.getElementById('btn-ai-verdict');
+            const aiResult = document.getElementById('ai-verdict-result');
+            const autos = window.vehiculosAComparar.map(id => allCars.find(c => c.id === id)).filter(Boolean);
+
+            if (autos.length < 2) return;
+
+            btnAi.disabled = true;
+            btnAi.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analizando con IA...';
+            aiResult.style.display = 'block';
+            aiResult.innerHTML = '<em>Gemini está evaluando los modelos, años, kilómetros y precios del mercado para darte una recomendación objetiva...</em>';
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/ai/compare`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ cars: autos })
+                });
+
+                if (!response.ok) throw new Error('Error al comparar con IA');
+                
+                const data = await response.json();
+                
+                aiResult.innerHTML = `<strong><i class="fas fa-star" style="color:var(--accent-lavender);"></i> Veredicto de Inteligencia Artificial:</strong><br><br>${data.recommendation.replace(/\\n/g, '<br>')}`;
+                btnAi.innerHTML = '<i class="fas fa-check"></i> Veredicto Completado';
+            } catch (error) {
+                console.error(error);
+                aiResult.innerHTML = '<span style="color:var(--error);">Ocurrió un error al consultar a la Inteligencia Artificial. Intentá más tarde.</span>';
+                btnAi.disabled = false;
+                btnAi.innerHTML = '<i class="fas fa-robot"></i> Reintentar Veredicto';
+            }
+        });
     }
 
     async function init() {
