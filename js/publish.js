@@ -77,7 +77,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             document.getElementById('input-precio').value      = autoAEditar.price;
             document.getElementById('input-km').value          = autoAEditar.km;
             document.getElementById('input-color').value       = autoAEditar.color || '';
-            document.getElementById('input-doors').value       = autoAEditar.doors || '';
             document.getElementById('input-engine').value      = autoAEditar.engine || '';
             document.getElementById('input-fuel').value        = autoAEditar.fuel;
             document.getElementById('input-trans').value       = autoAEditar.transmission;
@@ -184,7 +183,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         const yearVal = document.getElementById('input-anio').value.trim();
         const kmVal = document.getElementById('input-km').value.trim();
         const colorVal = document.getElementById('input-color').value.trim();
-        const doorsVal = document.getElementById('input-doors').value.trim();
         const engineVal = document.getElementById('input-engine').value.trim();
 
         if (!marcaVal || !modeloVal) {
@@ -202,7 +200,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 year: yearVal || '2020',
                 km: kmVal || '0',
                 color: colorVal || 'No especificado',
-                doors: doorsVal || '5',
                 engine: engineVal || 'No especificado'
             });
             const res = await fetch(`${API_BASE_URL}/cars/upload-images?${params}`, {
@@ -326,7 +323,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             price:        parseFloat(document.getElementById('input-precio').value),
             km:           Number(document.getElementById('input-km').value),
             color:        document.getElementById('input-color').value.trim(),
-            doors:        Number(document.getElementById('input-doors').value),
             engine:       document.getElementById('input-engine').value.trim(),
             fuel:         document.getElementById('input-fuel').value,
             transmission: document.getElementById('input-trans').value,

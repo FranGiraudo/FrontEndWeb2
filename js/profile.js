@@ -364,7 +364,6 @@ window.cambiarEstadoInquiry = async function(inquiryId, nuevoEstado) {
     }
 };
 
-});
 
 /* ==========================================================================
    SISTEMA DE ELIMINACIÓN CON TOAST
