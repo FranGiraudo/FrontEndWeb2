@@ -221,10 +221,15 @@
    ESTADÍSTICAS Y ACCIONES (HUD Style)
    ========================================================================== */
 .analytics-container {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.8rem;
     margin: 1.5rem 0;
+}
+.analytics-container .stat-box {
+    flex: 1;
+    min-width: 30%;
 }
 
 .stat-box {
