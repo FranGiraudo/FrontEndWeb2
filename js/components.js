@@ -33,9 +33,7 @@ function setupNavLinks(inPages) {
     if (navPublish) navPublish.href = `${prefix}publish.html`;
     if (navProfile) navProfile.href = `${prefix}login.html`;
 
-    // Highlight the current page with brute force to bypass CSS caching/matching issues
-    const currentPath = window.location.pathname.toLowerCase();
-    
+    // Highlight the current page with brute force and using body ID
     function forceActive(element) {
         if (!element) return;
         element.classList.add('active-page');
@@ -43,11 +41,12 @@ function setupNavLinks(inPages) {
         element.style.fontWeight = '800';
     }
 
-    if (currentPath === '/' || currentPath.includes('/index') || currentPath.endsWith('frontendweb2/') || currentPath.endsWith('frontendweb2')) {
+    const pageId = document.body.id;
+    if (pageId === 'page-home') {
         forceActive(navHome);
-    } else if (currentPath.includes('/publish')) {
+    } else if (pageId === 'page-publish') {
         forceActive(navPublish);
-    } else if (currentPath.includes('/profile') || currentPath.includes('/login') || currentPath.includes('/register')) {
+    } else if (pageId === 'page-profile') {
         forceActive(navProfile);
     }
 }
