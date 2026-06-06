@@ -6,8 +6,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const inPages = window.location.pathname.includes('/pages/');
     const headerPath = inPages ? '../components/header.html' : 'components/header.html';
+    const noCachePath = headerPath + '?t=' + new Date().getTime();
 
-    fetch(headerPath)
+    fetch(noCachePath)
         .then(res => res.text())
         .then(data => {
             headerContainer.innerHTML = data;

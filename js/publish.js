@@ -60,9 +60,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // --- 1. MODO EDICIÓN ---
-    const editId = new URLSearchParams(window.location.search).get('edit');
+    const editId = new URLSearchParams(window.location.search).get('edit') || sessionStorage.getItem('editModeId');
 
     if (editId) {
+        sessionStorage.removeItem('editModeId'); // Clean up
         editModeId = Number(editId);
         btnSubmit.textContent = "CARGANDO DATOS...";
         btnSubmit.disabled = true;

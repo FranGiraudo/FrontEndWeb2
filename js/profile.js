@@ -523,7 +523,7 @@ async function renderizarPanelVendedor(userId) {
                     <div class="stat-box"><span class="stat-label">IA Score</span><span class="stat-value" style="color: #4caf50;">98%</span></div>
                 </div>
                 <div class="action-bar">
-                    <button class="btn-action btn-edit" onclick="location.href='publish.html?edit=${auto.id}'">Editar</button>
+                    <button class="btn-action btn-edit" onclick="sessionStorage.setItem('editModeId', ${auto.id}); location.href='publish.html';">Editar</button>
                     <button class="btn-action btn-delete" onclick="window.eliminarPublicacion(${auto.id})">Eliminar</button>
                 </div>
             </div>`;
