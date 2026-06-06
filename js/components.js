@@ -35,7 +35,7 @@ function setupNavLinks(inPages) {
 
     // Highlight the current page
     const currentPath = window.location.pathname.toLowerCase();
-    if (currentPath === '/' || currentPath.includes('/index') || currentPath.endsWith('frontendweb2/')) {
+    if (currentPath === '/' || currentPath.includes('/index') || currentPath.endsWith('frontendweb2/') || currentPath.endsWith('frontendweb2')) {
         if (navHome) navHome.classList.add('active-page');
     } else if (currentPath.includes('/publish')) {
         if (navPublish) navPublish.classList.add('active-page');
