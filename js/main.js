@@ -241,6 +241,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (btnAi) {
             btnAi.disabled = false;
+            btnAi.style.color = '#fff';
+            btnAi.style.padding = '12px 30px';
+            btnAi.style.borderRadius = '30px';
+            btnAi.style.fontSize = '1.1rem';
+            btnAi.style.fontWeight = 'bold';
+            btnAi.style.boxShadow = '0 4px 15px rgba(183, 153, 255, 0.4)';
             btnAi.innerHTML = '<i class="fas fa-robot"></i> Pedir Veredicto a IA';
         }
     }
