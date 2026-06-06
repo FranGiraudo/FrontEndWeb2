@@ -196,6 +196,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const tbody = document.getElementById('compare-table');
         if (!tbody) return;
         const autos = window.vehiculosAComparar.map(id => allCars.find(c => c.id === id)).filter(Boolean);
+
+        // Find best values
+        const minPrice = Math.min(...autos.map(a => Number(a.price) || Infinity));
+        const minKm = Math.min(...autos.map(a => Number(a.km) || Infinity));
+        const maxYear = Math.max(...autos.map(a => Number(a.year) || 0));
+
         let hHeaders = `<th>Especificación</th>`;
         let hImg = `<td>Visualización</td>`;
         let hPrecio = `<td>Precio Estimado</td>`;
@@ -204,16 +210,26 @@ document.addEventListener('DOMContentLoaded', () => {
         let hCombustible = `<td>Combustible</td>`;
         let hTrans = `<td>Transmisión</td>`;
         let hBody = `<td>Carrocería IA</td>`;
+
         autos.forEach(a => {
+            const priceVal = Number(a.price);
+            const kmVal = Number(a.km);
+            const yearVal = Number(a.year);
+
+            const isBestPrice = priceVal === minPrice && priceVal > 0;
+            const isBestKm = kmVal === minKm && kmVal >= 0;
+            const isBestYear = yearVal === maxYear && yearVal > 0;
+
             hHeaders += `<th>${a.brand} ${a.model}</th>`;
-            hImg += `<td><img src="${a.image || ''}" alt="${a.model}"></td>`;
-            hPrecio += `<td><strong style="color:var(--accent-lavender);font-size:1.1rem;">u$s ${Number(a.price).toLocaleString()}</strong></td>`;
-            hAnio += `<td>${a.year}</td>`;
-            hKm += `<td>${a.km.toLocaleString()} km</td>`;
+            hImg += `<td><div class="compare-img-wrap"><img src="${a.image || ''}" alt="${a.model}"></div></td>`;
+            hPrecio += `<td class="${isBestPrice ? 'winner-highlight' : ''}"><strong style="font-size:1.1rem;">u$s ${priceVal.toLocaleString()}</strong></td>`;
+            hAnio += `<td class="${isBestYear ? 'winner-highlight' : ''}">${a.year}</td>`;
+            hKm += `<td class="${isBestKm ? 'winner-highlight' : ''}">${kmVal.toLocaleString()} km</td>`;
             hCombustible += `<td>${a.fuel}</td>`;
             hTrans += `<td>${a.transmission || 'No especificada'}</td>`;
             hBody += `<td><span class="badge-role">${a.bodyType}</span></td>`;
         });
+
         tbody.innerHTML = `<thead><tr>${hHeaders}</tr></thead><tbody><tr>${hImg}</tr><tr>${hPrecio}</tr><tr>${hAnio}</tr><tr>${hKm}</tr><tr>${hCombustible}</tr><tr>${hTrans}</tr><tr>${hBody}</tr></tbody>`;
     }
 
