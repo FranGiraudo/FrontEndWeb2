@@ -481,56 +481,115 @@ async function renderizarPanelComprador(userEmail) {
 /* ==========================================================================
    PANEL DEL VENDEDOR
    ========================================================================== */
+let inventarioVendedor = [];
+
 async function renderizarPanelVendedor(userId) {
     const grid = document.getElementById('my-cars-grid');
     if (!grid) return;
     grid.innerHTML = "<p style='color: var(--text-slate);'>Cargando tus publicaciones...</p>";
 
-    let misPublicaciones = [];
     try {
         const res = await fetch(`${API_BASE_URL}/cars/me`, {
             headers: getAuthHeaders(),
             cache: 'no-store'
         });
         if (res.ok) {
-            misPublicaciones = await res.json();
+            inventarioVendedor = await res.json();
         }
     } catch (e) {
         console.error("Error al obtener publicaciones de vendedor:", e);
     }
 
     const globalStats = document.getElementById('dashboard-global-stats');
+    const statsCounters = document.getElementById('stats-counters');
+    const top5List = document.getElementById('top5-list');
 
-    if (misPublicaciones.length === 0) {
-        if (globalStats) globalStats.innerHTML = '';
+    if (inventarioVendedor.length === 0) {
+        if (globalStats) globalStats.style.display = 'none';
         grid.innerHTML = `<div class="empty-state" style="text-align: center; padding: 3rem; background: var(--bg-shark); border-radius: 12px; border: 1px dashed var(--border);"><p style="margin-bottom: 1rem; color: var(--text-slate);">Todavía no tenés vehículos publicados.</p><button class="btn-detail" onclick="location.href='publish.html'">Publicar mi primer auto</button></div>`;
         return;
     }
 
-    if (globalStats) {
-        const totalVisitas = misPublicaciones.reduce((sum, car) => sum + (car.views || 0), 0);
-        const totalConsultas = misPublicaciones.reduce((sum, car) => sum + (car.contacts || 0), 0);
-        const autoMasVisto = [...misPublicaciones].sort((a, b) => (b.views || 0) - (a.views || 0))[0];
+    if (globalStats) globalStats.style.display = 'grid';
 
-        globalStats.innerHTML = `
-            <div class="stat-card" style="background: var(--bg-shark); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border); text-align: center;">
+    if (statsCounters) {
+        const totalVisitas = inventarioVendedor.reduce((sum, car) => sum + (car.views || 0), 0);
+        const totalConsultas = inventarioVendedor.reduce((sum, car) => sum + (car.contacts || 0), 0);
+
+        statsCounters.innerHTML = `
+            <div class="stat-card" style="background: var(--bg-shark); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border); text-align: center; display: flex; flex-direction: column; justify-content: center; height: 100%;">
                 <h3 style="color: var(--text-slate); font-size: 0.9rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px;">Visitas Totales</h3>
                 <span style="font-size: 2.5rem; font-weight: 800; color: var(--accent-lavender);">${totalVisitas}</span>
             </div>
-            <div class="stat-card" style="background: var(--bg-shark); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border); text-align: center;">
+            <div class="stat-card" style="background: var(--bg-shark); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border); text-align: center; display: flex; flex-direction: column; justify-content: center; height: 100%;">
                 <h3 style="color: var(--text-slate); font-size: 0.9rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px;">Consultas Recibidas</h3>
                 <span style="font-size: 2.5rem; font-weight: 800; color: var(--accent-lavender);">${totalConsultas}</span>
-            </div>
-            <div class="stat-card" style="background: var(--bg-shark); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--accent-purple); text-align: center; box-shadow: 0 4px 15px rgba(183, 153, 255, 0.1);">
-                <h3 style="color: var(--text-slate); font-size: 0.9rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px;">Auto Más Visto</h3>
-                <span style="font-size: 1.1rem; font-weight: 800; color: var(--white); display: block; margin-bottom: 0.2rem;">${autoMasVisto ? autoMasVisto.brand + ' ' + autoMasVisto.model : '-'}</span>
-                <span style="font-size: 0.9rem; color: var(--accent-lavender);">${autoMasVisto ? (autoMasVisto.views || 0) + ' vistas' : ''}</span>
             </div>
         `;
     }
 
+    if (top5List) {
+        const sortedByViews = [...inventarioVendedor].sort((a, b) => (b.views || 0) - (a.views || 0)).slice(0, 5);
+        top5List.innerHTML = '';
+        sortedByViews.forEach((car, index) => {
+            const li = document.createElement('li');
+            li.style.display = 'flex';
+            li.style.alignItems = 'center';
+            li.style.gap = '15px';
+            li.style.padding = '10px';
+            li.style.background = 'var(--bg-elevated)';
+            li.style.borderRadius = '8px';
+            li.style.border = '1px solid var(--border)';
+            li.innerHTML = `
+                <div style="font-size: 1.2rem; font-weight: 800; color: ${index === 0 ? 'var(--accent-lavender)' : 'var(--text-slate)'}; min-width: 25px; text-align: center;">#${index + 1}</div>
+                <img src="${car.image}" alt="Auto" style="width: 50px; height: 50px; object-fit: cover; border-radius: 6px;">
+                <div style="flex: 1;">
+                    <div style="font-weight: 600; font-size: 0.95rem; color: var(--white);">${car.brand} ${car.model}</div>
+                    <div style="font-size: 0.8rem; color: var(--text-slate);">${car.views || 0} vistas • ${car.contacts || 0} consultas</div>
+                </div>
+            `;
+            top5List.appendChild(li);
+        });
+    }
+
+    const inputSearch = document.getElementById('inventory-search');
+    const selectSort = document.getElementById('inventory-sort');
+
+    if (inputSearch && !inputSearch.dataset.listener) {
+        inputSearch.dataset.listener = "true";
+        inputSearch.addEventListener('input', () => renderizarGrillaInventario());
+    }
+    if (selectSort && !selectSort.dataset.listener) {
+        selectSort.dataset.listener = "true";
+        selectSort.addEventListener('change', () => renderizarGrillaInventario());
+    }
+
+    renderizarGrillaInventario();
+}
+
+function renderizarGrillaInventario() {
+    const grid = document.getElementById('my-cars-grid');
+    if (!grid) return;
+
+    const query = (document.getElementById('inventory-search')?.value || '').toLowerCase();
+    const sortVal = document.getElementById('inventory-sort')?.value || 'newest';
+
+    let filtrados = inventarioVendedor.filter(car => 
+        car.brand.toLowerCase().includes(query) || car.model.toLowerCase().includes(query) || (car.year && car.year.toString().includes(query))
+    );
+
+    if (sortVal === 'newest') filtrados.sort((a, b) => b.id - a.id);
+    if (sortVal === 'most_viewed') filtrados.sort((a, b) => (b.views || 0) - (a.views || 0));
+    if (sortVal === 'highest_price') filtrados.sort((a, b) => Number(b.price) - Number(a.price));
+    if (sortVal === 'lowest_price') filtrados.sort((a, b) => Number(a.price) - Number(b.price));
+
     grid.innerHTML = "";
-    misPublicaciones.forEach(auto => {
+    if (filtrados.length === 0) {
+        grid.innerHTML = "<p style='color: var(--text-slate); grid-column: 1/-1;'>No se encontraron vehículos con esa búsqueda.</p>";
+        return;
+    }
+
+    filtrados.forEach(auto => {
         const card = document.createElement('div');
         card.className = 'mini-card';
         card.style.marginBottom = "1.5rem";

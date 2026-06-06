@@ -43,11 +43,32 @@
                 <h1>Panel de Vendedor</h1>
                 <p style="color: var(--text-slate); margin-bottom: 2rem;">Métricas de rendimiento de tus publicaciones.</p>
                 
-                <div id="dashboard-global-stats" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
-                    <!-- Stats injected here via JS -->
+                <div id="dashboard-global-stats" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 3rem;">
+                    <!-- Left side: Counters -->
+                    <div id="stats-counters" style="display: flex; flex-direction: column; gap: 1.5rem;">
+                        <!-- Stats injected here via JS -->
+                    </div>
+                    <!-- Right side: Top 5 -->
+                    <div id="stats-top5" style="background: var(--bg-shark); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border);">
+                        <h3 style="color: var(--text-slate); font-size: 0.9rem; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.5px;">Top Autos Más Vistos</h3>
+                        <ul id="top5-list" style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px;">
+                            <!-- Top 5 injected here via JS -->
+                        </ul>
+                    </div>
                 </div>
 
-                <h2 style="margin-bottom: 1.5rem;">Mis Publicaciones</h2>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+                    <h2 style="margin: 0;">Mi Inventario</h2>
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                        <input type="text" id="inventory-search" placeholder="Buscar marca, modelo..." style="padding: 10px 15px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-elevated); color: var(--text-main); min-width: 250px;">
+                        <select id="inventory-sort" style="padding: 10px 15px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-elevated); color: var(--text-main); cursor: pointer;">
+                            <option value="newest">Más Recientes</option>
+                            <option value="most_viewed">Más Vistos</option>
+                            <option value="highest_price">Mayor Precio</option>
+                            <option value="lowest_price">Menor Precio</option>
+                        </select>
+                    </div>
+                </div>
                 <div id="my-cars-grid"></div>
             </div>
 
