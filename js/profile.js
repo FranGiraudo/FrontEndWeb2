@@ -518,9 +518,9 @@ async function renderizarPanelVendedor(userId) {
                 <div class="mini-card-header"><h4>${auto.brand} ${auto.model}</h4><span class="mini-price">u$s ${Number(auto.price).toLocaleString()}</span></div>
                 <p class="meta-text">${auto.year} • ${auto.fuel} • ${auto.bodyType || 'Sedán'}</p>
                 <div class="analytics-container">
-                    <div class="stat-box"><span class="stat-label">Visitas</span><span class="stat-value">${auto.views}</span></div>
-                    <div class="stat-box"><span class="stat-label">Contactos</span><span class="stat-value">${auto.contacts}</span></div>
-                    <div class="stat-box"><span class="stat-label">IA Score</span><span class="stat-value" style="color: #4caf50;">98%</span></div>
+                    <div class="stat-box"><span class="stat-label">Vistas</span><span class="stat-value">${auto.views || 0}</span></div>
+                    <div class="stat-box"><span class="stat-label">Consultas</span><span class="stat-value">${auto.contacts || 0}</span></div>
+                    <div class="stat-box"><span class="stat-label">IA Score</span><span class="stat-value" style="color: #4caf50;">${auto.aiScore ? auto.aiScore + '%' : '-'}</span></div>
                 </div>
                 <div class="action-bar">
                     <button class="btn-action btn-edit" onclick="sessionStorage.setItem('editModeId', ${auto.id}); location.href='publish.html';">Editar</button>

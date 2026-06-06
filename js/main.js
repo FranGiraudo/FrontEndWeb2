@@ -241,12 +241,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (btnAi) {
             btnAi.disabled = false;
-            btnAi.style.color = '#fff';
-            btnAi.style.padding = '12px 30px';
-            btnAi.style.borderRadius = '30px';
-            btnAi.style.fontSize = '1.1rem';
-            btnAi.style.fontWeight = 'bold';
-            btnAi.style.boxShadow = '0 4px 15px rgba(183, 153, 255, 0.4)';
+            btnAi.style.background = 'transparent';
+            btnAi.style.border = '2px solid var(--accent-lavender)';
+            btnAi.style.color = 'var(--accent-lavender)';
+            btnAi.style.padding = '10px 24px';
+            btnAi.style.borderRadius = '8px';
+            btnAi.style.fontSize = '1rem';
+            btnAi.style.fontWeight = '600';
+            btnAi.style.boxShadow = 'none';
+            btnAi.style.transition = 'all 0.3s ease';
             btnAi.innerHTML = '<i class="fas fa-robot"></i> Pedir Veredicto a IA';
         }
     }

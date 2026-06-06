@@ -317,6 +317,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             aiDamages:    danosVisiblesIA,
             aiPriceMin:   Number(rangoPrecioIA.min),
             aiPriceMax:   Number(rangoPrecioIA.max),
+            aiScore:      Number(datosAdicionalesIA?.aiScore) || 0,
             images:       fotosCargadas
         };
 
