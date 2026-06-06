@@ -639,7 +639,6 @@ function renderizarGrillaInventario() {
         card.innerHTML = `
             <div class="mini-card-img">
                 <img src="${auto.image}" alt="${auto.model}">
-                <span class="status-tag" style="background: ${auto.status === 'Vendido' ? 'rgba(255,50,50,0.9)' : auto.status === 'Reservado' ? 'rgba(255,165,0,0.9)' : 'rgba(50,255,50,0.9)'}; color: ${auto.status === 'Reservado' ? '#000' : '#fff'};">${auto.status ? auto.status.toUpperCase() : 'DISPONIBLE'}</span>
             </div>
             <div class="mini-card-details">
                 <div class="mini-card-header"><h4>${auto.brand} ${auto.model}</h4><span class="mini-price">u$s ${Number(auto.price).toLocaleString()}</span></div>
@@ -651,11 +650,7 @@ function renderizarGrillaInventario() {
                 </div>
                 <div class="action-bar" style="display: flex; gap: 8px; align-items: center; justify-content: space-between;">
                     <button class="btn-action btn-edit" style="flex: 1;" onclick="sessionStorage.setItem('editModeId', ${auto.id}); location.href='publish.html';">Editar</button>
-                    <select onchange="window.cambiarEstadoAuto(${auto.id}, this.value)" style="flex: 1; padding: 6px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-elevated); color: var(--text-main); font-size: 0.8rem; cursor: pointer;">
-                        <option value="Disponible" ${auto.status === 'Disponible' ? 'selected' : ''}>Disponible</option>
-                        <option value="Reservado" ${auto.status === 'Reservado' ? 'selected' : ''}>Reservado</option>
-                        <option value="Vendido" ${auto.status === 'Vendido' ? 'selected' : ''}>Vendido</option>
-                    </select>
+                    <button class="btn-action btn-delete" style="flex: 1;" onclick="window.eliminarPublicacion(${auto.id})">Eliminar</button>
                 </div>
             </div>`;
         grid.appendChild(card);
