@@ -76,6 +76,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             document.getElementById('input-anio').value        = autoAEditar.year;
             document.getElementById('input-precio').value      = autoAEditar.price;
             document.getElementById('input-km').value          = autoAEditar.km;
+            document.getElementById('input-color').value       = autoAEditar.color || '';
+            document.getElementById('input-doors').value       = autoAEditar.doors || '';
+            document.getElementById('input-engine').value      = autoAEditar.engine || '';
             document.getElementById('input-fuel').value        = autoAEditar.fuel;
             document.getElementById('input-trans').value       = autoAEditar.transmission;
             document.getElementById('input-ubicacion').value   = autoAEditar.location;
@@ -178,6 +181,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         const marcaVal  = document.getElementById('input-marca').value.trim();
         const modeloVal = document.getElementById('input-modelo').value.trim();
         const precioVal = document.getElementById('input-precio').value.trim();
+        const yearVal = document.getElementById('input-anio').value.trim();
+        const kmVal = document.getElementById('input-km').value.trim();
+        const colorVal = document.getElementById('input-color').value.trim();
+        const doorsVal = document.getElementById('input-doors').value.trim();
+        const engineVal = document.getElementById('input-engine').value.trim();
 
         if (!marcaVal || !modeloVal) {
             showToast("Escribí marca y modelo antes de subir las fotos para optimizar el análisis.", "error");
@@ -187,7 +195,16 @@ document.addEventListener('DOMContentLoaded', async () => {
             const formData = new FormData();
             Array.from(files).forEach(file => formData.append('images', file));
 
-            const params = new URLSearchParams({ brand: marcaVal, model: modeloVal, price: precioVal || '10000' });
+            const params = new URLSearchParams({ 
+                brand: marcaVal, 
+                model: modeloVal, 
+                price: precioVal || '10000',
+                year: yearVal || '2020',
+                km: kmVal || '0',
+                color: colorVal || 'No especificado',
+                doors: doorsVal || '5',
+                engine: engineVal || 'No especificado'
+            });
             const res = await fetch(`${API_BASE_URL}/cars/upload-images?${params}`, {
                 method: 'POST',
                 headers: getAuthHeaders(null),
@@ -308,6 +325,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             year:         Number(document.getElementById('input-anio').value),
             price:        parseFloat(document.getElementById('input-precio').value),
             km:           Number(document.getElementById('input-km').value),
+            color:        document.getElementById('input-color').value.trim(),
+            doors:        Number(document.getElementById('input-doors').value),
+            engine:       document.getElementById('input-engine').value.trim(),
             fuel:         document.getElementById('input-fuel').value,
             transmission: document.getElementById('input-trans').value,
             location:     document.getElementById('input-ubicacion').value.trim(),

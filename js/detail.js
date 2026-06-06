@@ -27,7 +27,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         combustible: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M3 21a1 1 0 0 1 0 -2v-13a3 3 0 0 1 3 -3h6a3 3 0 0 1 3 3v4a3 3 0 0 1 3 3v3a.5 .5 0 1 0 1 0v-6a2 2 0 0 1 -2 -2v-.585l-.707 -.708a1 1 0 0 1 -.083 -1.32l.083 -.094a1 1 0 0 1 1.414 0l3.003 3.002l.095 .112l.028 .04l.044 .073l.052 .11l.031 .09l.02 .076l.012 .078l.008 .126v7a2.5 2.5 0 1 1 -5 0v-3a1 1 0 0 0 -1 -1v7a1 1 0 0 1 0 2zm9 -16h-6a1 1 0 0 0 -1 1v4h8v-4a1 1 0 0 0 -1 -1" /></svg>`,
         anio: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M16 2a1 1 0 0 1 .993 .883l.007 .117v1h1a3 3 0 0 1 2.995 2.824l.005 .176v12a3 3 0 0 1 -2.824 2.995l-.176 .005h-12a3 3 0 0 1 -2.995 -2.824l-.005 -.176v-12a3 3 0 0 1 2.824 -2.995l.176 -.005h1v-1a1 1 0 0 1 1.993 -.117l.007 .117v1h6v-1a1 1 0 0 1 1 -1m3 8h-14v8.625c0 .705 .386 1.286 .883 1.366l.117 .009h12c.513 0 .936 -.53 .993 -1.215l.007 -.16zm-9 4a1 1 0 0 1 1 1v2a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1v-2a1 1 0 0 1 1 -1z" /></svg>`,
         ubicacion: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M18.364 4.636a9 9 0 0 1 .203 12.519l-.203 .21l-4.243 4.242a3 3 0 0 1 -4.097 .135l-.144 -.135l-4.244 -4.243a9 9 0 0 1 12.728 -12.728zm-6.364 3.364a3 3 0 1 0 0 6a3 3 0 0 0 0 -6" /></svg>`,
-        carroceria: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M14 5a1 1 0 0 1 .694 .28l.087 .095l3.699 4.625h.52a3 3 0 0 1 2.995 2.824l.005 .176v4a1 1 0 0 1 -1 1h-1.171a3.001 3.001 0 0 1 -5.658 0h-4.342a3.001 3.001 0 0 1 -5.658 0h-1.171a1 1 0 0 1 -1 -1v-6l.007 -.117l.008 -.056l.017 -.078l.012 -.036l.014 -.05l2.014 -5.034a1 1 0 0 1 .928 -.629zm-7 11a1 1 0 1 0 0 2a1 1 0 0 0 0 -2m10 0a1 1 0 1 0 0 2a1 1 0 0 0 0 -2m-6 -9h-5.324l-1.2 3h6.524zm2.52 0h-.52v3h2.92z" /></svg>`
+        carroceria: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M14 5a1 1 0 0 1 .694 .28l.087 .095l3.699 4.625h.52a3 3 0 0 1 2.995 2.824l.005 .176v4a1 1 0 0 1 -1 1h-1.171a3.001 3.001 0 0 1 -5.658 0h-4.342a3.001 3.001 0 0 1 -5.658 0h-1.171a1 1 0 0 1 -1 -1v-6l.007 -.117l.008 -.056l.017 -.078l.012 -.036l.014 -.05l2.014 -5.034a1 1 0 0 1 .928 -.629zm-7 11a1 1 0 1 0 0 2a1 1 0 0 0 0 -2m10 0a1 1 0 1 0 0 2a1 1 0 0 0 0 -2m-6 -9h-5.324l-1.2 3h6.524zm2.52 0h-.52v3h2.92z" /></svg>`,
+        color: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10c5.52 0 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-5.5-8.5l3.5 3.5 6-6"/></svg>`,
+        puertas: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="12" y1="3" x2="12" y2="21"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/></svg>`
     };
 
     // --- 1. Obtener auto de la API ---
@@ -110,6 +112,18 @@ document.addEventListener('DOMContentLoaded', async () => {
                             <span class="spec-value">${car.km.toLocaleString()} km</span>
                         </div>
                         <div class="info-item">
+                            <div class="spec-header"><span class="spec-icon">${icons.motor}</span><span class="spec-label">Motor</span></div>
+                            <span class="spec-value">${car.engine || 'No especificado'}</span>
+                        </div>
+                        <div class="info-item">
+                            <div class="spec-header"><span class="spec-icon">${icons.color}</span><span class="spec-label">Color</span></div>
+                            <span class="spec-value">${car.color || 'No especificado'}</span>
+                        </div>
+                        <div class="info-item">
+                            <div class="spec-header"><span class="spec-icon">${icons.puertas}</span><span class="spec-label">Puertas</span></div>
+                            <span class="spec-value">${car.doors || 'No especificado'}</span>
+                        </div>
+                        <div class="info-item">
                             <div class="spec-header"><span class="spec-icon">${icons.transmision}</span><span class="spec-label">Transmisión</span></div>
                             <span class="spec-value">${car.transmission || 'No especificada'}</span>
                         </div>
@@ -153,6 +167,17 @@ document.addEventListener('DOMContentLoaded', async () => {
                         <textarea id="input-inquiry-message" autocomplete="off" placeholder="Hola, me interesa este vehículo. ¿Sigue disponible?" required></textarea>
                         <button type="submit" class="btn-contact">ENVIAR MENSAJE</button>
                     </form>
+                    ${car.seller && car.seller.telefono ? `
+                    <div style="margin-top: 1rem;">
+                        <a href="https://wa.me/${car.seller.telefono.replace(/[^0-9]/g, '')}?text=Hola,%20vengo%20de%20SmartAuto.%20Estoy%20interesado%20en%20el%20${encodeURIComponent(car.brand + ' ' + car.model + ' (' + car.year + ')')}." target="_blank" style="display: flex; align-items: center; justify-content: center; gap: 10px; background-color: #25D366; color: white; padding: 12px; border-radius: 8px; text-decoration: none; font-weight: bold; width: 100%; box-sizing: border-box;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+                            Consultar por WhatsApp
+                        </a>
+                    </div>` : ''}
+                    <button id="btn-download-pdf" class="btn-detail" style="margin-top: 1rem; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; background: var(--bg-shark); border: 1px solid var(--border);">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
+                        Descargar Ficha PDF
+                    </button>
                 </div>
             </aside>
         `;
@@ -331,6 +356,52 @@ document.addEventListener('DOMContentLoaded', async () => {
                 } else {
                     if(typeof showToast === 'function') showToast(response.error, "error");
                 }
+            }
+        });
+    }
+
+    // E) Generar PDF
+    const btnPdf = document.getElementById('btn-download-pdf');
+    if (btnPdf) {
+        btnPdf.addEventListener('click', async () => {
+            if (typeof window.jspdf === 'undefined' || typeof window.html2canvas === 'undefined') {
+                if(typeof showToast === 'function') showToast("Las librerías para PDF no están cargadas.", "error");
+                return;
+            }
+
+            btnPdf.disabled = true;
+            btnPdf.innerHTML = "Generando PDF...";
+
+            try {
+                // Seleccionar qué vamos a capturar (toda la columna izquierda)
+                const contentToPrint = document.querySelector('.gallery-column');
+                const canvas = await html2canvas(contentToPrint, { scale: 2, useCORS: true });
+                const imgData = canvas.toDataURL('image/jpeg', 0.8);
+
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+                pdf.setFontSize(22);
+                pdf.text(`SmartAuto - Ficha Técnica`, 10, 15);
+                pdf.setFontSize(16);
+                pdf.text(`${car.brand} ${car.model} (${car.year}) - u$s ${Number(car.price).toLocaleString()}`, 10, 25);
+
+                // Add image below title
+                pdf.addImage(imgData, 'JPEG', 10, 30, pdfWidth - 20, pdfHeight - 20);
+
+                pdf.save(`Ficha_${car.brand}_${car.model}_${car.year}.pdf`);
+                if(typeof showToast === 'function') showToast("PDF generado correctamente.", "success");
+            } catch (error) {
+                console.error(error);
+                if(typeof showToast === 'function') showToast("Ocurrió un error al generar el PDF.", "error");
+            } finally {
+                btnPdf.disabled = false;
+                btnPdf.innerHTML = `
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
+                    Descargar Ficha PDF
+                `;
             }
         });
     }

@@ -99,7 +99,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 htmlBotones = `<button class="btn-compare-card ${isSelected ? 'active' : ''}" data-id="${car.id}">${isSelected ? 'Agregado' : 'Comparar'}</button>${htmlBotones}`;
                 htmlFavorito = `<button class="btn-favorite ${isFav ? 'active' : ''}" data-fav-id="${car.id}"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></button>`;
             }
-            card.innerHTML = `<div class="img-container">${htmlFavorito}<img src="${car.image || ''}" alt="${car.model}" onerror="this.style.visibility='hidden'"><span class="badge-ia">${car.bodyType}</span></div><div class="info-auto"><h3>${car.brand} ${car.model}</h3><p>${car.year} • ${car.km.toLocaleString()} km</p><div class="car-footer"><span class="price">u$s ${Number(car.price).toLocaleString()}</span><div style="display:flex;gap:8px;">${htmlBotones}</div></div></div>`;
+            let statusBadge = '';
+            if (car.status === 'Reservado') {
+                statusBadge = `<span class="badge-ia" style="background: rgba(255,165,0,0.9); color: #000; top: 10px; left: 10px; right: auto;">RESERVADO</span>`;
+            } else if (car.status === 'Vendido') {
+                statusBadge = `<span class="badge-ia" style="background: rgba(255,50,50,0.9); top: 10px; left: 10px; right: auto;">VENDIDO</span>`;
+            }
+            card.innerHTML = `<div class="img-container">${htmlFavorito}${statusBadge}<img src="${car.image || ''}" alt="${car.model}" onerror="this.style.visibility='hidden'"><span class="badge-ia">${car.bodyType}</span></div><div class="info-auto"><h3>${car.brand} ${car.model}</h3><p>${car.year} • ${car.km.toLocaleString()} km</p><div class="car-footer"><span class="price">u$s ${Number(car.price).toLocaleString()}</span><div style="display:flex;gap:8px;">${htmlBotones}</div></div></div>`;
             carContainer.appendChild(card);
         });
 

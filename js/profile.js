@@ -319,7 +319,48 @@ document.addEventListener('DOMContentLoaded', async () => {
                 window.location.href = "index.html";
             }
         });
+    }window.cambiarEstadoAuto = async function(carId, nuevoEstado) {
+    try {
+        const res = await authFetch(`${API_BASE_URL}/cars/${carId}/status`, {
+            method: 'POST',
+            headers: getAuthHeaders(),
+            body: JSON.stringify({ status: nuevoEstado })
+        });
+        if (res && res.ok) {
+            if(typeof showToast === 'function') showToast("Estado actualizado correctamente.", "success");
+            // Find car and update local state to reflect UI change without reload if needed, 
+            // but for now simple reload is fine or just re-render grid
+            const sessionData = getSession();
+            if (sessionData && sessionData.role === 'vendedor') {
+                renderizarPanelVendedor(sessionData.email);
+            }
+        } else {
+            if(typeof showToast === 'function') showToast("Error al actualizar el estado.", "error");
+        }
+    } catch(err) {
+        console.error(err);
+        if(typeof showToast === 'function') showToast("Error de conexión.", "error");
     }
+};
+
+window.cambiarEstadoInquiry = async function(inquiryId, nuevoEstado) {
+    try {
+        const res = await authFetch(`${API_BASE_URL}/inquiries/${inquiryId}/status`, {
+            method: 'POST',
+            headers: getAuthHeaders(),
+            body: JSON.stringify({ status: nuevoEstado })
+        });
+        if (res && res.ok) {
+            if(typeof showToast === 'function') showToast("Estado del lead actualizado.", "success");
+        } else {
+            if(typeof showToast === 'function') showToast("Error al actualizar estado.", "error");
+        }
+    } catch(err) {
+        console.error(err);
+        if(typeof showToast === 'function') showToast("Error de conexión.", "error");
+    }
+};
+
 });
 
 /* ==========================================================================
@@ -596,7 +637,7 @@ function renderizarGrillaInventario() {
         card.innerHTML = `
             <div class="mini-card-img">
                 <img src="${auto.image}" alt="${auto.model}">
-                <span class="status-tag">ACTIVO</span>
+                <span class="status-tag" style="background: ${auto.status === 'Vendido' ? 'rgba(255,50,50,0.9)' : auto.status === 'Reservado' ? 'rgba(255,165,0,0.9)' : 'rgba(50,255,50,0.9)'}; color: ${auto.status === 'Reservado' ? '#000' : '#fff'};">${auto.status ? auto.status.toUpperCase() : 'DISPONIBLE'}</span>
             </div>
             <div class="mini-card-details">
                 <div class="mini-card-header"><h4>${auto.brand} ${auto.model}</h4><span class="mini-price">u$s ${Number(auto.price).toLocaleString()}</span></div>
@@ -606,9 +647,13 @@ function renderizarGrillaInventario() {
                     <div class="stat-box"><span class="stat-label">Consultas</span><span class="stat-value">${auto.contacts || 0}</span></div>
                     <div class="stat-box"><span class="stat-label">IA Score</span><span class="stat-value" style="color: #4caf50;">${auto.aiScore ? auto.aiScore + '%' : '-'}</span></div>
                 </div>
-                <div class="action-bar">
-                    <button class="btn-action btn-edit" onclick="sessionStorage.setItem('editModeId', ${auto.id}); location.href='publish.html';">Editar</button>
-                    <button class="btn-action btn-delete" onclick="window.eliminarPublicacion(${auto.id})">Eliminar</button>
+                <div class="action-bar" style="display: flex; gap: 8px; align-items: center; justify-content: space-between;">
+                    <button class="btn-action btn-edit" style="flex: 1;" onclick="sessionStorage.setItem('editModeId', ${auto.id}); location.href='publish.html';">Editar</button>
+                    <select onchange="window.cambiarEstadoAuto(${auto.id}, this.value)" style="flex: 1; padding: 6px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-elevated); color: var(--text-main); font-size: 0.8rem; cursor: pointer;">
+                        <option value="Disponible" ${auto.status === 'Disponible' ? 'selected' : ''}>Disponible</option>
+                        <option value="Reservado" ${auto.status === 'Reservado' ? 'selected' : ''}>Reservado</option>
+                        <option value="Vendido" ${auto.status === 'Vendido' ? 'selected' : ''}>Vendido</option>
+                    </select>
                 </div>
             </div>`;
         grid.appendChild(card);
@@ -687,10 +732,18 @@ async function renderizarBandejaMensajes(userEmail, userRole) {
                     <div style="overflow: hidden;">
                         <div id="chat-body-${msg.id}" style="display: flex; flex-direction: column; padding: 0 1.2rem 1.2rem 1.2rem; border-top: 1px solid rgba(255,255,255,0.05);">
                             <div class="chat-box" style="flex-grow: 1; max-height: 350px; overflow-y: auto; background: #0f1115; border-radius: 8px; padding: 15px; display: flex; flex-direction: column; gap: 5px; margin-top: 1rem; border: 1px solid rgba(255,255,255,0.05);">${chatHistoryHTML}</div>
-                            <div style="display: flex; gap: 10px; margin-top: 15px;">
-                                <input type="text" id="reply-input-${msg.id}" autocomplete="off" onkeypress="if(event.key === 'Enter') enviarRespuesta(${msg.id}, '${userRole}')" placeholder="Escribir respuesta..." style="flex-grow: 1; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a1a; color: white; font-family: inherit; outline: none;">
-                                ${isUnanswered ? `<button class="btn-action" onclick="window.marcarComoLeido(${msg.id}, '${userRole}')" style="background: transparent; color: var(--text-slate); border: 1px solid var(--border); border-radius: 6px; padding: 0 15px; cursor: pointer; font-size: 0.8rem; transition: background 0.3s;">Marcar como leído</button>` : ''}
-                                <button class="btn-action" onclick="enviarRespuesta(${msg.id}, '${userRole}')" style="background: var(--accent-lavender); color: var(--bg-shark); font-weight: bold; border: none; border-radius: 6px; padding: 0 20px; cursor: pointer;">Enviar</button>
+                            <div style="display: flex; gap: 10px; margin-top: 15px; align-items: center; flex-wrap: wrap;">
+                                <input type="text" id="reply-input-${msg.id}" autocomplete="off" onkeypress="if(event.key === 'Enter') enviarRespuesta(${msg.id}, '${userRole}')" placeholder="Escribir respuesta..." style="flex-grow: 1; min-width: 200px; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: #1a1a1a; color: white; font-family: inherit; outline: none;">
+                                ${userRole === 'vendedor' ? `
+                                <select onchange="window.cambiarEstadoInquiry(${msg.id}, this.value)" style="padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-elevated); color: var(--text-main); font-size: 0.85rem; cursor: pointer;">
+                                    <option value="Nuevo" ${msg.status === 'Nuevo' ? 'selected' : ''}>Nuevo Lead</option>
+                                    <option value="EnContacto" ${msg.status === 'EnContacto' ? 'selected' : ''}>En Contacto</option>
+                                    <option value="Negociacion" ${msg.status === 'Negociacion' ? 'selected' : ''}>En Negociación</option>
+                                    <option value="Cerrado" ${msg.status === 'Cerrado' ? 'selected' : ''}>Cerrado</option>
+                                    <option value="Perdido" ${msg.status === 'Perdido' ? 'selected' : ''}>Perdido</option>
+                                </select>` : ''}
+                                ${isUnanswered ? `<button class="btn-action" onclick="window.marcarComoLeido(${msg.id}, '${userRole}')" style="background: transparent; color: var(--text-slate); border: 1px solid var(--border); border-radius: 6px; padding: 0 15px; height: 40px; cursor: pointer; font-size: 0.8rem; transition: background 0.3s;">Marcar leído</button>` : ''}
+                                <button class="btn-action" onclick="enviarRespuesta(${msg.id}, '${userRole}')" style="background: var(--accent-lavender); color: var(--bg-shark); font-weight: bold; border: none; border-radius: 6px; padding: 0 20px; height: 40px; cursor: pointer;">Enviar</button>
                             </div>
                             <div style="margin-top: 15px; text-align: center;"><a href="#" onclick="window.verDetalleVehiculo('${msg.autoId}')" style="color: var(--text-slate); font-size: 0.8rem; text-decoration: underline;">Ver publicación original</a></div>
                         </div>
