@@ -221,15 +221,14 @@
    ESTADÍSTICAS Y ACCIONES (HUD Style)
    ========================================================================== */
 .analytics-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: 0.8rem;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
     margin: 1.5rem 0;
 }
 .analytics-container .stat-box {
-    flex: 1;
-    min-width: 30%;
+    min-width: 0; /* Prevents overflow */
+    overflow: hidden;
 }
 
 .stat-box {
@@ -452,10 +451,10 @@
 @media (max-width: 30rem) {
     .profile-content h1 { font-size: 1.8rem; }
     
-    .analytics-container { gap: 0.5rem; }
-    .stat-box { padding: 0.8rem 0.5rem; }
-    .stat-label { font-size: 0.55rem; letter-spacing: 0; }
-    .stat-value { font-size: 1rem; }
+    .analytics-container { gap: 0.25rem; }
+    .stat-box { padding: 0.5rem 0.2rem; }
+    .stat-label { font-size: 0.55rem; letter-spacing: 0; overflow-wrap: break-word; }
+    .stat-value { font-size: 0.9rem; }
     
     .filter-segmented-control { height: 3rem; }
 }

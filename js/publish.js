@@ -32,6 +32,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let estadoGeneralIA  = "Buen estado";
     let danosVisiblesIA  = "Ninguno detectado";
     let rangoPrecioIA    = { min: 0, max: 0 };
+    let aiScoreIA        = 0;
     let editModeId       = null;
 
     // Actualiza el texto del recuadro IA con los datos actuales
@@ -257,6 +258,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             estadoGeneralIA     = data.aiAnalysis.aiStatus;
             danosVisiblesIA     = data.aiAnalysis.aiDamages;
             rangoPrecioIA       = data.aiAnalysis.priceRange;
+            aiScoreIA           = data.aiAnalysis.aiScore || 0;
 
             actualizarTextoIA();
             mostrarSelectorManual();
@@ -333,7 +335,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             aiDamages:    danosVisiblesIA,
             aiPriceMin:   Number(rangoPrecioIA.min),
             aiPriceMax:   Number(rangoPrecioIA.max),
-            aiScore:      Number(datosAdicionalesIA?.aiScore) || 0,
+            aiScore:      Number(aiScoreIA) || 0,
             images:       fotosCargadas
         };
 
