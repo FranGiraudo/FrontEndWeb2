@@ -41,8 +41,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         aiBox.innerHTML = `
             <b>Carrocería${manual ? ' (Manual)' : ''}:</b> ${carroceriaDetectada}<br>
             <b>Estado IA:</b> <span style="color:var(--accent-lavender);">${estadoGeneralIA}</span><br>
-            <b>Daños:</b> ${danosVisiblesIA}<br>
-            <b>Precio Sugerido:</b> u$s ${rangoPrecioIA.min.toLocaleString()} - u$s ${rangoPrecioIA.max.toLocaleString()}
+            <b>Daños:</b> ${danosVisiblesIA}
         `;
     }
 

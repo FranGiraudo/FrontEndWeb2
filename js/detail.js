@@ -27,8 +27,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         combustible: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M3 21a1 1 0 0 1 0 -2v-13a3 3 0 0 1 3 -3h6a3 3 0 0 1 3 3v4a3 3 0 0 1 3 3v3a.5 .5 0 1 0 1 0v-6a2 2 0 0 1 -2 -2v-.585l-.707 -.708a1 1 0 0 1 -.083 -1.32l.083 -.094a1 1 0 0 1 1.414 0l3.003 3.002l.095 .112l.028 .04l.044 .073l.052 .11l.031 .09l.02 .076l.012 .078l.008 .126v7a2.5 2.5 0 1 1 -5 0v-3a1 1 0 0 0 -1 -1v7a1 1 0 0 1 0 2zm9 -16h-6a1 1 0 0 0 -1 1v4h8v-4a1 1 0 0 0 -1 -1" /></svg>`,
         anio: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M16 2a1 1 0 0 1 .993 .883l.007 .117v1h1a3 3 0 0 1 2.995 2.824l.005 .176v12a3 3 0 0 1 -2.824 2.995l-.176 .005h-12a3 3 0 0 1 -2.995 -2.824l-.005 -.176v-12a3 3 0 0 1 2.824 -2.995l.176 -.005h1v-1a1 1 0 0 1 1.993 -.117l.007 .117v1h6v-1a1 1 0 0 1 1 -1m3 8h-14v8.625c0 .705 .386 1.286 .883 1.366l.117 .009h12c.513 0 .936 -.53 .993 -1.215l.007 -.16zm-9 4a1 1 0 0 1 1 1v2a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1v-2a1 1 0 0 1 1 -1z" /></svg>`,
         ubicacion: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M18.364 4.636a9 9 0 0 1 .203 12.519l-.203 .21l-4.243 4.242a3 3 0 0 1 -4.097 .135l-.144 -.135l-4.244 -4.243a9 9 0 0 1 12.728 -12.728zm-6.364 3.364a3 3 0 1 0 0 6a3 3 0 0 0 0 -6" /></svg>`,
-        carroceria: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M14 5a1 1 0 0 1 .694 .28l.087 .095l3.699 4.625h.52a3 3 0 0 1 2.995 2.824l.005 .176v4a1 1 0 0 1 -1 1h-1.171a3.001 3.001 0 0 1 -5.658 0h-4.342a3.001 3.001 0 0 1 -5.658 0h-1.171a1 1 0 0 1 -1 -1v-6l.007 -.117l.008 -.056l.017 -.078l.012 -.036l.014 -.05l2.014 -5.034a1 1 0 0 1 .928 -.629zm-7 11a1 1 0 1 0 0 2a1 1 0 0 0 0 -2m10 0a1 1 0 1 0 0 2a1 1 0 0 0 0 -2m-6 -9h-5.324l-1.2 3h6.524zm2.52 0h-.52v3h2.92z" /></svg>`,
-        color: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r="1.5" fill="currentColor"/><circle cx="17.5" cy="10.5" r="1.5" fill="currentColor"/><circle cx="8.5" cy="7.5" r="1.5" fill="currentColor"/><circle cx="6.5" cy="12.5" r="1.5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.92 0 1.75-.41 2.3-1.09.28-.35.45-.79.45-1.27 0-.58-.23-1.12-.61-1.52A2.16 2.16 0 0 1 13.5 17h2c3.04 0 5.5-2.46 5.5-5.5S18.5 2 12 2z"/></svg>`
+        carroceria: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M14 5a1 1 0 0 1 .694 .28l.087 .095l3.699 4.625h.52a3 3 0 0 1 2.995 2.824l.005 .176v4a1 1 0 0 1 -1 1h-1.171a3.001 3.001 0 0 1 -5.658 0h-4.342a3.001 3.001 0 0 1 -5.658 0h-1.171a1 1 0 0 1 -1 -1v-6l.007 -.117l.008 -.056l.017 -.078l.012 -.036l.014 -.05l2.014 -5.034a1 1 0 0 1 .928 -.629zm-7 11a1 1 0 1 0 0 2a1 1 0 0 0 0 -2m10 0a1 1 0 1 0 0 2a1 1 0 0 0 0 -2m-6 -9h-5.324l-1.2 3h6.524zm2.52 0h-.52v3h2.92z" /></svg>`
     };
 
     // --- 1. Obtener auto de la API ---
@@ -80,8 +79,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 </h4>
                 <p style="margin: 0; color: #eee;">
                     <b>Estado Detectado:</b> <span style="color: var(--accent-lavender); font-weight: 600;">${car.aiStatus || 'Excelente estado'}</span><br>
-                    <b>Daños en Chapa/Pintura:</b> ${car.aiDamages || 'Ninguno detectado'}<br>
-                    <b>Valoración Sugerida:</b> u$s ${sugMin.toLocaleString()} - u$s ${sugMax.toLocaleString()}
+                    <b>Daños en Chapa/Pintura:</b> ${car.aiDamages || 'Ninguno detectado'}
                 </p>
             </div>
         ` : '';
@@ -115,10 +113,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                             <span class="spec-value">${car.engine || 'No especificado'}</span>
                         </div>
                         <div class="info-item">
-                            <div class="spec-header"><span class="spec-icon">${icons.color}</span><span class="spec-label">Color</span></div>
-                            <span class="spec-value">${car.color || 'No especificado'}</span>
-                        </div>
-                        <div class="info-item">
                             <div class="spec-header"><span class="spec-icon">${icons.transmision}</span><span class="spec-label">Transmisión</span></div>
                             <span class="spec-value">${car.transmission || 'No especificada'}</span>
                         </div>
@@ -128,7 +122,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         </div>
                         <div class="info-item">
                             <div class="spec-header"><span class="spec-icon">${icons.carroceria}</span><span class="spec-label">Carrocería</span></div>
-                            <span class="spec-value">${car.bodyType}</span>
+                            <span class="spec-value">${car.bodyType || 'Sedán'}</span>
                         </div>
                         <div class="info-item">
                             <div class="spec-header"><span class="spec-icon">${icons.ubicacion}</span><span class="spec-label">Ubicación</span></div>
@@ -436,11 +430,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 pdf.setFont("helvetica", "normal");
                 pdf.text(`Combustible: ${car.fuel}`, 25, 210);
                 pdf.text(`Transmisión: ${car.transmission}`, 25, 220);
-                pdf.text(`Motor: ${car.engine || 'N/A'}`, 25, 230);
-                pdf.text(`Color: ${car.color || 'N/A'}`, 25, 240);
+                pdf.text(`Carrocería: ${car.bodyType || 'Sedán'}`, 25, 230);
 
-                pdf.text(`Carrocería: ${car.bodyType}`, pdfWidth/2 + 10, 210);
-                pdf.text(`Estado: ${car.status || 'Disponible'}`, pdfWidth/2 + 10, 220);
+                pdf.text(`Estado: ${car.status || 'Disponible'}`, pdfWidth/2 + 10, 210);
                 
                 // Footer
                 pdf.setFillColor(accentColor[0], accentColor[1], accentColor[2]);
