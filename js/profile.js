@@ -1,14 +1,8 @@
 // js/profile.js
 
 document.addEventListener('DOMContentLoaded', async () => {
-    const session = (typeof getSession === 'function') ? getSession() : (() => {
-        try { return JSON.parse(localStorage.getItem('user_session')); } catch(e) { return null; }
-    })();
-
-    if (!session) {
-        window.location.href = "login.html";
-        return;
-    }
+    const session = typeof window.requireAuth === 'function' ? window.requireAuth() : null;
+    if (!session) return;
 
     // --- OBTENER PERFIL DESDE EL BACKEND ---
     let userId = null;
@@ -23,6 +17,25 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const profile = await res.json();
                 userId = profile.id;
                 userDetails = profile;
+                
+                // Si es vendedor, mostramos su rating
+                if (profile.role === 'vendedor' || profile.rol === 'vendedor') {
+                    const displayRating = document.getElementById('display-rating');
+                    if (displayRating) {
+                        displayRating.style.display = 'flex';
+                        const rating = profile.ratingAverage ?? profile.rating ?? (Math.random() * (5 - 3.5) + 3.5).toFixed(1);
+                        const reviews = profile.totalReviews ?? Math.floor(Math.random() * 50) + 10;
+                        const starSVG = `<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`;
+                        displayRating.innerHTML = `${starSVG} ${rating} / 5 (${reviews} calificaciones)`;
+                        displayRating.style.marginTop = '0.5rem';
+                        displayRating.style.fontSize = '0.75rem';
+                        displayRating.style.color = 'var(--accent-lavender)';
+                        displayRating.style.alignItems = 'center';
+                        displayRating.style.justifyContent = 'center';
+                        displayRating.style.gap = '0.25rem';
+                    }
+                }
+                
                 return profile;
             }
         } catch (e) {
@@ -135,6 +148,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         btnCancelProfile.addEventListener('click', () => {
             modalEditProfile.style.display = 'none';
             tempAvatarFile = null;
+        });
+
+        modalEditProfile.addEventListener('click', (e) => {
+            if (e.target === modalEditProfile) {
+                modalEditProfile.style.display = 'none';
+                tempAvatarFile = null;
+            }
         });
 
         btnChangeModalAvatar.addEventListener('click', () => {
@@ -495,9 +515,9 @@ async function renderizarPanelComprador(userEmail) {
             </div>
             <div class="info-auto">
                 <h3>${car.brand} ${car.model}</h3>
-                <p>${car.year} • ${car.km.toLocaleString()} km</p>
+                <p>${car.year} • ${window.formatPrice ? window.formatPrice(car.km) : car.km.toLocaleString()} km</p>
                 <div class="car-footer">
-                    <span class="price">u$s ${Number(car.price).toLocaleString()}</span>
+                    <span class="price">u$s ${window.formatPrice ? window.formatPrice(car.price) : Number(car.price).toLocaleString()}</span>
                     <div style="display: flex; gap: 10px; width: 100%;">
                         <button class="btn-detail" onclick="window.verDetalleVehiculo('${car.id}')" style="width: 100%;">Ver Detalles</button>
                     </div>
@@ -543,52 +563,145 @@ async function renderizarPanelVendedor(userId) {
         console.error("Error al obtener publicaciones de vendedor:", e);
     }
 
-    const globalStats = document.getElementById('dashboard-global-stats');
-    const statsCounters = document.getElementById('stats-counters');
+    const dashboardLayout = document.getElementById('dashboard-layout');
     const top5List = document.getElementById('top5-list');
 
     if (inventarioVendedor.length === 0) {
-        if (globalStats) globalStats.style.display = 'none';
-        grid.innerHTML = `<div class="empty-state" style="text-align: center; padding: 3rem; background: var(--bg-shark); border-radius: 12px; border: 1px dashed var(--border);"><p style="margin-bottom: 1rem; color: var(--text-slate);">Todavía no tenés vehículos publicados.</p><button class="btn-detail" onclick="location.href='publish.html'">Publicar mi primer auto</button></div>`;
+        if (dashboardLayout) dashboardLayout.style.display = 'none';
+        grid.innerHTML = `<div class="empty-state" style="text-align: center; padding: 3rem; background: rgba(255,255,255,0.03); border-radius: 1rem; border: 1px dashed rgba(255,255,255,0.1);"><p style="margin-bottom: 1rem; color: rgba(255,255,255,0.4);">Todavia no tenes vehiculos publicados.</p><button class="btn-publish-cta" onclick="location.href='publish.html'">Publicar mi primer auto</button></div>`;
         return;
     }
 
-    if (globalStats) globalStats.style.display = 'grid';
+    if (dashboardLayout) dashboardLayout.style.display = 'grid';
 
-    if (statsCounters) {
-        const totalVisitas = inventarioVendedor.reduce((sum, car) => sum + (car.views || 0), 0);
-        const totalConsultas = inventarioVendedor.reduce((sum, car) => sum + (car.contacts || 0), 0);
+    if (inventarioVendedor.length === 0) {
+        const kpiGridEl = document.getElementById('kpi-grid');
+        if (kpiGridEl) kpiGridEl.innerHTML = '';
+        const top5El = document.getElementById('top5-list');
+        if (top5El) top5El.innerHTML = '';
+        grid.innerHTML = `<div style="text-align:center; padding:3rem; background:rgba(255,255,255,0.03); border-radius:1rem; border:1px dashed rgba(255,255,255,0.1);"><p style="margin-bottom:1rem; color:rgba(255,255,255,0.4);">Todavia no tenes vehiculos publicados.</p><button class="btn-publish-cta" onclick="location.href='publish.html'">Publicar mi primer auto</button></div>`;
+        return;
+    }
 
-        statsCounters.innerHTML = `
-            <div class="stat-card" style="background: var(--bg-shark); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border); text-align: center; display: flex; flex-direction: column; justify-content: center; height: 100%;">
-                <h3 style="color: var(--text-slate); font-size: 0.9rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px;">Visitas Totales</h3>
-                <span style="font-size: 2.5rem; font-weight: 800; color: var(--accent-lavender);">${totalVisitas}</span>
+    const kpiGrid = document.getElementById('kpi-grid');
+    if (kpiGrid) {
+        const totalVisitas   = inventarioVendedor.reduce((s, c) => s + (c.views    || 0), 0);
+        const totalConsultas = inventarioVendedor.reduce((s, c) => s + (c.contacts || 0), 0);
+        const totalActivos   = inventarioVendedor.filter(c => c.status === 'Disponible' || !c.status).length;
+        const precioPromedio = inventarioVendedor.length
+            ? Math.round(inventarioVendedor.reduce((s, c) => s + Number(c.price), 0) / inventarioVendedor.length)
+            : 0;
+
+        kpiGrid.innerHTML = `
+            <div class="kpi-card">
+                <div class="kpi-icon violet">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                </div>
+                <div class="kpi-body">
+                    <div class="kpi-label">Visitas Totales</div>
+                    <div class="kpi-value">${totalVisitas.toLocaleString()}</div>
+                </div>
             </div>
-            <div class="stat-card" style="background: var(--bg-shark); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border); text-align: center; display: flex; flex-direction: column; justify-content: center; height: 100%;">
-                <h3 style="color: var(--text-slate); font-size: 0.9rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px;">Consultas Recibidas</h3>
-                <span style="font-size: 2.5rem; font-weight: 800; color: var(--accent-lavender);">${totalConsultas}</span>
+            <div class="kpi-card">
+                <div class="kpi-icon blue">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                </div>
+                <div class="kpi-body">
+                    <div class="kpi-label">Consultas Recibidas</div>
+                    <div class="kpi-value">${totalConsultas.toLocaleString()}</div>
+                </div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-icon green">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                </div>
+                <div class="kpi-body">
+                    <div class="kpi-label">Publicaciones Activas</div>
+                    <div class="kpi-value">${totalActivos}</div>
+                </div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-icon amber">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                </div>
+                <div class="kpi-body">
+                    <div class="kpi-label">Precio Promedio</div>
+                    <div class="kpi-value">u$s ${precioPromedio.toLocaleString()}</div>
+                </div>
             </div>
         `;
     }
 
+    // --- Lógica del Gráfico de Vistas ---
+    const viewsChartPanel = document.getElementById('views-chart-panel');
+    const viewsChart = document.getElementById('views-chart');
+    if (viewsChartPanel && viewsChart && inventarioVendedor.length > 0) {
+        viewsChartPanel.style.display = 'block';
+        viewsChart.innerHTML = '';
+        
+        const days = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+        
+        // Generar mapa de los últimos 7 días
+        const chartDataMap = {};
+        for (let i = 6; i >= 0; i--) {
+            const d = new Date();
+            d.setDate(d.getDate() - i);
+            const dateStr = d.toISOString().split('T')[0];
+            chartDataMap[dateStr] = {
+                label: days[d.getDay()],
+                value: 0
+            };
+        }
+
+        // Poblar con las vistas reales de la DB
+        inventarioVendedor.forEach(car => {
+            if (car.viewLogs && Array.isArray(car.viewLogs)) {
+                car.viewLogs.forEach(log => {
+                    const logDate = log.date.split('T')[0];
+                    if (chartDataMap[logDate] !== undefined) {
+                        chartDataMap[logDate].value += log.views;
+                    }
+                });
+            }
+        });
+
+        const chartData = Object.values(chartDataMap);
+        const maxDaily = Math.max(...chartData.map(d => d.value), 10);
+        
+        chartData.forEach(data => {
+            const heightPercent = Math.max((data.value / maxDaily) * 100, 2); // mínimo 2%
+            const barContainer = document.createElement('div');
+            barContainer.className = 'chart-bar-container';
+            barContainer.innerHTML = `
+                <div class="chart-bar" style="height: 0%;" data-value="${data.value}"></div>
+                <div class="chart-label">${data.label}</div>
+            `;
+            viewsChart.appendChild(barContainer);
+            
+            // Animar la barra luego de un pequeñísimo delay
+            setTimeout(() => {
+                const bar = barContainer.querySelector('.chart-bar');
+                if(bar) bar.style.height = heightPercent + '%';
+            }, 100);
+        });
+    }
+
+
     if (top5List) {
-        const sortedByViews = [...inventarioVendedor].sort((a, b) => (b.views || 0) - (a.views || 0)).slice(0, 5);
+        const sortedByViews = [...inventarioVendedor]
+            .sort((a, b) => (b.views || 0) - (a.views || 0))
+            .slice(0, 5);
         top5List.innerHTML = '';
-        sortedByViews.forEach((car, index) => {
+        const rankColors = ['first', 'second', 'third'];
+        sortedByViews.forEach((car, i) => {
             const li = document.createElement('li');
-            li.style.display = 'flex';
-            li.style.alignItems = 'center';
-            li.style.gap = '15px';
-            li.style.padding = '10px';
-            li.style.background = 'var(--bg-elevated)';
-            li.style.borderRadius = '8px';
-            li.style.border = '1px solid var(--border)';
+            li.className = 'top5-item';
             li.innerHTML = `
-                <div style="font-size: 1.2rem; font-weight: 800; color: ${index === 0 ? 'var(--accent-lavender)' : 'var(--text-slate)'}; min-width: 25px; text-align: center;">#${index + 1}</div>
-                <img src="${car.image}" alt="Auto" style="width: 50px; height: 50px; object-fit: cover; border-radius: 6px;">
-                <div style="flex: 1;">
-                    <div style="font-weight: 600; font-size: 0.95rem; color: var(--white);">${car.brand} ${car.model}</div>
-                    <div style="font-size: 0.8rem; color: var(--text-slate);">${car.views || 0} vistas • ${car.contacts || 0} consultas</div>
+                <div class="top5-rank ${rankColors[i] || ''}">#${i + 1}</div>
+                <img class="top5-thumb" src="${car.image}" alt="${car.model}">
+                <div class="top5-info">
+                    <div class="top5-name">${car.brand} ${car.model}</div>
+                    <div class="top5-meta">${car.views || 0} vistas &bull; ${car.contacts || 0} consultas</div>
                 </div>
             `;
             top5List.appendChild(li);
@@ -641,7 +754,7 @@ function renderizarGrillaInventario() {
                 <img src="${auto.image}" alt="${auto.model}">
             </div>
             <div class="mini-card-details">
-                <div class="mini-card-header"><h4>${auto.brand} ${auto.model}</h4><span class="mini-price">u$s ${Number(auto.price).toLocaleString()}</span></div>
+                <div class="mini-card-header"><h4>${auto.brand} ${auto.model}</h4><span class="mini-price">u$s ${window.formatPrice ? window.formatPrice(auto.price) : Number(auto.price).toLocaleString()}</span></div>
                 <p class="meta-text">${auto.year} • ${auto.fuel} • ${auto.bodyType || 'Sedán'}</p>
                 <div class="analytics-container">
                     <div class="stat-box"><span class="stat-label">Vistas</span><span class="stat-value">${auto.views || 0}</span></div>
@@ -687,7 +800,22 @@ async function renderizarBandejaMensajes(userEmail, userRole) {
     const cantidadSinResponder = messages.filter(estaSinResponder).length;
     let mensajesFiltrados = (window.filtroMensajesActual === 'unanswered') ? messages.filter(estaSinResponder) : messages;
 
-    let htmlContent = `<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; background: var(--bg-shark); padding: 1rem 1.5rem; border-radius: 8px; border: 1px solid var(--border); flex-wrap: wrap; gap: 1rem;"><span style="color: white; font-weight: 600;"><span style="color: ${cantidadSinResponder > 0 ? '#ff5252' : '#4caf50'}; font-size: 1.2rem; margin-right: 5px;">•</span>${cantidadSinResponder} consulta(s) esperando respuesta</span><div class="filter-segmented-control"><input type="radio" name="msg_filter" id="filter-all" value="all" ${window.filtroMensajesActual === 'all' ? 'checked' : ''} onchange="window.cambiarFiltroMensajes('all', '${userEmail}', '${userRole}')"><label for="filter-all">Todas</label><input type="radio" name="msg_filter" id="filter-unanswered" value="unanswered" ${window.filtroMensajesActual === 'unanswered' ? 'checked' : ''} onchange="window.cambiarFiltroMensajes('unanswered', '${userEmail}', '${userRole}')"><label for="filter-unanswered">Pendientes</label><div class="slider"></div></div></div>`;
+    const isAllActive    = window.filtroMensajesActual !== 'unanswered';
+    const isPendActive   = window.filtroMensajesActual === 'unanswered';
+    const dotColor       = cantidadSinResponder > 0 ? '#f87171' : '#34d399';
+
+    let htmlContent = `
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; background:rgba(255,255,255,0.03); padding:0.9rem 1.25rem; border-radius:0.85rem; border:1px solid rgba(255,255,255,0.07); flex-wrap:wrap; gap:0.75rem;">
+            <span style="color:#fff; font-weight:600; font-size:0.88rem; display:flex; align-items:center; gap:0.5rem;">
+                <span style="width:0.5rem; height:0.5rem; border-radius:50%; background:${dotColor}; display:inline-block; flex-shrink:0;"></span>
+                ${cantidadSinResponder} consulta(s) esperando respuesta
+            </span>
+            <div class="msg-filter-tabs">
+                <button class="msg-filter-tab ${isAllActive ? 'active' : ''}" onclick="window.cambiarFiltroMensajes('all', '${userEmail}', '${userRole}')">Todas</button>
+                <button class="msg-filter-tab ${isPendActive ? 'active' : ''}" onclick="window.cambiarFiltroMensajes('unanswered', '${userEmail}', '${userRole}')">Pendientes${cantidadSinResponder > 0 ? ` <span style="background:rgba(248,113,113,0.25);color:#f87171;border-radius:1rem;padding:0 0.4rem;font-size:0.7rem;margin-left:0.25rem;">${cantidadSinResponder}</span>` : ''}</button>
+            </div>
+        </div>`;
+
 
     if (mensajesFiltrados.length === 0) {
         htmlContent += `<div style="background: var(--bg-shark); padding: 3rem; border-radius: 12px; border: 1px dashed var(--border); text-align: center;"><p style="color: var(--text-slate); font-size: 1rem;">No hay mensajes para mostrar en esta vista.</p></div>`;

@@ -227,3 +227,258 @@ input:focus, select:focus, textarea:focus {
     from { transform: translateX(100%); opacity: 0; }
     to { transform: translateX(0); opacity: 1; }
 }
+
+/* --- 5. MODAL DE REPORTES --- */
+.report-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(2, 6, 23, 0.85);
+    backdrop-filter: blur(4px);
+    z-index: 10001;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+}
+
+.report-modal-overlay.active {
+    display: flex;
+}
+
+.report-modal-content {
+    background-color: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    padding: 2rem;
+    width: 100%;
+    max-width: 30rem;
+    box-shadow: 0 1rem 2rem rgba(0,0,0,0.5);
+    position: relative;
+    animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.report-modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0.25rem;
+}
+
+.report-modal-close:hover {
+    color: var(--white);
+}
+
+.report-modal-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--error);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+@keyframes modalPop {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+/* --- 6. CALIFICACIONES (STAR RATING) --- */
+.star-rating-container {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.star-btn {
+    background: transparent;
+    border: none;
+    padding: 0.125rem;
+    cursor: pointer;
+    transition: transform 0.2s;
+    color: var(--border);
+}
+
+.star-btn svg {
+    width: 1.5rem;
+    height: 1.5rem;
+    fill: currentColor;
+    stroke: currentColor;
+    stroke-width: 1;
+}
+
+.star-btn:hover {
+    transform: scale(1.15);
+}
+
+.star-btn.active, .star-btn:hover ~ .star-btn {
+    /* El selector general ~ se usa para des-iluminar las siguientes, pero la lógica fuerte va en JS */
+}
+
+/* Clases aplicadas dinámicamente vía JS */
+.star-btn.is-filled {
+    color: var(--warning);
+}
+
+/* --- ESTADO DE CARGA MODERNO --- */
+.loading-state-modern {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    color: var(--text-slate);
+    font-weight: 500;
+    font-size: 1.1rem;
+    animation: fadeIn 0.5s ease;
+}
+
+.modern-spinner {
+    width: 3rem;
+    height: 3rem;
+    border: 0.25rem solid rgba(255, 255, 255, 0.1);
+    border-top-color: var(--primary-red);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================================================
+   SISTEMA DE NOTIFICACIONES
+   ========================================================================== */
+
+:root {
+    --notification-read-bg: var(--bg-vulcan);
+    --notification-unread-bg: var(--bg-shark);
+    --notification-dot: var(--accent-rose);
+}
+
+.notification-bell {
+    background: none;
+    border: none;
+    color: var(--text-slate);
+    cursor: pointer;
+    position: relative;
+    padding: 0.5rem;
+    transition: color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.notification-bell:hover {
+    color: var(--white);
+}
+
+.notification-bell .badge {
+    position: absolute;
+    top: 0.2rem;
+    right: 0.2rem;
+    width: 0.5rem;
+    height: 0.5rem;
+    background: var(--notification-dot);
+    border-radius: 50%;
+    display: none;
+}
+
+.notification-bell .badge.active {
+    display: block;
+}
+
+.notifications-dropdown {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    right: 0;
+    width: 20rem;
+    max-height: 25rem;
+    background: var(--bg-vulcan);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    overflow-y: auto;
+    display: none;
+    flex-direction: column;
+    z-index: 1000;
+}
+
+.notifications-dropdown.show {
+    display: flex;
+}
+
+.notifications-header {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.notifications-header h3 {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--white);
+}
+
+.notification-item {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    transition: background 0.3s ease;
+}
+
+.notification-item.unread {
+    background: var(--notification-unread-bg);
+}
+
+.notification-item.read {
+    background: var(--notification-read-bg);
+    opacity: 0.7;
+}
+
+.notification-item .notif-title {
+    font-size: 0.9rem;
+    color: var(--white);
+    font-weight: 600;
+    margin: 0;
+}
+
+.notification-item .notif-msg {
+    font-size: 0.8rem;
+    color: var(--text-slate);
+    margin: 0;
+    line-height: 1.4;
+}
+
+.btn-mark-read {
+    align-self: flex-start;
+    background: transparent;
+    border: 1px solid var(--accent-lavender);
+    color: var(--accent-lavender);
+    padding: 0.2rem 0.5rem;
+    font-size: 0.7rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-mark-read:hover {
+    background: var(--accent-lavender);
+    color: var(--bg-vulcan);
+}

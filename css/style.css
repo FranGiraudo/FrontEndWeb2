@@ -26,6 +26,13 @@
     --error-dark: #b71c1c;      
     --success: #66bb6a;
     --success-dark: #1b5e20;    
+    --warning: #fbbf24;
+    --warning-dark: #b45309;
+
+    --rank-gold: #F59E0B;
+    --rank-silver: #94A3B8;
+    --rank-bronze: #B45309;
+    --rank-standard: var(--border);
 
     --white-alpha-05: rgba(255, 255, 255, 0.04);
     --white-alpha-10: rgba(255, 255, 255, 0.10);
@@ -73,7 +80,6 @@ body {
     background-color: var(--bg-shark);
     color: var(--text-slate);
     line-height: 1.6;
-    overflow-x: hidden;
     --glass-bg: rgba(30, 41, 59, 0.4);
     --glass-border: rgba(255, 255, 255, 0.08);
 }
@@ -377,6 +383,33 @@ nav ul li a:hover::after, nav ul li a.active-page::after {
 /* ==========================================================================
    4. TOAST NOTIFICATIONS GLOBALES (Alertas laterales)
    ========================================================================== */
+
+body {
+    line-height: 1.6;
+    color: var(--text-light);
+    background-color: var(--bg-dark);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+main {
+    flex: 1;
+    animation: fadeInPage 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes fadeInPage {
+    from {
+        opacity: 0;
+        transform: translateY(0.5rem);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 .toast-container {
     position: fixed;
     bottom: 1.5625rem;

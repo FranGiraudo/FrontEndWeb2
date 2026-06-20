@@ -33,6 +33,24 @@ function handleUnauthorized() {
 }
 
 /**
+ * Valida la autenticación de forma sincrónica.
+ * Opcionalmente requiere un rol específico ('vendedor' o 'comprador').
+ * Si falla, redirige al login.
+ */
+window.requireAuth = function(requiredRole = null) {
+    const session = getSession();
+    if (!session) {
+        handleUnauthorized();
+        return null;
+    }
+    if (requiredRole && session.role !== requiredRole && session.rol !== requiredRole) {
+        handleUnauthorized();
+        return null;
+    }
+    return session;
+};
+
+/**
  * Helper para obtener cabeceras de autorización con JWT.
  */
 function getAuthHeaders(contentType = 'application/json') {
@@ -90,6 +108,55 @@ async function getCarById(id) {
         return await res.json();
     } catch (error) {
         console.error('Error en getCarById:', error);
+        return null;
+    }
+}
+
+/**
+ * 1.1 OBTENER LOS 10 AUTOS MÁS BUSCADOS (TRENDING)
+ */
+async function getTrendingCars() {
+    try {
+        const res = await fetch(`${API_BASE_URL}/cars/trending`, { cache: 'no-store' });
+        if (!res.ok) throw new Error('Error al obtener trending cars.');
+        return await res.json();
+    } catch (error) {
+        console.error('Error en getTrendingCars:', error);
+        return [];
+    }
+}
+
+/**
+ * 1.2 HISTORIAL DE BÚSQUEDAS
+ */
+async function getSearchHistory() {
+    const session = getSession();
+    if (!session || !session.token) return [];
+    try {
+        const res = await authFetch(`${API_BASE_URL}/search-history`, {
+            headers: getAuthHeaders()
+        });
+        if (!res || !res.ok) return [];
+        return await res.json();
+    } catch (error) {
+        console.error('Error en getSearchHistory:', error);
+        return [];
+    }
+}
+
+async function saveSearchHistory(queryText, filters) {
+    const session = getSession();
+    if (!session || !session.token) return null;
+    try {
+        const res = await authFetch(`${API_BASE_URL}/search-history`, {
+            method: 'POST',
+            headers: getAuthHeaders('application/json'),
+            body: JSON.stringify({ queryText, filters })
+        });
+        if (!res || !res.ok) return null;
+        return await res.json();
+    } catch (error) {
+        console.error('Error en saveSearchHistory:', error);
         return null;
     }
 }

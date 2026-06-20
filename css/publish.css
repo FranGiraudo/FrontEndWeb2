@@ -102,15 +102,21 @@ textarea {
 }
 
 .publish-card input, .publish-card select, .publish-card textarea {
-    background-color: rgba(15, 23, 42, 0.7);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background-color: var(--bg-elevated);
+    border: 0.0625rem solid var(--border);
     transition: all 0.3s ease;
+    color: var(--text-main);
+}
+
+.publish-card select option {
+    background-color: var(--bg-elevated);
+    color: var(--text-main);
 }
 
 .publish-card input:focus, .publish-card select:focus, .publish-card textarea:focus {
-    background-color: rgba(15, 23, 42, 0.9);
+    background-color: var(--bg-hover);
     border-color: var(--accent-lavender);
-    box-shadow: 0 0 15px rgba(249, 115, 22, 0.15);
+    box-shadow: 0 0 0.9375rem var(--accent-alpha-15);
 }
 
 /* Zona de Carga de Imágenes */
@@ -140,6 +146,21 @@ textarea {
     flex-direction: column;
     align-items: center;
     gap: 1rem;
+}
+
+/* AI Detection Loading State */
+.loading-input {
+    background-color: var(--bg-hover) !important;
+    color: var(--text-muted) !important;
+    border-color: var(--border) !important;
+    animation: pulse 1.5s infinite;
+    cursor: wait;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.7; }
+    50% { opacity: 1; }
+    100% { opacity: 0.7; }
 }
 
 .drop-zone:hover {

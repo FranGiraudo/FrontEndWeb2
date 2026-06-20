@@ -1,0 +1,147 @@
+/* css/ai-price.css */
+.ai-price-container {
+    background-color: var(--bg-elevated);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+    border: 1px solid var(--border);
+    font-family: 'Inter', sans-serif;
+}
+
+.ai-price-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.ai-price-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.ai-price-title svg {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: var(--accent-lavender);
+}
+
+.ai-price-status {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05rem;
+}
+
+/* Minimal Status variants */
+.status-good { 
+    background-color: rgba(34, 197, 94, 0.1);
+    color: #4ade80;
+}
+.status-warning { 
+    background-color: rgba(234, 179, 8, 0.1);
+    color: #fde047;
+}
+.status-bad { 
+    background-color: rgba(239, 68, 68, 0.1);
+    color: #fca5a5;
+}
+
+/* Minimal Gauge Bar */
+.ai-price-bar-wrapper {
+    position: relative;
+    height: 0.5rem;
+    border-radius: 1rem;
+    background-color: var(--bg-dark);
+    margin: 2.5rem 0 0.5rem 0;
+}
+
+.ai-price-bar-gradient {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 1rem;
+    background: linear-gradient(90deg, #4ade80 0%, #facc15 50%, #f87171 100%);
+    opacity: 0.8;
+}
+
+/* The sleek dynamic marker */
+.ai-price-marker {
+    position: absolute;
+    top: 50%;
+    width: 0.5rem;
+    height: 1.5rem;
+    background: var(--white);
+    border-radius: 0.25rem;
+    transform: translate(-50%, -50%);
+    transition: left 1s cubic-bezier(0.25, 1, 0.5, 1);
+    z-index: 2;
+    box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.5);
+}
+
+.ai-price-marker-label {
+    position: absolute;
+    top: -1.75rem;
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--white);
+    font-size: 0.7rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* Range markers (min / max labels) */
+.ai-price-range-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: var(--text-slate);
+    font-weight: 500;
+    margin-bottom: 2rem;
+}
+
+/* Data rows */
+.ai-price-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.ai-price-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.875rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.ai-price-row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.ai-price-label {
+    color: var(--text-slate);
+}
+
+.ai-price-value {
+    color: var(--white);
+    font-weight: 600;
+}
+
+/* specific alert row */
+.ai-price-alert .ai-price-label {
+    color: var(--warning);
+}
+.ai-price-alert .ai-price-value {
+    color: var(--warning);
+}

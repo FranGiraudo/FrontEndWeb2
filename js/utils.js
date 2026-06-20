@@ -8,6 +8,17 @@
     }
 })();
 
+window.escapeHTML = function(str) {
+    if (!str) return '';
+    return String(str).replace(/[&<>'"]/g, tag => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        "'": '&#39;',
+        '"': '&quot;'
+    }[tag] || tag));
+};
+
 // --- FORMATEO ---
 
 function showToast(message, type = 'success') {
@@ -21,7 +32,7 @@ function showToast(message, type = 'success') {
     toast.className = `toast ${type}`;
     const iconSuccess = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`;
     const iconError = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>`;
-    toast.innerHTML = `${type === 'success' ? iconSuccess : iconError} <span>${message}</span>`;
+    toast.innerHTML = `${type === 'success' ? iconSuccess : iconError} <span>${window.escapeHTML(message)}</span>`;
     container.appendChild(toast);
     setTimeout(() => {
         toast.style.animation = 'fadeOut 0.3s ease forwards';

@@ -606,6 +606,172 @@
 }
 
 /* ==========================================================================
+   6.5 LEADERBOARD & SEARCH HISTORY
+   ========================================================================== */
+.search-history-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    padding: 1rem;
+    background: var(--bg-elevated);
+    border-radius: 0.75rem;
+    align-items: center;
+}
+
+.search-history-title {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-right: 0.5rem;
+}
+
+.search-chip {
+    padding: 0.4rem 1rem;
+    background: var(--bg-hover);
+    color: var(--text-main);
+    border-radius: 1.5rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.search-chip:hover {
+    background: var(--accent-lavender);
+    color: var(--bg-darker);
+    border-color: var(--accent-lavender);
+}
+
+.leaderboard-section {
+    padding: 2rem;
+    background: var(--card-bg);
+    border-radius: 1.25rem;
+    border: 1px solid var(--border);
+    margin-bottom: 2rem;
+}
+
+.leaderboard-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--text-main);
+}
+
+.leaderboard-header svg {
+    width: 1.5rem;
+    height: 1.5rem;
+    color: var(--accent-lavender);
+}
+
+.leaderboard-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.leaderboard-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    background: var(--bg-elevated);
+    border-radius: 0.75rem;
+    transition: transform 0.2s, background 0.2s, max-height 0.4s ease, opacity 0.4s ease, margin-top 0.4s ease, padding 0.4s ease;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.leaderboard-hidden {
+    max-height: 0;
+    opacity: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-top: -0.5rem; /* negate gap */
+    border: none;
+}
+
+.leaderboard-hidden.expanded {
+    max-height: 10rem;
+    opacity: 1;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    margin-top: 0;
+}
+
+.leaderboard-item:hover {
+    transform: translateX(0.5rem);
+    background: var(--bg-hover);
+}
+
+.leaderboard-item::before {
+    content: attr(data-rank);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: var(--bg-darker);
+    background: var(--rank-standard);
+    margin-right: 1.5rem;
+    flex-shrink: 0;
+}
+
+.leaderboard-item[data-rank="1"]::before {
+    background: var(--rank-gold);
+}
+
+.leaderboard-item[data-rank="2"]::before {
+    background: var(--rank-silver);
+}
+
+.leaderboard-item[data-rank="3"]::before {
+    background: var(--rank-bronze);
+}
+
+.leaderboard-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.leaderboard-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.leaderboard-price {
+    font-size: 0.85rem;
+    color: var(--accent-lavender);
+    font-weight: 800;
+}
+
+.leaderboard-views {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.leaderboard-views svg {
+    width: 1rem;
+    height: 1rem;
+}
+
+/* ==========================================================================
    7. MEDIA QUERIES (MOBILE FIRST PARA HOME)
    ========================================================================== */
 @media (max-width: 48rem) {
@@ -645,3 +811,68 @@
         padding-bottom: 1.5rem;
     }
 }
+
+/* Dashboard Widgets Layout */
+.dashboard-widgets {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 3rem;
+    width: 100%;
+}
+
+@media (max-width: 64rem) {
+    .dashboard-widgets {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* =========================================================
+   AI Recommendations Section
+   ========================================================= */
+.ai-recommendations-section {
+    width: 100%;
+    margin-bottom: 0;
+    background: linear-gradient(145deg, var(--bg-elevated), var(--bg-darker));
+    border: 0.0625rem solid var(--accent-lavender-alpha-20);
+    border-radius: 1.5rem;
+    padding: 2rem;
+    box-shadow: 0 1rem 3rem var(--black-alpha-40), inset 0 0.0625rem 0 var(--white-alpha-10);
+}
+
+.ai-recommendations-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--accent-lavender);
+    margin-bottom: 2rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05rem;
+}
+
+.ai-recommendations-header svg {
+    width: 1.75rem;
+    height: 1.75rem;
+    color: var(--accent-lavender);
+}
+
+.ai-recommendations-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+    gap: 2rem;
+}
+
+.ai-empty-message {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 3rem;
+    color: var(--text-muted);
+    font-size: 1rem;
+    font-weight: 600;
+    background: var(--bg-vulcan);
+    border-radius: 1rem;
+    border: 0.0625rem dashed var(--border);
+    opacity: 0.7;
+}}
