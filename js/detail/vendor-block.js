@@ -36,8 +36,9 @@ export function generateVendorBlockHTML(seller) {
                     <span><strong>${rating} / 5</strong> (${totalReviews})</span>
                 </div>
             </div>
-            <div id="vendor-rating-interactive-${seller.id}" style="width: 100%; margin-top: 1rem; border-top: 1px solid var(--border); padding-top: 1rem;">
+            <div style="width: 100%; margin-top: 1rem; border-top: 1px solid var(--border); padding-top: 1rem;">
                 <p style="font-size: 0.8rem; color: var(--text-slate); margin-bottom: 0.5rem; text-align: center;">¿Hiciste negocio? Calificá al vendedor:</p>
+                <div id="vendor-rating-interactive-${seller.id}" style="display: flex; flex-direction: column; align-items: center;"></div>
             </div>
         </div>
     `;

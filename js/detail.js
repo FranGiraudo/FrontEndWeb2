@@ -90,6 +90,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <form id="form-contactar-vendedor"><textarea id="input-inquiry-message" required></textarea><button type="submit" class="btn-contact">ENVIAR MENSAJE</button></form>
                     <div style="display: flex; gap: 10px; margin-top: 1rem; width: 100%;">
                         <button id="btn-download-pdf" class="btn-detail" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; border-radius: 8px;">Ficha PDF</button>
+                        <button type="button" class="btn-detail" onclick="if(typeof window.showReportModal==='function') window.showReportModal(${car.id})" style="flex: 1; background: rgba(255, 77, 77, 0.1); color: var(--error); border: 1px solid var(--error); display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; border-radius: 8px; font-weight: 600;">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                            Reportar
+                        </button>
                     </div>
                 </div>
             </aside>

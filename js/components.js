@@ -293,9 +293,9 @@ window.renderStarRating = function(containerId, vendorId) {
         `;
     }
     starsHTML += `</div>
-        <div class="form-group" style="margin-top: 1rem; display: none;" id="rating-comment-group-${vendorId}">
-            <textarea id="rating-comment-${vendorId}" rows="2" placeholder="Opcional: Deja un comentario..."></textarea>
-            <button class="btn-submit" style="margin-top: 0.5rem; width: 100%;" id="rating-submit-${vendorId}">Enviar Calificación</button>
+        <div class="form-group" style="margin-top: 1rem; display: none; flex-direction: column; gap: 0.5rem; width: 100%;" id="rating-comment-group-${vendorId}">
+            <textarea id="rating-comment-${vendorId}" rows="2" placeholder="Opcional: Deja un comentario..." style="width: 100%; background: var(--bg-shark); color: var(--white); border: 1px solid var(--border); padding: 0.8rem; border-radius: 0.5rem; resize: vertical; font-family: inherit; font-size: 0.875rem;"></textarea>
+            <button class="btn-submit" style="width: 100%; padding: 0.8rem; font-weight: 600; border-radius: 0.5rem;" id="rating-submit-${vendorId}">Enviar Calificación</button>
         </div>
     `;
 
