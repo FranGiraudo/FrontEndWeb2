@@ -103,6 +103,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         initPdfExport(car, window.showToast);
 
         // Conversión a ARS quitada de la vista por pedido del usuario
+        
+        if (typeof window.renderStarRating === 'function') {
+            const vendorObj = car.vendor || car.seller;
+            if (vendorObj && vendorObj.id) {
+                window.renderStarRating(`vendor-rating-interactive-${vendorObj.id}`, vendorObj.id);
+            }
+        }
 
         if (typeof window.initFinancingSimulator === 'function' && !car.auction) {
             window.initFinancingSimulator(document.querySelector('.action-sidebar'), Number(car.price));
