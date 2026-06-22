@@ -73,7 +73,17 @@ export function initFormSubmit(uiNodes, state, utils) {
                 savedCar = await response.json();
                 showToast("¡Vehículo actualizado con éxito!", "success");
             } else {
-                savedCar = await saveCar(datosAuto);
+                const API_URL = typeof window.env !== 'undefined' ? window.env.API_URL : 'http://localhost:3000/api';
+                const response = await fetch(`${API_URL}/cars`, {
+                    method: 'POST',
+                    headers: window.getAuthHeaders('application/json'),
+                    body: JSON.stringify(datosAuto)
+                });
+                if (!response.ok) {
+                    const err = await response.json();
+                    throw new Error(err.message || 'Error al publicar auto');
+                }
+                savedCar = await response.json();
                 showToast("¡Vehículo publicado con éxito!", "success");
             }
             
