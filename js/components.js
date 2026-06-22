@@ -404,6 +404,11 @@ window.renderNotificationsPanel = async function() {
             }
         }
 
+        const unreadAuctionsWon = notifications.filter(n => !n.isRead && n.type === 'AUCTION_WON');
+        if (unreadAuctionsWon.length > 0 && typeof window.showAuctionWonModal === 'function') {
+            unreadAuctionsWon.forEach(n => window.showAuctionWonModal(n));
+        }
+
         listContainer.innerHTML = '';
         notifications.forEach(notif => {
             const item = document.createElement('div');
@@ -464,5 +469,54 @@ window.markNotificationAsRead = async function(id, btnElement) {
         }
     } catch (e) {
         console.error("Error marking notification as read:", e);
+    }
+}
+
+window.showAuctionWonModal = function(notif) {
+    // Evitar duplicados
+    if (document.getElementById(`modal-auction-won-${notif.id}`)) return;
+
+    const modalHTML = `
+        <div id="modal-auction-won-${notif.id}" class="modal-overlay" style="display: flex;">
+            <div class="modal-content auction-won-modal">
+                <div class="auction-won-header">
+                    <h2>🏆 ¡Subasta Ganada! 🏆</h2>
+                </div>
+                <div class="auction-won-body">
+                    <p class="auction-won-msg">${notif.message}</p>
+                    <p class="auction-won-sub">El vendedor se ha puesto en contacto con vos automáticamente. Revisá tus mensajes para coordinar el pago y la entrega.</p>
+                </div>
+                <div class="modal-actions" style="justify-content: center; margin-top: 2rem;">
+                    <button class="btn-primary" onclick="window.closeAuctionWonModal(${notif.id})">¡Genial!</button>
+                    <a href="profile.html?tab=messages" class="btn-secondary" style="text-decoration: none;" onclick="window.closeAuctionWonModal(${notif.id})">Ver Mensajes</a>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    confettiRain(); // Efecto de celebración
+};
+
+window.closeAuctionWonModal = function(notifId) {
+    const modal = document.getElementById(`modal-auction-won-${notifId}`);
+    if (modal) {
+        modal.remove();
+        // Marcar como leída silenciosamente
+        window.markNotificationAsRead(notifId, { closest: () => ({ classList: { remove: () => {} } }) }).catch(e => console.error(e));
+    }
+};
+
+// Función simple de confeti (agregada inline para no depender de librerías externas)
+function confettiRain() {
+    const colors = ['#F97316', '#FB923C', '#F8FAFC', '#9A3412', '#F59E0B'];
+    for (let i = 0; i < 100; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        confetti.style.left = Math.random() * 100 + 'vw';
+        confetti.style.animationDelay = Math.random() * 2 + 's';
+        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        document.body.appendChild(confetti);
+        setTimeout(() => confetti.remove(), 4000);
     }
 };
