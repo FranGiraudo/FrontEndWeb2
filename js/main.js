@@ -251,6 +251,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.querySelectorAll('.btn-compare-card').forEach(btn => {
             btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
                 const idStr = e.currentTarget.getAttribute('data-id');
                 manejarToggleComparacion(isNaN(idStr) ? idStr : Number(idStr));
             });
@@ -312,7 +314,18 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!barra || !contador) return;
         barra.style.display = window.vehiculosAComparar.length > 0 ? 'flex' : 'none';
         contador.textContent = window.vehiculosAComparar.length;
-        aplicarFiltros();
+        
+        document.querySelectorAll('.btn-compare-card').forEach(btn => {
+            const idStr = btn.getAttribute('data-id');
+            const id = isNaN(idStr) ? idStr : Number(idStr);
+            if (window.vehiculosAComparar.includes(id)) {
+                btn.classList.add('active');
+                btn.textContent = 'Agregado';
+            } else {
+                btn.classList.remove('active');
+                btn.textContent = 'Comparar';
+            }
+        });
     }
 
     const btnOpenCompare = document.getElementById('btn-open-compare');
