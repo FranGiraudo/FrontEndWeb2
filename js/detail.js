@@ -96,6 +96,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                         </button>
                     </div>
                 </div>
+                
+                <div class="vendor-block" style="margin-top: 1rem;">
+                    <p style="font-size: 0.85rem; color: var(--text-slate); margin-bottom: 0.5rem; text-align: center; font-weight: 500;">¿Hiciste negocio? Calificá al vendedor:</p>
+                    <div id="vendor-rating-interactive-${(car.vendor && car.vendor.id) ? car.vendor.id : (car.seller && car.seller.id) ? car.seller.id : car.id}" style="display: flex; flex-direction: column; align-items: center;"></div>
+                </div>
             </aside>
         `;
         
@@ -109,10 +114,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Conversión a ARS quitada de la vista por pedido del usuario
         
         if (typeof window.renderStarRating === 'function') {
-            const vendorObj = car.vendor || car.seller;
-            if (vendorObj && vendorObj.id) {
-                window.renderStarRating(`vendor-rating-interactive-${vendorObj.id}`, vendorObj.id);
-            }
+            const vendorObj = car.vendor || car.seller || {};
+            const targetId = vendorObj.id || car.id;
+            window.renderStarRating(`vendor-rating-interactive-${targetId}`, targetId);
         }
 
         if (typeof window.initFinancingSimulator === 'function' && !car.auction) {
