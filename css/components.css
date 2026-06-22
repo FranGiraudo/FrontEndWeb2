@@ -481,4 +481,54 @@ input:focus, select:focus, textarea:focus {
 .btn-mark-read:hover {
     background: var(--accent-lavender);
     color: var(--bg-vulcan);
+}
+
+/* ==========================================================================
+   BOTÓN FAVORITOS (GLOBAL PARA TARJETAS)
+   ========================================================================== */
+.btn-favorite {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    background: var(--card-bg-alpha-60);
+    backdrop-filter: blur(0.25rem);
+    -webkit-backdrop-filter: blur(0.25rem);
+    border: 0.0625rem solid var(--white-alpha-10);
+    border-radius: 50%;
+    width: 2.2rem;
+    height: 2.2rem;
+    display: flex; 
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    z-index: 50; 
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    color: var(--white);
+    flex-shrink: 0; 
+}
+
+.btn-favorite:hover {
+    transform: scale(1.1);
+    background: var(--card-bg-alpha-90);
+}
+
+.btn-favorite svg {
+    display: block; 
+    width: 1.1rem;
+    height: 1.1rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    transition: all 0.3s;
+    pointer-events: none; 
+}
+
+.btn-favorite.active {
+    border-color: var(--error);
+}
+
+.btn-favorite.active svg {
+    fill: var(--error);
+    stroke: var(--error);
+    transform: scale(1.15);
 }
