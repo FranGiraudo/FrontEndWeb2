@@ -118,10 +118,11 @@
 .ai-price-row {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     font-size: 0.875rem;
     padding-bottom: 0.75rem;
     border-bottom: 1px solid var(--border);
+    gap: 1rem;
 }
 
 .ai-price-row:last-child {
@@ -131,17 +132,29 @@
 
 .ai-price-label {
     color: var(--text-slate);
+    white-space: nowrap;
 }
 
 .ai-price-value {
     color: var(--white);
     font-weight: 600;
+    text-align: right;
+    word-break: break-word;
 }
 
 /* specific alert row */
+.ai-price-alert {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+}
 .ai-price-alert .ai-price-label {
     color: var(--warning);
+    white-space: normal;
 }
 .ai-price-alert .ai-price-value {
     color: var(--warning);
+    text-align: left;
+    font-weight: normal;
+    line-height: 1.4;
 }

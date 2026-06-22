@@ -15,8 +15,13 @@ export function generateVendorBlockHTML(seller) {
     
     const badgeHTML = isTopVendedor ? `<div class="vendor-badge">Vendedor Destacado</div>` : '';
     
-    // SVG Estrella (Semántica, Cero Emojis)
-    const starSVG = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`;
+    const starFilledSVG = `<svg viewBox="0 0 24 24" fill="#F59E0B" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1rem;height:1rem;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
+    const starEmptySVG = `<svg viewBox="0 0 24 24" fill="transparent" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1rem;height:1rem;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
+    
+    let starsHTML = '';
+    for (let i = 1; i <= 5; i++) {
+        starsHTML += i <= Math.round(rating) ? starFilledSVG : starEmptySVG;
+    }
 
     return `
         <div class="vendor-block">
@@ -27,8 +32,8 @@ export function generateVendorBlockHTML(seller) {
             <div class="vendor-info">
                 <h4 class="vendor-name">${nameStr}</h4>
                 <div class="vendor-rating">
-                    ${starSVG}
-                    <span><strong>${rating} / 5</strong> (${totalReviews} calificaciones)</span>
+                    <div style="display:flex; gap:2px; margin-right:4px;">${starsHTML}</div>
+                    <span><strong>${rating} / 5</strong> (${totalReviews})</span>
                 </div>
             </div>
         </div>
