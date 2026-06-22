@@ -35,12 +35,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         auctionDurationInput: document.getElementById('input-auction-duration'),
         
         actualizarTextoIA: function(manual = false) {
-            if (!this.aiBox) return;
-            this.aiBox.innerHTML = `<b>Carrocería${manual ? ' (Manual)' : ''}:</b> ${state.carroceriaDetectada}<br><b>Estado IA:</b> <span style="color:var(--accent-lavender);">${state.estadoGeneralIA}</span><br><b>Daños:</b> ${state.danosVisiblesIA}`;
+            const aiBox = document.getElementById('ai-text');
+            if (!aiBox) return;
+            aiBox.innerHTML = `<b>Carrocería${manual ? ' (Manual)' : ''}:</b> ${state.carroceriaDetectada}<br><b>Estado IA:</b> <span style="color:var(--accent-lavender);">${state.estadoGeneralIA}</span><br><b>Daños:</b> ${state.danosVisiblesIA}`;
         },
         mostrarSelectorManual: function() {
-            if (this.correctionUI) this.correctionUI.style.display = 'block';
-            if (this.selectCarroceria) this.selectCarroceria.value = state.carroceriaDetectada;
+            const correctionUI = document.getElementById('correction-ui');
+            const selectCarroceria = document.getElementById('select-carroceria-manual');
+            if (correctionUI) correctionUI.style.display = 'block';
+            if (selectCarroceria) selectCarroceria.value = state.carroceriaDetectada;
         }
     };
 
