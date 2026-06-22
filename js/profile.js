@@ -528,12 +528,13 @@ async function renderizarPanelComprador(userEmail) {
 
     favGrid.querySelectorAll('.btn-favorite').forEach(btn => {
         btn.addEventListener('click', async (e) => {
-            const idStr = e.currentTarget.getAttribute('data-fav-id');
+            const btnElem = e.currentTarget;
+            const idStr = btnElem.getAttribute('data-fav-id');
             const id = isNaN(idStr) ? idStr : Number(idStr);
             
-            e.currentTarget.disabled = true;
+            btnElem.disabled = true;
             await toggleFavoriteStatus(userEmail, id);
-            e.currentTarget.disabled = false;
+            btnElem.disabled = false;
 
             if(typeof showToast === 'function') showToast("Vehículo eliminado de la lista.", "success");
             await renderizarPanelComprador(userEmail);

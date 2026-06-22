@@ -259,17 +259,18 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.btn-favorite').forEach(btn => {
             btn.addEventListener('click', async (e) => {
                 e.stopPropagation();
-                const idStr = e.currentTarget.getAttribute('data-fav-id');
+                const btnElem = e.currentTarget;
+                const idStr = btnElem.getAttribute('data-fav-id');
                 const id = isNaN(idStr) ? idStr : Number(idStr);
-                e.currentTarget.disabled = true;
+                btnElem.disabled = true;
                 const isAdded = await toggleFavoriteStatus(userIdentifier, id);
                 cachedFavsList = null;
-                e.currentTarget.disabled = false;
+                btnElem.disabled = false;
                 if (isAdded) {
-                    e.currentTarget.classList.add('active');
+                    btnElem.classList.add('active');
                     showToast('Guardado en favoritos.');
                 } else {
-                    e.currentTarget.classList.remove('active');
+                    btnElem.classList.remove('active');
                     showToast('Eliminado de favoritos.', 'error');
                 }
             });
