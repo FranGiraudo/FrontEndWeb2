@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             </div>
             <aside class="action-sidebar">
                 <div class="sidebar-header"><p class="subtitle" style="text-transform: uppercase; color: var(--accent-lavender);">${car.brand}</p><h1>${car.model}</h1></div>
-                ${car.auction && car.auction.active ? `
+                ${car.auction && car.auction.isActive ? `
                 <div class="auction-box" data-ends-at="${car.auction.endsAt}" data-auction-id="${car.auction.id}">
                     <div class="auction-header"><span class="auction-badge">EN SUBASTA</span><div class="auction-countdown" id="auction-countdown"></div></div>
                     <div class="auction-prices">
@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         `;
         
         setTimeout(() => initLeafletMap(car.location), 100);
-        if (car.auction && car.auction.active) initAuctionLogic(car.auction, window.requireAuth, window.formatPrice);
+        if (car.auction && car.auction.isActive) initAuctionLogic(car.auction, window.requireAuth, window.formatPrice);
         initFavoritesLogic(document.getElementById('btn-detail-favorite'), car.id, userIdentifier, window.toggleFavoriteStatus, window.showToast);
         initLightbox(carImages);
         initContactForm(car.id, window.requireAuth, window.sendInquiryToSeller, window.trackMetric, window.showToast);

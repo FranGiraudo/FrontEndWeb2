@@ -42,6 +42,7 @@ export function initFormSubmit(uiNodes, state, utils) {
             datosAuto.isAuction = true;
             datosAuto.auctionStartingPrice = parseFloat(auctionPriceInput.value) || 0;
             datosAuto.auctionDurationDays = parseFloat(auctionDurationInput.value) || 3;
+            datosAuto.price = datosAuto.auctionStartingPrice; // El backend requiere 'price' para la DB
             if (datosAuto.auctionStartingPrice <= 0) {
                 showToast("El precio inicial de subasta debe ser mayor a 0", "error");
                 btnSubmit.innerHTML = state.editModeId ? "GUARDAR CAMBIOS" : "PUBLICAR VEHÍCULO";
