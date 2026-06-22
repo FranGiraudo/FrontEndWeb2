@@ -109,7 +109,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
         const aiPlaceholder = document.getElementById('ai-price-placeholder');
         if (aiPlaceholder && car.aiStatus && car.aiPriceMin) {
-            if (typeof window.renderAiAnalysis === 'function') window.renderAiAnalysis(aiPlaceholder, car);
+            if (typeof window.renderAiAnalysis === 'function') {
+                window.renderAiAnalysis(aiPlaceholder, {
+                    status: car.aiStatus,
+                    damages: car.aiDamages,
+                    minPrice: car.aiPriceMin,
+                    maxPrice: car.aiPriceMax,
+                    currentPrice: car.price
+                });
+            }
         }
     }
 });
