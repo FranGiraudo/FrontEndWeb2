@@ -378,7 +378,8 @@ window.renderNotificationsPanel = async function() {
 
         listContainer.innerHTML = '<div style="padding: 1rem; text-align: center; color: var(--text-slate);">Cargando notificaciones...</div>';
 
-        const res = await fetch(`${window.API_BASE_URL || 'http://localhost:3000/api'}/notifications`, {
+        const baseUrl = (window.ENV && window.ENV.API_BASE_URL) ? window.ENV.API_BASE_URL : 'http://localhost:3000/api';
+        const res = await fetch(`${baseUrl}/notifications`, {
             headers: {
                 'Authorization': `Bearer ${session.token}`,
                 'Content-Type': 'application/json'
@@ -442,7 +443,8 @@ window.markNotificationAsRead = async function(id, btnElement) {
         const session = (typeof getSession === 'function') ? getSession() : null;
         if (!session || !session.token) return;
 
-        const res = await fetch(`${window.API_BASE_URL || 'http://localhost:3000/api'}/notifications/${id}/read`, {
+        const baseUrl = (window.ENV && window.ENV.API_BASE_URL) ? window.ENV.API_BASE_URL : 'http://localhost:3000/api';
+        const res = await fetch(`${baseUrl}/notifications/${id}/read`, {
             method: 'PATCH',
             headers: {
                 'Authorization': `Bearer ${session.token}`,
