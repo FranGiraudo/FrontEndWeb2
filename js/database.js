@@ -62,6 +62,7 @@ function getAuthHeaders(contentType = 'application/json') {
     }
     return headers;
 }
+window.getAuthHeaders = getAuthHeaders;
 
 /**
  * Wrapper de fetch para endpoints protegidos.

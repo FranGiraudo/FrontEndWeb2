@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     const utils = {
-        API_BASE_URL: typeof window.env !== 'undefined' ? window.env.API_BASE_URL : 'http://localhost:3000/api',
+        API_BASE_URL: (typeof window.ENV !== 'undefined' && window.ENV.API_BASE_URL) ? window.ENV.API_BASE_URL : 'http://localhost:3000/api',
         getAuthHeaders: window.getAuthHeaders,
         showToast: window.showToast,
         getSession: window.getSession,
