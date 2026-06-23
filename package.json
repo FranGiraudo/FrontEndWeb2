@@ -4,7 +4,7 @@
   "description": "Frontend Vanilla JS",
   "scripts": {
     "build": "node build-env.js",
-    "start": "npx serve ."
+    "start": "node ./node_modules/serve/build/main.js -l ${PORT:-3000} ."
   },
   "dependencies": {
     "serve": "^14.2.4"
