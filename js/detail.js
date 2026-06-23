@@ -174,7 +174,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 contentDiv.innerHTML = '<span style="opacity:0.6;">Consultando historial, mercado y repuestos...</span>';
                 
                 try {
-                    const API_URL = (typeof window.API_BASE_URL !== 'undefined') ? window.API_BASE_URL : 'http://localhost:3000/api';
+                    const API_URL = (window.ENV && window.ENV.API_BASE_URL) ? window.ENV.API_BASE_URL : 'http://localhost:3000/api';
                     const res = await fetch(`${API_URL}/ai/advisor-review`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },

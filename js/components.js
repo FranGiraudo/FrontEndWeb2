@@ -255,7 +255,8 @@ window.submitReport = async function(carId) {
     if (!session || !session.token) return;
 
     try {
-        const response = await fetch('http://localhost:3000/api/reports', {
+        const baseUrl = (window.ENV && window.ENV.API_BASE_URL) ? window.ENV.API_BASE_URL : 'http://localhost:3000/api';
+        const response = await fetch(`${baseUrl}/reports`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -334,7 +335,8 @@ window.renderStarRating = function(containerId, vendorId) {
             submitBtn.disabled = true;
             submitBtn.textContent = 'Enviando...';
 
-            const response = await fetch('http://localhost:3000/api/reviews', {
+            const baseUrl = (window.ENV && window.ENV.API_BASE_URL) ? window.ENV.API_BASE_URL : 'http://localhost:3000/api';
+            const response = await fetch(`${baseUrl}/reviews`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

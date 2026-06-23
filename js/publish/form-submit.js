@@ -58,7 +58,7 @@ export function initFormSubmit(uiNodes, state, utils) {
             let savedCar;
             
             if (state.editModeId) {
-                const API_URL = typeof window.env !== 'undefined' ? window.env.API_URL : 'http://localhost:3000/api';
+                const API_URL = (window.ENV && window.ENV.API_BASE_URL) ? window.ENV.API_BASE_URL : 'http://localhost:3000/api';
                 const response = await fetch(`${API_URL}/cars/${state.editModeId}`, {
                     method: 'PUT',
                     headers: {
@@ -74,7 +74,7 @@ export function initFormSubmit(uiNodes, state, utils) {
                 savedCar = await response.json();
                 showToast("¡Vehículo actualizado con éxito!", "success");
             } else {
-                const API_URL = typeof window.env !== 'undefined' ? window.env.API_URL : 'http://localhost:3000/api';
+                const API_URL = (window.ENV && window.ENV.API_BASE_URL) ? window.ENV.API_BASE_URL : 'http://localhost:3000/api';
                 const response = await fetch(`${API_URL}/cars`, {
                     method: 'POST',
                     headers: window.getAuthHeaders('application/json'),

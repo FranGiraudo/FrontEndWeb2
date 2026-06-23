@@ -16,7 +16,8 @@ export function initAuctionLogic(auction, requireAuth, formatPrice) {
     // Socket.IO Setup
     let socket = null;
     if (typeof window.io !== 'undefined') {
-        const socketUrl = typeof window.env !== 'undefined' ? window.env.API_URL.replace('/api', '') : 'http://localhost:3000';
+        const baseUrl = (window.ENV && window.ENV.API_BASE_URL) ? window.ENV.API_BASE_URL : 'http://localhost:3000/api';
+        const socketUrl = baseUrl.replace('/api', '');
         socket = window.io(socketUrl);
 
         socket.emit('joinAuction', { auctionId: auction.id });
@@ -96,7 +97,7 @@ export function initAuctionLogic(auction, requireAuth, formatPrice) {
         submitBtn.textContent = "PROCESANDO...";
 
         try {
-            const API_URL = typeof window.env !== 'undefined' ? window.env.API_URL : 'http://localhost:3000/api';
+            const API_URL = (window.ENV && window.ENV.API_BASE_URL) ? window.ENV.API_BASE_URL : 'http://localhost:3000/api';
             const response = await fetch(`${API_URL}/auctions/${auction.id}/bid`, {
                 method: 'POST',
                 headers: {
