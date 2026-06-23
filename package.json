@@ -4,7 +4,7 @@
   "description": "Frontend Vanilla JS",
   "scripts": {
     "build": "node build-env.js",
-    "start": "serve ."
+    "start": "npx serve ."
   },
   "dependencies": {
     "serve": "^14.2.4"
