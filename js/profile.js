@@ -282,14 +282,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     const viewVendedor = document.getElementById('vendedor-view');
     const viewComprador = document.getElementById('comprador-view');
     const viewMensajes = document.getElementById('mensajes-view');
+    const viewSubastas = document.getElementById('subastas-view');
+    const navSubastas = document.getElementById('nav-subastas');
 
     async function switchTab(tabName) {
         if (navPanel) navPanel.classList.remove('active');
         if (navConsultas) navConsultas.classList.remove('active');
+        if (navSubastas) navSubastas.classList.remove('active');
         
         if (viewVendedor) viewVendedor.style.display = 'none';
         if (viewComprador) viewComprador.style.display = 'none';
         if (viewMensajes) viewMensajes.style.display = 'none';
+        if (viewSubastas) viewSubastas.style.display = 'none';
 
         if (tabName === 'panel') {
             if (navPanel) navPanel.classList.add('active');
@@ -316,6 +320,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                 await renderizarBandejaMensajes(session.email, 'comprador');
             }
         }
+        else if (tabName === 'subastas') {
+            if (navSubastas) navSubastas.classList.add('active');
+            if (viewSubastas) viewSubastas.style.display = 'block';
+            await renderHistorialSubastas();
+        }
         
         // Al cambiar de pestaña en móvil, cerramos el menú
         if (window.innerWidth <= 768 && profileNav && profileNav.classList.contains('open')) {
@@ -326,6 +335,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (navPanel) navPanel.addEventListener('click', (e) => { e.preventDefault(); switchTab('panel'); });
     if (navConsultas) navConsultas.addEventListener('click', (e) => { e.preventDefault(); switchTab('mensajes'); });
+    if (navSubastas) navSubastas.addEventListener('click', (e) => { e.preventDefault(); switchTab('subastas'); });
 
     /// --- LOGOUT ---
     const btnLogout = document.getElementById('btn-logout-sidebar');
@@ -532,12 +542,35 @@ async function renderizarPanelComprador(userEmail) {
             const idStr = btnElem.getAttribute('data-fav-id');
             const id = isNaN(idStr) ? idStr : Number(idStr);
             
+            // Optimistic UI Update: hide the card immediately
+            const card = btnElem.closest('.card-auto');
+            if (card) {
+                card.style.transition = "opacity 0.3s ease, transform 0.3s ease";
+                card.style.opacity = "0";
+                card.style.transform = "scale(0.9)";
+                setTimeout(() => card.style.display = "none", 300);
+            }
+            
             btnElem.disabled = true;
-            await toggleFavoriteStatus(userEmail, id);
-            btnElem.disabled = false;
-
-            if(typeof showToast === 'function') showToast("Vehículo eliminado de la lista.", "success");
-            await renderizarPanelComprador(userEmail);
+            
+            try {
+                await toggleFavoriteStatus(userEmail, id);
+                if(typeof showToast === 'function') showToast("Vehículo eliminado de favoritos.", "success");
+                // Background sync without re-rendering everything
+                cachedFavsList = null; 
+            } catch (err) {
+                // Revert on error
+                if (card) {
+                    card.style.display = "block";
+                    setTimeout(() => {
+                        card.style.opacity = "1";
+                        card.style.transform = "scale(1)";
+                    }, 50);
+                }
+                if(typeof showToast === 'function') showToast("Error al eliminar. Intentá de nuevo.", "error");
+            } finally {
+                btnElem.disabled = false;
+            }
         });
     });
 }
@@ -933,19 +966,35 @@ window.marcarComoLeido = async function(msgId, userRole) {
 
 window.enviarRespuesta = async function(msgId, userRole) {
     const input = document.getElementById(`reply-input-${msgId}`);
+    if (!input || input.disabled) return; // Anti-doble envío
     const text = input.value.trim();
     if (!text) {
         if(typeof showToast === 'function') showToast("Escribí un mensaje antes de enviar.", "error");
         return;
     }
+    input.disabled = true; // Bloquea el input para que no se presione enter de vuelta
+    const btn = input.parentElement.querySelector('.btn-action');
+    if (btn) btn.disabled = true;
+
     const session = JSON.parse(localStorage.getItem('user_session'));
     const senderName = session.nombre || session.email;
     if (typeof addReplyToMessage === 'function') {
         const response = await addReplyToMessage(msgId, text, senderName, userRole);
         if (response.success) {
-            await renderizarBandejaMensajes(session.email, userRole);
-            setTimeout(() => window.mantenerChatAbierto(msgId), 50);
+            // Fluid append: avoid full re-render
+            const chatBox = document.querySelector(`#chat-body-${msgId} .chat-box`);
+            if (chatBox) {
+                const dateHtml = `<div style="font-size: 0.7rem; color: rgba(0,0,0,0.5); margin-top: 4px; text-align: right;">Justo ahora</div>`;
+                chatBox.innerHTML += `<div style="background: var(--accent-lavender); color: var(--bg-dark); padding: 10px 15px; border-radius: 8px 8px 0 8px; max-width: 80%; align-self: flex-end; font-size: 0.9rem; font-weight: 500;"><strong>Tú:</strong> ${text}${dateHtml}</div>`;
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+            input.value = '';
+            input.disabled = false;
+            if (btn) btn.disabled = false;
+            input.focus();
         } else {
+            input.disabled = false;
+            if (btn) btn.disabled = false;
             if(typeof showToast === 'function') showToast(response.error || "Error al responder.", "error");
         }
     }
@@ -954,4 +1003,73 @@ window.enviarRespuesta = async function(msgId, userRole) {
 window.verDetalleVehiculo = function(id) {
     localStorage.setItem('car_id_view', id);
     window.location.href = "detail.html";
+};
+
+window.renderHistorialSubastas = async function() {
+    const grid = document.getElementById('grid-subastas');
+    if (!grid) return;
+
+    grid.innerHTML = '<p style="color: var(--text-slate);">Cargando historial...</p>';
+
+    try {
+        const res = await authFetch(`${API_BASE_URL}/auctions/history`, {
+            headers: getAuthHeaders()
+        });
+        
+        if (res && res.ok) {
+            const auctions = await res.json();
+            if (auctions.length === 0) {
+                grid.innerHTML = '<p style="color: var(--text-slate); grid-column: 1/-1;">No tenés subastas finalizadas en tu historial.</p>';
+                return;
+            }
+
+            grid.innerHTML = '';
+            auctions.forEach(auction => {
+                const isWinner = auction.winnerId === getSession().id;
+                const roleBadge = isWinner ? 
+                    '<span style="background: var(--accent-emerald); color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold;">Ganador</span>' : 
+                    '<span style="background: var(--accent-lavender); color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold;">Vendedor</span>';
+                
+                const image = (auction.car.images && auction.car.images.length > 0) ? auction.car.images[0].url : '../assets/placeholder-car.jpg';
+                const otherPartyText = isWinner ? 'Vendedor' : 'Ganador';
+                
+                // Si es el vendedor, le mostramos el nombre del ganador. Si es el comprador, ocultamos al vendedor.
+                const otherPartyDisplay = isWinner ? 
+                    'Privado' : 
+                    (auction.winner ? `${auction.winner.nombre} ${auction.winner.apellido || ''}` : 'Nadie');
+
+                const card = document.createElement('div');
+                card.className = 'car-card';
+                card.style.display = 'flex';
+                card.style.flexDirection = 'column';
+                card.innerHTML = `
+                    <div style="height: 160px; background-image: url('${image}'); background-size: cover; background-position: center; border-radius: 8px 8px 0 0;"></div>
+                    <div class="card-content" style="flex: 1; display: flex; flex-direction: column; padding: 1rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+                            <h3 style="margin: 0; font-size: 1.1rem; color: var(--white);">${auction.car.brand} ${auction.car.model}</h3>
+                            ${roleBadge}
+                        </div>
+                        <p style="color: var(--text-slate); font-size: 0.85rem; margin-bottom: 1rem;">Finalizada el: ${new Date(auction.endsAt).toLocaleDateString()}</p>
+                        <div style="margin-top: auto; border-top: 1px solid var(--border); padding-top: 1rem;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                <span style="color: var(--text-slate); font-size: 0.85rem;">Precio Final:</span>
+                                <strong style="color: var(--white);">u$s ${auction.currentPrice.toLocaleString()}</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="color: var(--text-slate); font-size: 0.85rem;">${otherPartyText}:</span>
+                                <span style="color: var(--white); font-size: 0.85rem;">${otherPartyDisplay}</span>
+                            </div>
+                        </div>
+                        <button class="btn-detail" onclick="window.verDetalleVehiculo('${auction.carId}')" style="margin-top: 1rem; width: 100%; text-align: center;">Ver Vehículo</button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        } else {
+            grid.innerHTML = '<p style="color: var(--error);">Error al cargar el historial.</p>';
+        }
+    } catch (e) {
+        console.error(e);
+        grid.innerHTML = '<p style="color: var(--error);">Error de conexión.</p>';
+    }
 };

@@ -36,6 +36,7 @@
             <nav class="sidebar-nav" id="profile-nav">
                 <a href="#" id="nav-panel-general" class="active">Panel General</a>
                 <a href="#" id="nav-consultas">Consultas</a>
+                <a href="#" id="nav-subastas">Mis Subastas</a>
                 <a href="#" id="nav-edit-profile">Configurar Perfil</a>
                 <a href="../index.html">Explorar Marketplace</a>
                 <a href="#" class="logout-danger" id="btn-logout-sidebar">Cerrar Sesión</a>
@@ -106,6 +107,14 @@
                     <p id="subtitulo-mensajes">Gestioná la comunicación sobre los vehículos.</p>
                 </div>
                 <div id="grid-mensajes" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; margin-top: 2rem;"></div>
+            </div>
+
+            <div id="subastas-view" class="dashboard-content" style="display: none;">
+                <div class="card-header">
+                    <h1>Historial de Subastas</h1>
+                    <p>Subastas en las que participaste como vendedor o ganador.</p>
+                </div>
+                <div id="grid-subastas" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; margin-top: 2rem;"></div>
             </div>
         </section>
     </main>

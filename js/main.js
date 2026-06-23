@@ -235,17 +235,20 @@ document.addEventListener('DOMContentLoaded', () => {
             const card = document.createElement('div');
             card.className = 'card-auto';
 
-            let htmlBotones = `<button class="btn-detail" onclick="navigateToDetail('${car.id}')">Detalles</button>`;
+            let htmlBotones = `<button class="btn-detail" onclick="navigateToDetail('${car.id}')" style="padding: 0.4rem 1rem; font-size: 0.85rem; font-weight: 700; width: auto; flex-grow: 1;">Detalles</button>`;
             let htmlFavorito = '';
             if (isComprador) {
-                htmlBotones = `<button class="btn-compare-card ${isSelected ? 'active' : ''}" data-id="${car.id}">${isSelected ? 'Agregado' : 'Comparar'}</button>${htmlBotones}`;
+                htmlBotones = `<button class="btn-compare-card ${isSelected ? 'active' : ''}" data-id="${car.id}" style="padding: 0.4rem 0.6rem; font-size: 0.75rem; background: transparent; border: 1px solid var(--border-light); color: var(--text-muted); font-weight: 500;">${isSelected ? 'Agregado' : 'Comparar'}</button>${htmlBotones}`;
                 htmlFavorito = `<button class="btn-favorite ${isFav ? 'active' : ''}" data-fav-id="${car.id}"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></button>`;
             }
 
-            let arsPriceHtml = '';
-            // Se quitó la visualización en pesos por pedido del usuario
+            let priceHtml = `<div style="display: flex; flex-direction: column; line-height: 1.2;"><span class="price" style="font-size: 1.15rem;">u$s ${window.formatPrice ? window.formatPrice(car.price) : Number(car.price).toLocaleString()}</span>`;
+            if (car.oldPrice && car.oldPrice !== car.price) {
+                priceHtml += `<span class="price-old" style="text-decoration: line-through; color: #999; font-size: 0.75rem;">u$s ${Number(car.oldPrice).toLocaleString()}</span>`;
+            }
+            priceHtml += `</div>`;
 
-            card.innerHTML = `<div class="img-container">${htmlFavorito}<img src="${car.image || ''}" alt="${car.model}" onerror="this.style.visibility='hidden'"><span class="badge-ia">${car.bodyType}</span></div><div class="info-auto"><h3>${car.brand} ${car.model}</h3><p>${car.year} • ${window.formatPrice ? window.formatPrice(car.km) : Number(car.km).toLocaleString()} km</p><div class="car-footer"><span class="price">u$s ${window.formatPrice ? window.formatPrice(car.price) : Number(car.price).toLocaleString()}</span><div style="display:flex;gap:8px;">${htmlBotones}</div></div></div>`;
+            card.innerHTML = `<div class="img-container">${htmlFavorito}<img src="${car.image || ''}" alt="${car.model}" onerror="this.style.visibility='hidden'"><span class="badge-ia">${car.bodyType}</span></div><div class="info-auto"><h3>${car.brand} ${car.model}</h3><p>${car.year} • ${window.formatPrice ? window.formatPrice(car.km) : Number(car.km).toLocaleString()} km</p><div class="car-footer" style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; flex-wrap: wrap;"><div class="price-container">${priceHtml}</div><div style="display:flex; align-items: center; gap: 6px; flex-wrap: wrap;">${htmlBotones}</div></div></div>`;
             carContainer.appendChild(card);
         });
 
@@ -264,16 +267,38 @@ document.addEventListener('DOMContentLoaded', () => {
                 const btnElem = e.currentTarget;
                 const idStr = btnElem.getAttribute('data-fav-id');
                 const id = isNaN(idStr) ? idStr : Number(idStr);
-                btnElem.disabled = true;
-                const isAdded = await toggleFavoriteStatus(userIdentifier, id);
-                cachedFavsList = null;
-                btnElem.disabled = false;
-                if (isAdded) {
-                    btnElem.classList.add('active');
-                    showToast('Guardado en favoritos.');
-                } else {
+                
+                // Optimistic UI Update
+                const wasActive = btnElem.classList.contains('active');
+                if (wasActive) {
                     btnElem.classList.remove('active');
-                    showToast('Eliminado de favoritos.', 'error');
+                } else {
+                    btnElem.classList.add('active');
+                    btnElem.style.transform = "scale(1.3)";
+                    setTimeout(() => btnElem.style.transform = "", 200);
+                }
+                
+                btnElem.disabled = true;
+                
+                // Background Sync
+                try {
+                    const isAdded = await toggleFavoriteStatus(userIdentifier, id);
+                    cachedFavsList = null;
+                    if (isAdded && !wasActive) showToast('Guardado en favoritos.');
+                    if (!isAdded && wasActive) showToast('Eliminado de favoritos.', 'error');
+                    
+                    // Revert if server disagrees
+                    if (isAdded !== !wasActive) {
+                        if (isAdded) btnElem.classList.add('active');
+                        else btnElem.classList.remove('active');
+                    }
+                } catch (err) {
+                    // Revert on error
+                    if (wasActive) btnElem.classList.add('active');
+                    else btnElem.classList.remove('active');
+                    showToast('Error de conexión', 'error');
+                } finally {
+                    btnElem.disabled = false;
                 }
             });
         });
@@ -451,10 +476,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function init() {
-        const [carsData, trendingData, historyData] = await Promise.all([
+        const [carsData, trendingData, historyData, vendorsData] = await Promise.all([
             getAllCars(),
             getTrendingCars(),
-            getSearchHistory()
+            getSearchHistory(),
+            getVendorsRanking()
         ]);
         allCars = carsData;
         
@@ -462,8 +488,52 @@ document.addEventListener('DOMContentLoaded', () => {
         await renderLeaderboard(trendingData);
         renderHistoryList(historyData);
         await renderAiRecommendations();
+        await renderVendorsRanking(vendorsData);
     }
     
+    async function renderVendorsRanking(vendors) {
+        const section = document.getElementById('vendors-ranking-section');
+        const listDiv = document.getElementById('vendors-ranking-list');
+        if (!section || !listDiv) return;
+
+        if (!vendors || vendors.length === 0) {
+            section.style.display = 'none';
+            return;
+        }
+
+        section.style.display = 'block';
+        listDiv.innerHTML = '';
+
+        vendors.forEach((vendor, index) => {
+            const card = document.createElement('div');
+            card.className = 'card-auto'; // Reutilizamos estilo para mantener consistencia
+            card.style.textAlign = 'center';
+            card.style.padding = '2rem 1rem';
+            
+            let medalHtml = '';
+            if (index === 0) medalHtml = '<i class="fa-solid fa-medal" style="color: gold; font-size: 2rem; margin-bottom: 1rem;"></i>';
+            else if (index === 1) medalHtml = '<i class="fa-solid fa-medal" style="color: silver; font-size: 1.5rem; margin-bottom: 1rem;"></i>';
+            else if (index === 2) medalHtml = '<i class="fa-solid fa-medal" style="color: #cd7f32; font-size: 1.5rem; margin-bottom: 1rem;"></i>';
+
+            const fallbackAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(vendor.nombre + ' ' + (vendor.apellido || ''))}&background=8b5cf6&color=fff&size=80`;
+            const avatar = vendor.avatarUrl || fallbackAvatar;
+            
+            card.innerHTML = `
+                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
+                    ${medalHtml}
+                    <img src="${avatar}" alt="${vendor.nombre}" onerror="this.onerror=null; this.src='${fallbackAvatar}'" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 1rem; border: 3px solid var(--accent-lavender);">
+                    <h3 style="margin-bottom: 0.5rem; color: var(--white);">${vendor.nombre} ${vendor.apellido || ''}</h3>
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                        <span style="color: var(--warning); font-size: 1.2rem; font-weight: bold;">${vendor.avgScore.toFixed(1)}</span>
+                        <i class="fa-solid fa-star" style="color: var(--warning);"></i>
+                    </div>
+                    <p style="color: var(--text-slate); font-size: 0.9rem;">${vendor.totalReviews} reseñas</p>
+                </div>
+            `;
+            listDiv.appendChild(card);
+        });
+    }
+
     async function renderAiRecommendations() {
         const container = document.getElementById('ai-recommendations');
         const listDiv = document.getElementById('ai-recommendations-list');
@@ -482,6 +552,85 @@ document.addEventListener('DOMContentLoaded', () => {
             const dashboard = document.getElementById('dashboard-widgets');
             if (dashboard) dashboard.style.display = 'grid';
 
+            const btnForce = document.getElementById('btn-force-recommendations');
+            if (btnForce) {
+                btnForce.onclick = async () => {
+                    listDiv.innerHTML = '<div class="ai-empty-message" style="opacity: 0.5;"><i class="fa-solid fa-spinner fa-spin"></i> Analizando tu perfil con IA...</div>';
+                    btnForce.disabled = true;
+                    try {
+                        const res = await fetch(`${API_BASE_URL}/recommendations/generate`, {
+                            method: 'POST',
+                            headers: { 'Authorization': `Bearer ${session.token}` }
+                        });
+                        if (!res.ok) throw new Error('Error al generar');
+                        const data = await res.json();
+
+                        if (!data.cars || data.cars.length === 0) {
+                            listDiv.innerHTML = '<div class="ai-empty-message">No hay historial suficiente para recomendar.</div>';
+                            return;
+                        }
+
+                        listDiv.innerHTML = '';
+                        data.cars.forEach((car, index) => {
+                            const imgUrl = car.images && car.images.length > 0 ? car.images[0].url : (car.image || 'assets/placeholder-car.jpg');
+                            const card = document.createElement('div');
+                            card.className = 'card-auto'; 
+                            if (index >= 1) {
+                                card.classList.add('ai-hidden');
+                            }
+                            
+                            let priceHtml = `<div style="display: flex; flex-direction: column; line-height: 1.2;"><span class="price" style="font-size: 1.15rem;">u$s ${window.formatPrice ? window.formatPrice(car.price) : Number(car.price).toLocaleString()}</span>`;
+                            if (car.oldPrice && car.oldPrice !== car.price) {
+                                priceHtml += `<span class="price-old" style="text-decoration: line-through; color: #999; font-size: 0.75rem;">u$s ${Number(car.oldPrice).toLocaleString()}</span>`;
+                            }
+                            priceHtml += `</div>`;
+
+                            let htmlBotones = `<button class="btn-detail" onclick="navigateToDetail('${car.id}')" style="padding: 0.4rem 1rem; font-size: 0.85rem; font-weight: 700; width: auto; flex-grow: 1;">Detalles</button>`;
+                            card.innerHTML = `<div class="img-container"><img src="${imgUrl}" alt="${car.model}" onerror="this.style.visibility='hidden'"><span class="badge-ia">Recomendado</span></div>
+                            <div class="info-auto"><h3>${car.brand} ${car.model}</h3><p>${car.year} • ${window.formatPrice ? window.formatPrice(car.km) : Number(car.km).toLocaleString()} km</p>
+                            <div class="car-footer" style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; flex-wrap: wrap;"><div class="price-container">${priceHtml}</div><div style="display:flex; align-items: center; gap: 6px; flex-wrap: wrap;">${htmlBotones}</div></div></div>`;
+                            listDiv.appendChild(card);
+                        });
+
+                        if (data.cars.length > 1) {
+                            const btnToggle = document.createElement('button');
+                            btnToggle.className = 'btn-detail';
+                            btnToggle.style.marginTop = '1rem';
+                            btnToggle.style.width = '100%';
+                            btnToggle.style.display = 'block';
+                            btnToggle.textContent = 'Ver Todas (' + data.cars.length + ')';
+                            
+                            btnToggle.onclick = () => {
+                                const hiddenItems = listDiv.querySelectorAll('.ai-hidden');
+                                const isExpanded = btnToggle.textContent.startsWith('Ver Menos');
+                                
+                                hiddenItems.forEach(item => {
+                                    if (isExpanded) {
+                                        item.classList.remove('expanded');
+                                    } else {
+                                        item.classList.add('expanded');
+                                    }
+                                });
+                                
+                                if (isExpanded) {
+                                    btnToggle.textContent = 'Ver Todas (' + data.cars.length + ')';
+                                    container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                } else {
+                                    btnToggle.textContent = 'Ver Menos';
+                                }
+                            };
+                            
+                            listDiv.appendChild(btnToggle);
+                        }
+
+                    } catch (e) {
+                        listDiv.innerHTML = '<div class="ai-empty-message">Error al generar recomendaciones.</div>';
+                    } finally {
+                        btnForce.disabled = false;
+                    }
+                };
+            }
+
             const response = await fetch(`${API_BASE_URL}/recommendations/me`, {
                 headers: { 'Authorization': `Bearer ${session.token}` }
             });
@@ -496,26 +645,57 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             listDiv.innerHTML = '';
-            data.cars.forEach(car => {
-                const imgUrl = car.images && car.images.length > 0 ? car.images[0].url : 'assets/placeholder-car.jpg';
+            data.cars.forEach((car, index) => {
+                const imgUrl = car.images && car.images.length > 0 ? car.images[0].url : (car.image || 'assets/placeholder-car.jpg');
                 const card = document.createElement('div');
-                card.className = 'car-card';
-                card.innerHTML = `
-                    <div class="car-img" style="background-image: url('${imgUrl}')">
-                        <span class="badge-role" style="position:absolute; top:1rem; right:1rem;">Recomendado</span>
-                    </div>
-                    <div class="car-info">
-                        <h3>${car.brand} ${car.model}</h3>
-                        <p class="price">u$s ${window.formatPrice ? window.formatPrice(car.price) : car.price}</p>
-                        <div class="car-meta">
-                            <span>${window.AppIcons.anio} ${car.year}</span>
-                            <span>${window.AppIcons.km} ${window.formatPrice ? window.formatPrice(car.km) : car.km} km</span>
-                        </div>
-                        <button class="btn-detail" onclick="navigateToDetail(${car.id})">Ver Detalles</button>
-                    </div>
-                `;
+                card.className = 'card-auto'; 
+                if (index >= 1) {
+                    card.classList.add('ai-hidden');
+                }
+                
+                let priceHtml = `<div style="display: flex; flex-direction: column; line-height: 1.2;"><span class="price" style="font-size: 1.15rem;">u$s ${window.formatPrice ? window.formatPrice(car.price) : Number(car.price).toLocaleString()}</span>`;
+                if (car.oldPrice && car.oldPrice !== car.price) {
+                    priceHtml += `<span class="price-old" style="text-decoration: line-through; color: #999; font-size: 0.75rem;">u$s ${Number(car.oldPrice).toLocaleString()}</span>`;
+                }
+                priceHtml += `</div>`;
+
+                let htmlBotones = `<button class="btn-detail" onclick="navigateToDetail('${car.id}')" style="padding: 0.4rem 1rem; font-size: 0.85rem; font-weight: 700; width: auto; flex-grow: 1;">Detalles</button>`;
+                card.innerHTML = `<div class="img-container"><img src="${imgUrl}" alt="${car.model}" onerror="this.style.visibility='hidden'"><span class="badge-ia">Recomendado</span></div>
+                <div class="info-auto"><h3>${car.brand} ${car.model}</h3><p>${car.year} • ${window.formatPrice ? window.formatPrice(car.km) : Number(car.km).toLocaleString()} km</p>
+                <div class="car-footer" style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; flex-wrap: wrap;"><div class="price-container">${priceHtml}</div><div style="display:flex; align-items: center; gap: 6px; flex-wrap: wrap;">${htmlBotones}</div></div></div>`;
                 listDiv.appendChild(card);
             });
+
+            if (data.cars.length > 1) {
+                const btnToggle = document.createElement('button');
+                btnToggle.className = 'btn-detail';
+                btnToggle.style.marginTop = '1rem';
+                btnToggle.style.width = '100%';
+                btnToggle.style.display = 'block';
+                btnToggle.textContent = 'Ver Todas (' + data.cars.length + ')';
+                
+                btnToggle.onclick = () => {
+                    const hiddenItems = listDiv.querySelectorAll('.ai-hidden');
+                    const isExpanded = btnToggle.textContent.startsWith('Ver Menos');
+                    
+                    hiddenItems.forEach(item => {
+                        if (isExpanded) {
+                            item.classList.remove('expanded');
+                        } else {
+                            item.classList.add('expanded');
+                        }
+                    });
+                    
+                    if (isExpanded) {
+                        btnToggle.textContent = 'Ver Todas (' + data.cars.length + ')';
+                        container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    } else {
+                        btnToggle.textContent = 'Ver Menos';
+                    }
+                };
+                
+                listDiv.appendChild(btnToggle);
+            }
 
         } catch (error) {
             console.error('Error:', error);

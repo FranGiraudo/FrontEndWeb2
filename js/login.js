@@ -100,6 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (response.success) {
             const sessionData = {
+                id: response.user.id,
                 email: response.user.email,
                 role: response.user.role || response.user.rol,
                 nombre: response.user.nombre,

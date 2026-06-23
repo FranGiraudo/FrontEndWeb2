@@ -7,7 +7,7 @@ export function initContactForm(carId, requireAuth, sendInquiryToSeller, trackMe
     const contactForm = document.getElementById('form-contactar-vendedor');
     if (!contactForm) return;
 
-    contactForm.addEventListener('submit', async (event) => {
+    contactForm.onsubmit = async (event) => {
         event.preventDefault();
 
         const session = typeof requireAuth === 'function' ? requireAuth('comprador') : null;
@@ -35,5 +35,5 @@ export function initContactForm(carId, requireAuth, sendInquiryToSeller, trackMe
                 if (typeof showToast === 'function') showToast(response.error, "error");
             }
         }
-    });
+    };
 }

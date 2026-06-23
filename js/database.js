@@ -103,8 +103,10 @@ async function getAllCars(filters = {}) {
  */
 async function getCarById(id) {
     try {
-        const res = await fetch(`${API_BASE_URL}/cars/${id}`, { cache: 'no-store' });
-        if (!res.ok) throw new Error('Vehículo no encontrado.');
+        const url = `${API_BASE_URL}/cars/${id}`;
+        console.log('Fetching car from:', url);
+        const res = await fetch(url, { cache: 'no-store' });
+        if (!res.ok) throw new Error(`Vehículo no encontrado (Status: ${res.status}, URL: ${url}).`);
         return await res.json();
     } catch (error) {
         console.error('Error en getCarById:', error);
@@ -161,8 +163,20 @@ async function saveSearchHistory(queryText, filters) {
     }
 }
 
+async function getVendorsRanking() {
+    try {
+        const res = await fetch(`${API_BASE_URL}/reviews/ranking`);
+        if (!res.ok) return [];
+        return await res.json();
+    } catch (error) {
+        console.error('Error fetching vendors ranking:', error);
+        return [];
+    }
+}
+
 /**
  * 2. SISTEMA DE ANALYTICS CENTRALIZADO
+
  */
 function trackMetric(id, type) {
     console.log(`[SmartAuto Analytics] Evento '${type}' para el vehículo ${id} registrado en servidor.`);

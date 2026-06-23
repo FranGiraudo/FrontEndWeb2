@@ -171,9 +171,9 @@ function applySessionToNav(inPages) {
         link.classList.remove('active-page');
         link.style.cssText = 'color: var(--text-slate); opacity: 0.7; border-bottom: 2px solid transparent;';
 
-        const esHome    = url.includes('index.html') || url.endsWith('/') || url.endsWith('smartauto/');
-        const esPublish = url.includes('publish.html');
-        const esPerfil  = url.includes('profile.html') || url.includes('login.html');
+        const esHome    = url.includes('index') || url.endsWith('/') || url.endsWith('smartauto/') || url.includes('detail');
+        const esPublish = url.includes('publish');
+        const esPerfil  = url.includes('profile') || url.includes('login');
 
         if ((esHome && href.includes('index')) ||
             (esPublish && href.includes('publish')) ||
@@ -408,10 +408,19 @@ window.renderNotificationsPanel = async function() {
         notifications.forEach(notif => {
             const item = document.createElement('div');
             item.className = `notification-item ${notif.isRead ? 'read' : 'unread'}`;
+            if (notif.linkUrl) {
+                item.style.cursor = 'pointer';
+                item.addEventListener('click', (e) => {
+                    // Evitamos que al marcar como leida se redireccione sin querer
+                    if (!e.target.closest('.btn-mark-read')) {
+                        window.location.href = notif.linkUrl;
+                    }
+                });
+            }
             
             let btnHtml = '';
             if (!notif.isRead) {
-                btnHtml = `<button class="btn-mark-read" onclick="window.markNotificationAsRead(${notif.id}, this)">Marcar como leída</button>`;
+                btnHtml = `<button class="btn-mark-read" onclick="window.markNotificationAsRead(${notif.id}, this); event.stopPropagation();">Marcar como leída</button>`;
             }
 
             item.innerHTML = `

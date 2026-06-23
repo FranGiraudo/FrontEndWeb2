@@ -61,6 +61,13 @@ export function initAiAutofill(uiNodes, state, utils) {
 
             if (!res.ok) throw new Error(data.message || "Error al subir las imágenes.");
 
+            if (data.aiAnalysis && data.aiAnalysis.isFraud) {
+                showToast(`FRAUDE DETECTADO: ${data.aiAnalysis.fraudReason || 'La imagen parece falsa o bajada de internet.'}`, "error");
+                if (aiBox) aiBox.innerHTML = `<span style="color:var(--error); font-weight:bold;">¡IMAGEN RECHAZADA!</span><br>La IA determinó que la imagen no es válida o es fraudulenta.<br><em>Motivo: ${data.aiAnalysis.fraudReason}</em>`;
+                if (aiContainer) aiContainer.style.borderLeft = "4px solid var(--error)";
+                throw new Error("Imagen rechazada por sospecha de fraude.");
+            }
+
             state.fotosCargadas = data.images;
             galleryPreview.innerHTML = '';
             

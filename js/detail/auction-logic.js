@@ -12,6 +12,38 @@ export function initAuctionLogic(auction, requireAuth, formatPrice) {
     if (!countdownEl || !submitBtn || !inputAmount) return;
 
     const endsAt = new Date(auction.endsAt).getTime();
+    
+    // Socket.IO Setup
+    let socket = null;
+    if (typeof window.io !== 'undefined') {
+        const socketUrl = typeof window.env !== 'undefined' ? window.env.API_URL.replace('/api', '') : 'http://localhost:3000';
+        socket = window.io(socketUrl);
+
+        socket.emit('joinAuction', { auctionId: auction.id });
+
+        socket.on('newBid', (data) => {
+            currentPriceEl.textContent = `u$s ${formatPrice ? formatPrice(data.currentPrice) : data.currentPrice.toLocaleString()}`;
+            inputAmount.min = data.currentPrice + 100;
+            inputAmount.placeholder = `Monto (mín. ${data.currentPrice + 100})`;
+            
+            // Visual highlight effect
+            currentPriceEl.style.transition = 'color 0.3s ease';
+            currentPriceEl.style.color = 'var(--success)';
+            setTimeout(() => {
+                currentPriceEl.style.color = 'var(--white)';
+            }, 1000);
+        });
+
+        socket.on('auctionEnded', (data) => {
+            if (interval) clearInterval(interval);
+            countdownEl.textContent = "FINALIZADA";
+            countdownEl.style.color = "var(--error)";
+            submitBtn.disabled = true;
+            submitBtn.textContent = "SUBASTA CERRADA";
+            inputAmount.disabled = true;
+            currentPriceEl.textContent = `u$s ${formatPrice ? formatPrice(data.finalPrice) : data.finalPrice.toLocaleString()}`;
+        });
+    }
 
     const updateCountdown = () => {
         const now = new Date().getTime();

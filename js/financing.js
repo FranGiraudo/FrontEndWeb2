@@ -129,5 +129,48 @@ function initFinancingSimulator(container, precioVehiculo) {
 
     // Inyectar al DOM
     container.appendChild(simulatorWrapper);
+
+    // 8. Costo Total del Vehículo (Mantenimiento Mensual Estimado)
+    const maintenanceWrapper = document.createElement('div');
+    maintenanceWrapper.className = 'financing-calculator'; // Reusamos los estilos de la calculadora
+    maintenanceWrapper.style.marginTop = '1.5rem';
+
+    const maintTitle = document.createElement('div');
+    maintTitle.className = 'financing-title';
+    maintTitle.innerHTML = `
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+        </svg>
+        Costo de Mantenimiento Mensual
+    `;
+    maintenanceWrapper.appendChild(maintTitle);
+
+    const calcPatente = precioVehiculo * 0.05 / 12; // 5% anual / 12
+    const calcSeguro = precioVehiculo * 0.01; // 1% mensual
+    const calcMantenimiento = 50 + (precioVehiculo * 0.001); // Fijo + desgaste proporcional
+
+    const totalCost = calcPatente + calcSeguro + calcMantenimiento;
+
+    const costsHtml = `
+        <div style="font-size: 0.85rem; color: var(--text-slate); margin-bottom: 0.5rem; display: flex; justify-content: space-between;">
+            <span>Patente (5% anual / 12)</span> <span style="font-weight:600; color:var(--text-main);">u$s ${Math.round(calcPatente).toLocaleString()}</span>
+        </div>
+        <div style="font-size: 0.85rem; color: var(--text-slate); margin-bottom: 0.5rem; display: flex; justify-content: space-between;">
+            <span>Seguro Completo (~1%)</span> <span style="font-weight:600; color:var(--text-main);">u$s ${Math.round(calcSeguro).toLocaleString()}</span>
+        </div>
+        <div style="font-size: 0.85rem; color: var(--text-slate); margin-bottom: 1rem; display: flex; justify-content: space-between;">
+            <span>Service, nafta y gastos fijos</span> <span style="font-weight:600; color:var(--text-main);">u$s ${Math.round(calcMantenimiento).toLocaleString()}</span>
+        </div>
+        <div class="financing-result-box" style="margin-top: 0; background: var(--bg-card); border: 1px solid var(--border-color);">
+            <div class="financing-result-label" style="font-size: 0.8rem;">Gasto Fijo Total (Estimado)</div>
+            <div class="financing-result-value" style="font-size: 1.5rem;">u$s ${Math.round(totalCost).toLocaleString()}</div>
+        </div>
+    `;
+
+    const costsDiv = document.createElement('div');
+    costsDiv.innerHTML = costsHtml;
+    maintenanceWrapper.appendChild(costsDiv);
+
+    container.appendChild(maintenanceWrapper);
 }
 window.initFinancingSimulator = initFinancingSimulator;

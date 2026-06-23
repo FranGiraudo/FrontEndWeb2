@@ -813,7 +813,7 @@
 
 .ai-recommendations-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
     gap: 2rem;
 }
 
@@ -828,4 +828,37 @@
     border-radius: 1rem;
     border: 0.0625rem dashed var(--border);
     opacity: 0.7;
-}}
+}
+
+@media (max-width: 768px) {
+    .ai-recommendations-section {
+        padding: 1rem;
+        border-radius: 1rem;
+    }
+    
+    .ai-recommendations-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    #btn-force-recommendations {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* Clases para colapsar recomendaciones IA sin romper el layout de grid/flex */
+.ai-hidden {
+    display: none !important;
+}
+.ai-hidden.expanded {
+    display: flex !important;
+    animation: fadeIn 0.4s ease forwards;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}

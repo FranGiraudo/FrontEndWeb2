@@ -14,6 +14,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     const container = document.getElementById('car-detail-content');
     const carIdStr = localStorage.getItem('car_id_view') || new URLSearchParams(window.location.search).get('id');
     localStorage.removeItem('car_id_view');
+
+    if (!carIdStr) {
+        if(container) container.innerHTML = `<div class="error-msg" style="text-align:center; padding: 4rem;"><h2>Vehículo no encontrado</h2><a href="../index.html" class="btn-detail">Volver</a></div>`;
+        return;
+    }
+
     const carId = isNaN(carIdStr) ? carIdStr : Number(carIdStr);
     
     if (carId && !new URLSearchParams(window.location.search).has('id')) {
@@ -82,9 +88,30 @@ document.addEventListener('DOMContentLoaded', async () => {
                         <input type="number" id="auction-bid-amount" placeholder="Monto (mín. ${car.auction.currentPrice + 100})" min="${car.auction.currentPrice + 100}">
                         <button id="btn-submit-bid" class="btn-detail">ENVIAR PUJA</button>
                     </div>
-                </div>` : `<div class="price-box"><p style="font-size: 0.7rem; text-transform: uppercase;">Precio Publicado</p><h2 class="price-value" id="detail-main-price">u$s ${Number(car.price).toLocaleString()}</h2></div>`}
+                </div>` : `<div class="price-box"><p style="font-size: 0.7rem; text-transform: uppercase;">Precio Final</p><h2 class="price-value" id="detail-main-price">u$s ${Number(car.price).toLocaleString()}${car.oldPrice && car.oldPrice !== car.price ? `<span style="text-decoration: line-through; color: #999; font-size: 0.6em; margin-left: 10px;">u$s ${Number(car.oldPrice).toLocaleString()}</span>` : ''}</h2></div>`}
+                ${car.status === 'Disponible' ? '' : `
+                    <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid var(--error); border-radius: 8px; padding: 1rem; text-align: center; margin-bottom: 1rem;">
+                        <h3 style="color: var(--error); margin: 0; font-size: 1.1rem; text-transform: uppercase; font-weight: 800;">VEHÍCULO ${car.status.toUpperCase()}</h3>
+                        <p style="color: var(--text-slate); font-size: 0.85rem; margin-top: 0.5rem; margin-bottom: 0;">Esta publicación ya cerró su venta.</p>
+                    </div>
+                `}
                 ${generateVendorBlockHTML(car.vendor || car.seller)}
+                
+                <div class="advisor-review-container" style="background: var(--bg-card); border: 0.0625rem solid var(--border-color); border-radius: 0.5rem; padding: 1.25rem; margin-bottom: 1rem; position: relative; overflow: hidden;">
+                    <div style="position: absolute; top: 0; left: 0; width: 0.25rem; height: 100%; background: var(--accent-lavender);"></div>
+                    <div style="display: flex; align-items: center; gap: 0.625rem; margin-bottom: 0.5rem;">
+                        <i class="fa-solid fa-user-tie" style="color: var(--accent-lavender); font-size: 1.25rem;"></i>
+                        <h3 style="margin: 0; color: var(--white); font-size: 1.125rem;">La Opinión del Asesor</h3>
+                    </div>
+                    <p style="font-size: 0.875rem; color: var(--text-slate); margin-bottom: 1rem; margin-top: 0;">Un experto automotriz virtual de SmartAuto analizará si este vehículo es una buena compra.</p>
+                    <div id="advisor-review-content" style="display: none; background: var(--bg-main); padding: 1rem; border-radius: 0.375rem; font-size: 0.875rem; line-height: 1.5; color: var(--text-main); font-style: italic; border-left: 0.125rem solid var(--accent-pink); margin-bottom: 1rem;"></div>
+                    <button id="btn-get-advisor-review" class="btn-detail" style="width: 100%; display: flex; justify-content: center; align-items: center; gap: 0.5rem;">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Solicitar Análisis Experto
+                    </button>
+                </div>
+
                 <div id="ai-price-placeholder"></div>
+                ${car.status === 'Disponible' ? `
                 <div class="contact-form-container">
                     <h3 style="color: white; margin-bottom: 1rem;">Consultar al vendedor</h3>
                     <form id="form-contactar-vendedor"><textarea id="input-inquiry-message" required></textarea><button type="submit" class="btn-contact">ENVIAR MENSAJE</button></form>
@@ -96,6 +123,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         </button>
                     </div>
                 </div>
+                ` : ''}
                 
                 <div class="vendor-block" style="margin-top: 1rem; padding: 1.5rem; box-sizing: border-box; width: 100%; display: flex; flex-direction: column;">
                     <p style="font-size: 0.85rem; color: var(--text-slate); margin-bottom: 0.5rem; text-align: center; font-weight: 500;">¿Hiciste negocio? Calificá al vendedor:</p>
@@ -105,7 +133,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         `;
         
         setTimeout(() => initLeafletMap(car.location), 100);
-        if (car.auction && car.auction.isActive) initAuctionLogic(car.auction, window.requireAuth, window.formatPrice);
+        if (car.auction && car.auction.isActive && car.status === 'Disponible') initAuctionLogic(car.auction, window.requireAuth, window.formatPrice);
         initFavoritesLogic(document.getElementById('btn-detail-favorite'), car.id, userIdentifier, window.toggleFavoriteStatus, window.showToast);
         initLightbox(carImages);
         initContactForm(car.id, window.requireAuth, window.sendInquiryToSeller, window.trackMetric, window.showToast);
@@ -134,6 +162,47 @@ document.addEventListener('DOMContentLoaded', async () => {
                     currentPrice: car.price
                 });
             }
+        }
+
+        const btnAdvisor = document.getElementById('btn-get-advisor-review');
+        if (btnAdvisor) {
+            btnAdvisor.onclick = async () => {
+                const contentDiv = document.getElementById('advisor-review-content');
+                btnAdvisor.disabled = true;
+                btnAdvisor.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> El experto está analizando...';
+                contentDiv.style.display = 'block';
+                contentDiv.innerHTML = '<span style="opacity:0.6;">Consultando historial, mercado y repuestos...</span>';
+                
+                try {
+                    const API_URL = (typeof window.API_BASE_URL !== 'undefined') ? window.API_BASE_URL : 'http://localhost:3000/api';
+                    const res = await fetch(`${API_URL}/ai/advisor-review`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            carData: {
+                                brand: car.brand,
+                                model: car.model,
+                                year: car.year,
+                                km: car.km,
+                                price: car.price,
+                                aiStatus: car.aiStatus,
+                                aiPriceMin: car.aiPriceMin,
+                                aiPriceMax: car.aiPriceMax
+                            }
+                        })
+                    });
+                    
+                    if (!res.ok) throw new Error('Failed to get review');
+                    const data = await res.json();
+                    contentDiv.innerHTML = `"${data.review}"`;
+                    btnAdvisor.style.display = 'none'; 
+                } catch (error) {
+                    console.error('Error fetching advisor review:', error);
+                    contentDiv.innerHTML = '<span style="color:var(--error);">Hubo un problema al contactar al asesor. Intentá nuevamente más tarde.</span>';
+                    btnAdvisor.disabled = false;
+                    btnAdvisor.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> Reintentar Análisis';
+                }
+            };
         }
     }
 });
